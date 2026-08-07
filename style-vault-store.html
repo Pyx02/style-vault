@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Style Vault</title>
+    <meta name="description" content="Premium branded bags, shoes, watches & accessories — factory direct.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #14141f;
+            --card: #1a1a28;
+            --border: #252538;
+            --text: #e8e8f0;
+            --text-muted: #8a8aa0;
+            --accent: #7c5cfc;
+            --accent-glow: rgba(124, 92, 252, 0.25);
+            --gold: #d4a853;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            padding-bottom: 20px;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10,10,15,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), #a78bfa);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .logo-accent { color: var(--accent); }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .icon-btn:active { transform: scale(0.92); background: var(--card); }
+
+        .cart-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+        .cart-count.show { display: flex; }
+
+        /* ========== SEARCH ========== */
+        .search-wrap {
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.25s;
+        }
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+            padding: 4px;
+            border-radius: 50%;
+        }
+        .search-clear.show { display: block; }
+
+        /* ========== CATEGORIES ========== */
+        .categories {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            flex-shrink: 0;
+        }
+        .categories::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            flex-shrink: 0;
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .cat-btn:active { transform: scale(0.96); }
+        .cat-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        /* ========== BANNER ========== */
+        .banner {
+            margin: 0 16px 16px;
+            background: linear-gradient(135deg, #1a1040, #0d1a30);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .banner::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent-glow);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+        .banner-badge {
+            display: inline-block;
+            background: rgba(124,92,252,0.2);
+            color: #b4a0ff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .banner h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        .banner p {
+            font-size: 13px;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== PRODUCT GRID ========== */
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            padding: 0 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .section-count {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 0 16px;
+        }
+
+        .product-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .product-card:active { transform: scale(0.97); }
+        .card-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: var(--surface);
+        }
+        .card-img-placeholder {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(135deg, var(--surface), var(--card));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        .card-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+        .card-tag.hot { background: var(--red); }
+        .card-tag.best { background: var(--gold); color: #1a1a0a; }
+
+        .card-body {
+            padding: 10px 12px 12px;
+        }
+        .card-brand {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .card-name {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .card-price .retail {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            font-weight: 400;
+            margin-left: 6px;
+        }
+        .card-wa-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #25d366;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .card-wa-btn:active { transform: scale(0.88); }
+
+        /* ========== PRODUCT DETAIL MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            animation: fadeIn 0.2s;
+        }
+        .modal-overlay.hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .modal-sheet {
+            width: 100%;
+            max-width: 480px;
+            max-height: 88vh;
+            background: var(--surface);
+            border-radius: 20px 20px 0 0;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+            margin: 0 auto;
+        }
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+        .modal-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: var(--card);
+        }
+        .modal-img-placeholder {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(135deg, var(--card), var(--surface));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+        }
+        .modal-content {
+            padding: 16px 20px 24px;
+        }
+        .modal-brand {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+        .modal-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .modal-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .modal-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        .modal-retail {
+            font-size: 15px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+        .modal-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .modal-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .spec-tag {
+            padding: 6px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .btn-wa-order {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            background: #25d366;
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+        .btn-wa-order:active { transform: scale(0.97); opacity: 0.9; }
+        .btn-close-modal {
+            width: 100%;
+            padding: 12px;
+            background: var(--card);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* ========== CART DRAWER ========== */
+        .cart-drawer {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 300;
+            display: flex;
+            justify-content: flex-end;
+            display: none;
+        }
+        .cart-drawer.open { display: flex; }
+        .cart-panel {
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            animation: slideRight 0.3s ease-out;
+        }
+        @keyframes slideRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .cart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-header h3 { font-size: 18px; font-weight: 700; }
+        .cart-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card);
+            border: none;
+            color: var(--text);
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .cart-item-img {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+        }
+        .cart-item-info { flex: 1; min-width: 0; }
+        .cart-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cart-item-price { font-size: 14px; font-weight: 700; color: var(--accent); }
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: var(--red);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .cart-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .cart-empty-icon { font-size: 56px; margin-bottom: 12px; }
+        .cart-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .cart-total-price { color: var(--accent); font-size: 18px; font-weight: 700; }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state-icon { font-size: 64px; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 18px; margin-bottom: 6px; }
+        .empty-state p { font-size: 14px; color: var(--text-muted); }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 500;
+            pointer-events: none;
+            animation: toastIn 0.3s, toastOut 0.3s 2s forwards;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            text-align: center;
+            padding: 32px 16px 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 24px;
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (min-width: 640px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 640px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+            .categories {
+                max-width: 640px;
+                margin: 0 auto;
+                padding: 12px 20px;
+            }
+            .header {
+                padding: 12px 20px;
+            }
+            .banner {
+                max-width: 640px;
+                margin: 0 auto 16px;
+                left: 0;
+                right: 0;
+            }
+            .section-title {
+                max-width: 640px;
+                margin: 0 auto 12px;
+                padding: 0 20px;
+            }
+            .modal-sheet { border-radius: 20px; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== HEADER ========== -->
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">
+                <div class="logo-icon">🛍️</div>
+                <span>Nebula <span class="logo-accent">Vault</span></span>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleCart()" aria-label="Cart">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput"
+                   placeholder="Search bags, shoes, watches..."
+                   oninput="handleSearch()">
+            <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+        </div>
+    </header>
+
+    <!-- ========== CATEGORIES ========== -->
+    <nav class="categories" id="categoryNav">
+        <button class="cat-btn active" data-cat="all">🔥 All</button>
+        <button class="cat-btn" data-cat="shoes">👟 Shoes</button>
+        <button class="cat-btn" data-cat="bags">👜 Bags</button>
+        <button class="cat-btn" data-cat="clothing">👕 Clothing</button>
+        <button class="cat-btn" data-cat="watches">⌚ Watches</button>
+        <button class="cat-btn" data-cat="accessories">💎 Accessories</button>
+    </nav>
+
+    <!-- ========== BANNER ========== -->
+    <div class="banner">
+        <div class="banner-badge">Factory Direct</div>
+        <h2>Premium Brands, Real Prices</h2>
+        <p>Same quality — without the retail markup. Order via WhatsApp.</p>
+    </div>
+
+    <!-- ========== PRODUCT SECTION ========== -->
+    <div class="section-title" id="sectionTitle">
+        🔥 Trending Now
+        <span class="section-count" id="sectionCount"></span>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+    <div class="empty-state hidden" id="emptyState">
+        <div class="empty-state-icon">🔍</div>
+        <h3>Nothing found</h3>
+        <p>Try a different search or browse categories</p>
+    </div>
+
+    <!-- ========== PRODUCT DETAIL MODAL ========== -->
+    <div class="modal-overlay hidden" id="productModal" onclick="closeModal(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <div id="modalImgContainer"></div>
+            <div class="modal-content" id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- ========== CART DRAWER ========== -->
+    <div class="cart-drawer" id="cartDrawer" onclick="closeCartDrawer(event)">
+        <div class="cart-panel" onclick="event.stopPropagation()">
+            <div class="cart-header">
+                <h3>🛒 Your Bag</h3>
+                <button class="cart-close" onclick="toggleCart()">✕</button>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-footer" id="cartFooter"></div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <div class="footer">
+        Style Vault © 2026 · Factory Direct Premium Goods<br>
+        <a href="https://wa.me/8613800000000" target="_blank">Contact via WhatsApp</a>
+    </div>
+
+    <script>
+        // ==================== CONFIG ====================
+        // 👇 CHANGE THIS TO YOUR REAL WHATSAPP NUMBER (with country code, no + or spaces)
+        const WA_NUMBER = '8617681555093';  // e.g. '8613912345678'
+        const STORE_NAME = 'Style Vault';
+        const CURRENCY = '$';
+
+        // ==================== PRODUCTS DATABASE ====================
+        // 👇 REPLACE THESE WITH YOUR REAL PRODUCTS
+        // img: use a real image URL, or leave empty for emoji placeholder
+        const products = [
+            // ---- SHOES ----
+            {
+                id: 1,
+                name: 'Air Jordan 1 Retro High OG "Chicago"',
+                brand: 'Nike',
+                category: 'shoes',
+                price: 145,
+                retail: 180,
+                img: '',
+                emoji: '👟',
+                tag: 'Hot',
+                tagClass: 'hot',
+                desc: 'Premium quality, 1:1 craftsmanship. Full-grain leather upper, Air-Sole unit, solid rubber outsole. Comes with original box and extra laces.',
+                specs: ['US 7-13', 'Full Box', 'Extra Laces', '1:1 Quality']
+            },
+            {
+                id: 2,
+                name: 'Yeezy Boost 350 V2 "Zebra"',
+                brand: 'Adidas',
+                category: 'shoes',
+                price: 130,
+                retail: 220,
+                img: '',
+                emoji: '👟',
+                tag: 'Best',
+                tagClass: 'best',
+                desc: 'Primeknit upper with signature zebra stripe pattern. Boost cushioning for all-day comfort. Reflective details.',
+                specs: ['US 5-12', 'Box Included', 'Reflective', 'Boost Sole']
+            },
+            {
+                id: 3,
+                name: 'Nike Dunk Low "Panda"',
+                brand: 'Nike',
+                category: 'shoes',
+                price: 115,
+                retail: 130,
+                img: '',
+                emoji: '👟',
+                tag: '',
+                tagClass: '',
+                desc: 'Classic black and white colorway. Leather upper, padded collar, rubber outsole. The everyday sneaker that goes with everything.',
+                specs: ['US 6-13', 'OG Box', 'Classic Fit']
+            },
+            {
+                id: 4,
+                name: 'Balenciaga Triple S Clear Sole',
+                brand: 'Balenciaga',
+                category: 'shoes',
+                price: 175,
+                retail: 1050,
+                img: '',
+                emoji: '👟',
+                tag: 'New',
+                tagClass: '',
+                desc: 'The iconic chunky sneaker. Mesh and leather upper with embroidered logo. Clear rubber sole with triple-stacked design.',
+                specs: ['EU 36-45', 'Premium Box', 'Embroidered Logo']
+            },
+
+            // ---- BAGS ----
+            {
+                id: 10,
+                name: 'Neverfull MM Damier Ebene',
+                brand: 'Louis Vuitton',
+                category: 'bags',
+                price: 185,
+                retail: 2030,
+                img: '',
+                emoji: '👜',
+                tag: 'Best',
+                tagClass: 'best',
+                desc: 'Classic tote in Damier Ebene canvas. Natural cowhide leather trim, striped textile lining. Side laces, golden hardware.',
+                specs: ['MM Size', 'Dust Bag', 'Date Code', '1:1 Hardware']
+            },
+            {
+                id: 11,
+                name: 'Chanel Classic Flap Bag Medium',
+                brand: 'Chanel',
+                category: 'bags',
+                price: 220,
+                retail: 10200,
+                img: '',
+                emoji: '👜',
+                tag: '',
+                tagClass: '',
+                desc: 'Lambskin leather with signature diamond quilting. Gold-tone chain strap, CC turn-lock closure. Burgundy interior.',
+                specs: ['Medium 25cm', 'Dust Bag', 'Auth Card', 'Serial Sticker']
+            },
+            {
+                id: 12,
+                name: 'GG Marmont Matelassé Mini',
+                brand: 'Gucci',
+                category: 'bags',
+                price: 150,
+                retail: 1980,
+                img: '',
+                emoji: '👜',
+                tag: 'Hot',
+                tagClass: 'hot',
+                desc: 'Matelassé chevron leather with GG hardware on the front. Sliding chain strap, suede-like microfiber lining.',
+                specs: ['Mini 22cm', 'Chain Strap', 'Dust Bag', 'Top Quality']
+            },
+            {
+                id: 13,
+                name: 'Prada Re-Edition 2005 Nylon Mini',
+                brand: 'Prada',
+                category: 'bags',
+                price: 135,
+                retail: 1250,
+                img: '',
+                emoji: '👜',
+                tag: '',
+                tagClass: '',
+                desc: 'Recycled nylon with Saffiano leather trim. Silver-tone hardware, removable chain strap. Enamel triangle logo.',
+                specs: ['Mini Size', 'Chain+Pouch', 'Re-Nylon', 'Logo Plaque']
+            },
+
+            // ---- CLOTHING ----
+            {
+                id: 20,
+                name: 'Canada Goose Expedition Parka',
+                brand: 'Canada Goose',
+                category: 'clothing',
+                price: 195,
+                retail: 1550,
+                img: '',
+                emoji: '🧥',
+                tag: 'Hot',
+                tagClass: 'hot',
+                desc: 'Arctic Tech fabric, 625 fill power duck down. Fur-trimmed hood, fleece-lined pockets. Rated for -30°C. The real deal.',
+                specs: ['S-XXL', 'Fur Hood', 'Arctic Tech', 'Hologram Tag']
+            },
+            {
+                id: 21,
+                name: 'Moncler Maya Short Down Jacket',
+                brand: 'Moncler',
+                category: 'clothing',
+                price: 165,
+                retail: 1450,
+                img: '',
+                emoji: '🧥',
+                tag: '',
+                tagClass: '',
+                desc: 'Glossy nylon laqué, 90/10 down fill. Detachable hood, zip closure. Iconic felt logo patch on sleeve.',
+                specs: ['1-7 (EU)', '90/10 Down', 'Glossy Finish', 'Logo Patch']
+            },
+            {
+                id: 22,
+                name: 'Essentials Fear of God Hoodie',
+                brand: 'Fear of God',
+                category: 'clothing',
+                price: 85,
+                retail: 110,
+                img: '',
+                emoji: '👕',
+                tag: '',
+                tagClass: '',
+                desc: 'Heavyweight cotton fleece, oversized fit. 3D silicone appliqué logo on chest and back. Dropped shoulders, ribbed cuffs.',
+                specs: ['XS-XXL', 'Oversized', 'French Terry', '3D Logo']
+            },
+
+            // ---- WATCHES ----
+            {
+                id: 30,
+                name: 'Rolex Submariner Date 126610LN',
+                brand: 'Rolex',
+                category: 'watches',
+                price: 265,
+                retail: 10750,
+                img: '',
+                emoji: '⌚',
+                tag: 'Best',
+                tagClass: 'best',
+                desc: '41mm Oystersteel case, black ceramic bezel. Automatic movement, date window with Cyclops lens. Oyster bracelet.',
+                specs: ['41mm', 'Auto Movement', 'Ceramic Bezel', 'Sapphire Glass']
+            },
+            {
+                id: 31,
+                name: 'Audemars Piguet Royal Oak 15500',
+                brand: 'Audemars Piguet',
+                category: 'watches',
+                price: 285,
+                retail: 27800,
+                img: '',
+                emoji: '⌚',
+                tag: '',
+                tagClass: '',
+                desc: '41mm stainless steel with iconic Grande Tapisserie dial. Integrated bracelet, exhibition case back.',
+                specs: ['41mm', 'Tapisserie Dial', 'Steel Bracelet', 'Auto']
+            },
+
+            // ---- ACCESSORIES ----
+            {
+                id: 40,
+                name: 'Gucci GG Canvas Belt',
+                brand: 'Gucci',
+                category: 'accessories',
+                price: 65,
+                retail: 450,
+                img: '',
+                emoji: '💎',
+                tag: '',
+                tagClass: '',
+                desc: 'GG Supreme canvas with leather trim. Double G buckle in aged gold-tone metal. 4cm width.',
+                specs: ['4cm Width', 'GG Buckle', 'Leather Trim', 'Adjustable']
+            },
+            {
+                id: 41,
+                name: 'Louis Vuitton Monogram Scarf',
+                brand: 'Louis Vuitton',
+                category: 'accessories',
+                price: 55,
+                retail: 520,
+                img: '',
+                emoji: '💎',
+                tag: 'New',
+                tagClass: '',
+                desc: 'Wool-silk blend with all-over Monogram pattern. Fringed edges, signature LV woven label. Soft and warm.',
+                specs: ['180x30cm', 'Wool/Silk', 'Monogram', 'Fringed']
+            },
+            {
+                id: 42,
+                name: 'Chrome Hearts Dagger Pendant',
+                brand: 'Chrome Hearts',
+                category: 'accessories',
+                price: 48,
+                retail: 890,
+                img: '',
+                emoji: '💎',
+                tag: '',
+                tagClass: '',
+                desc: 'Sterling silver dagger pendant on ball chain. Detailed cross and floral engraving. Includes branded packaging.',
+                specs: ['925 Silver', 'Ball Chain', 'Engraved', 'Gift Box']
+            },
+            {
+                id: 43,
+                name: 'Hermès H Buckle Belt Kit',
+                brand: 'Hermès',
+                category: 'accessories',
+                price: 72,
+                retail: 870,
+                img: '',
+                emoji: '💎',
+                tag: 'Hot',
+                tagClass: 'hot',
+                desc: 'Box calf leather strap with signature H buckle. Gold-plated hardware. Reversible design for two-color wear.',
+                specs: ['3.2cm Width', 'Gold Plated', 'Reversible', 'Gift Box']
+            },
+        ];
+
+        // ==================== STATE ====================
+        let cart = JSON.parse(localStorage.getItem('nbv_cart') || '[]');
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // ==================== RENDER ====================
+        function filterProducts() {
+            return products.filter(p => {
+                const catMatch = currentCategory === 'all' || p.category === currentCategory;
+                const searchMatch = !searchQuery ||
+                    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    p.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    p.category.toLowerCase().includes(searchQuery.toLowerCase());
+                return catMatch && searchMatch;
+            });
+        }
+
+        function renderProducts() {
+            const filtered = filterProducts();
+            const grid = document.getElementById('productGrid');
+            const empty = document.getElementById('emptyState');
+            const count = document.getElementById('sectionCount');
+            const title = document.getElementById('sectionTitle');
+
+            const catNames = { all: '🔥 Trending Now', shoes: '👟 Shoes', bags: '👜 Bags', clothing: '👕 Clothing', watches: '⌚ Watches', accessories: '💎 Accessories' };
+            title.innerHTML = catNames[currentCategory] || 'Products';
+            count.textContent = filtered.length ? `(${filtered.length} items)` : '';
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                count.textContent = '';
+            } else {
+                empty.classList.add('hidden');
+                grid.innerHTML = filtered.map(p => {
+                    const img = p.img
+                        ? `<img src="${p.img}" alt="${p.name}" class="card-img" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="card-img-placeholder" style="display:none">${p.emoji}</div>`
+                        : `<div class="card-img-placeholder">${p.emoji}</div>`;
+                    const tag = p.tag ? `<span class="card-tag ${p.tagClass}">${p.tag}</span>` : '';
+                    return `
+                    <div class="product-card" onclick="openProduct(${p.id})">
+                        ${tag}
+                        ${img}
+                        <div class="card-body">
+                            <div class="card-brand">${p.brand}</div>
+                            <div class="card-name">${p.name}</div>
+                            <div class="card-bottom">
+                                <div class="card-price">
+                                    ${CURRENCY}${p.price}
+                                    <span class="retail">${CURRENCY}${p.retail}</span>
+                                </div>
+                                <button class="card-wa-btn" onclick="event.stopPropagation();addToCart(${p.id})" title="Add to bag">＋</button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        // ==================== PRODUCT MODAL ====================
+        function openProduct(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+
+            const modal = document.getElementById('productModal');
+            const imgContainer = document.getElementById('modalImgContainer');
+            const content = document.getElementById('modalContent');
+
+            const img = p.img
+                ? `<img src="${p.img}" alt="${p.name}" class="modal-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="modal-img-placeholder" style="display:none">${p.emoji}</div>`
+                : `<div class="modal-img-placeholder">${p.emoji}</div>`;
+
+            imgContainer.innerHTML = img;
+            content.innerHTML = `
+                <div class="modal-brand">${p.brand}</div>
+                <div class="modal-name">${p.name}</div>
+                <div class="modal-price-row">
+                    <span class="modal-price">${CURRENCY}${p.price}</span>
+                    <span class="modal-retail">${CURRENCY}${p.retail}</span>
+                </div>
+                <div class="modal-specs">
+                    ${p.specs.map(s => `<span class="spec-tag">${s}</span>`).join('')}
+                </div>
+                <div class="modal-desc">${p.desc}</div>
+                <button class="btn-wa-order" onclick="orderViaWA(${p.id})">
+                    💬 Order via WhatsApp
+                </button>
+                <button class="btn-close-modal" onclick="closeModal()">Close</button>
+            `;
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(e) {
+            if (e && e.target !== document.getElementById('productModal')) return;
+            document.getElementById('productModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // ==================== WHATSAPP ORDER ====================
+        function orderViaWA(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            const msg = encodeURIComponent(
+                `Hi! I'm interested in:\n\n` +
+                `${p.brand} — ${p.name}\n` +
+                `Price: ${CURRENCY}${p.price}\n\n` +
+                `Can you share more details? 😊`
+            );
+            window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+        }
+
+        function orderCartViaWA() {
+            if (cart.length === 0) return;
+            const items = cart.map(c => `• ${c.brand} — ${c.name} (${CURRENCY}${c.price})`).join('\n');
+            const total = cart.reduce((sum, c) => sum + c.price, 0);
+            const msg = encodeURIComponent(
+                `Hi! I'd like to order:\n\n${items}\n\n` +
+                `Total: ${CURRENCY}${total}\n\n` +
+                `Please confirm availability & shipping. Thanks! 😊`
+            );
+            window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+        }
+
+        // ==================== CART ====================
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            cart.push({ id: p.id, name: p.name, brand: p.brand, price: p.price, emoji: p.emoji });
+            saveCart();
+            showToast(`Added to bag ✨`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            renderCart();
+            updateCartCount();
+        }
+
+        function saveCart() {
+            localStorage.setItem('nbv_cart', JSON.stringify(cart));
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const el = document.getElementById('cartCount');
+            el.textContent = cart.length;
+            if (cart.length > 0) el.classList.add('show');
+            else el.classList.remove('show');
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            const footer = document.getElementById('cartFooter');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="cart-empty">
+                        <div class="cart-empty-icon">🛒</div>
+                        <p>Your bag is empty</p>
+                        <p style="font-size:12px;color:var(--text-muted)">Tap ＋ on any product to add it</p>
+                    </div>`;
+                footer.innerHTML = '';
+            } else {
+                container.innerHTML = cart.map((c, i) => `
+                    <div class="cart-item">
+                        <div class="cart-item-img">${c.emoji}</div>
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${c.brand} — ${c.name}</div>
+                            <div class="cart-item-price">${CURRENCY}${c.price}</div>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart(${i})">🗑️</button>
+                    </div>
+                `).join('');
+
+                const total = cart.reduce((s, c) => s + c.price, 0);
+                footer.innerHTML = `
+                    <div class="cart-total">
+                        <span>Total (${cart.length} items)</span>
+                        <span class="cart-total-price">${CURRENCY}${total}</span>
+                    </div>
+                    <button class="btn-wa-order" onclick="orderCartViaWA()">
+                        💬 Order All via WhatsApp
+                    </button>
+                `;
+            }
+        }
+
+        function toggleCart() {
+            const drawer = document.getElementById('cartDrawer');
+            const isOpen = drawer.classList.contains('open');
+            if (isOpen) {
+                drawer.classList.remove('open');
+                document.body.style.overflow = '';
+            } else {
+                renderCart();
+                drawer.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeCartDrawer(e) {
+            if (e.target === document.getElementById('cartDrawer')) {
+                document.getElementById('cartDrawer').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // ==================== SEARCH ====================
+        function handleSearch() {
+            const input = document.getElementById('searchInput');
+            const clear = document.getElementById('searchClear');
+            searchQuery = input.value.trim();
+            if (searchQuery) clear.classList.add('show');
+            else clear.classList.remove('show');
+            renderProducts();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchClear').classList.remove('show');
+            searchQuery = '';
+            renderProducts();
+        }
+
+        // ==================== CATEGORIES ====================
+        document.getElementById('categoryNav').addEventListener('click', (e) => {
+            const btn = e.target.closest('.cat-btn');
+            if (!btn) return;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = btn.dataset.cat;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchClear').classList.remove('show');
+            searchQuery = '';
+            renderProducts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ==================== TOAST ====================
+        function showToast(msg) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        // ==================== KEYBOARD ====================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('cartDrawer').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // ==================== INIT ====================
+        updateCartCount();
+        renderProducts();
+    </script>
+</body>
+</html>
