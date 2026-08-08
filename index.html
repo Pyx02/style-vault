@@ -92,15 +92,21 @@ body {
 }
 .product-card:active { transform: scale(0.97); }
 .card-img-wrap {
-    width: 100%; padding-bottom: 75%; overflow: hidden; background: var(--surface);
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
 }
 .card-img-wrap img {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    width: 100%; height: 100%;
     object-fit: cover; display: block;
 }
 .card-img-placeholder {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
     font-size: 40px;
 }
@@ -165,12 +171,12 @@ body {
     margin: 0 auto 16px;
 }
 .modal-img-wrap {
-    width: 100%; height: 200px; border-radius: var(--radius);
+    width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius);
     overflow: hidden; background: var(--card); margin-bottom: 16px;
     display: flex; align-items: center; justify-content: center;
 }
 .modal-img { width: 100%; height: 100%; object-fit: cover; }
-.modal-img-placeholder { font-size: 60px; }
+.modal-img-placeholder { font-size: 60px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .modal-brand {
     font-size: 11px; color: var(--text-muted); text-transform: uppercase;
     letter-spacing: 1.5px; margin-bottom: 4px;
@@ -6061,8 +6067,10 @@ var currentCategory = 'all';
 var searchQuery = '';
 
 function filterProducts() {
+    var catKey = currentCategory.toLowerCase();
     return products.filter(function(p) {
-        if (currentCategory !== 'all' && p.category !== currentCategory) return false;
+        var pCat = (p.category || '').toLowerCase();
+        if (catKey !== 'all' && pCat !== catKey) return false;
         if (searchQuery) {
             var q = searchQuery.toLowerCase();
             if (p.name.toLowerCase().indexOf(q) === -1 && p.brand.toLowerCase().indexOf(q) === -1) return false;
@@ -6094,7 +6102,7 @@ function renderProducts() {
         var p = filtered[i];
         var imgHtml = '';
         if (p.img) {
-            imgHtml = '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="card-img-placeholder" style="display:none">' + p.emoji + '</div>';
+            imgHtml = '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="card-img-placeholder" style="display:none">' + p.emoji + '</div>';
         } else {
             imgHtml = '<div class="card-img-placeholder">' + p.emoji + '</div>';
         }
@@ -6103,7 +6111,7 @@ function renderProducts() {
         var priceHtml = p.price > 0
             ? '<div class="card-price">¥' + p.price + '<span class="card-retail">¥' + p.retail + '</span></div>'
             : '<div class="card-price" style="font-size:0.65rem;opacity:0.5">Tap to view</div>';
-        var waLink = 'https://wa.me/' + 8617681555093 + '?text=' + Hi%20Style%20Vault%2C%20I%27m%20interested%20in%3A + '%20' + encodeURIComponent(p.name);
+        var waLink = 'https://wa.me/8617681555093?text=' + encodeURIComponent('Hi Style Vault, I am interested in: ' + p.name);
 
         html += '<div class="product-card" onclick="openProduct(' + p.id + ')">' +
             tagHtml +
@@ -6130,7 +6138,7 @@ function openProduct(id) {
     if (!p) return;
 
     var imgHtml = p.img
-        ? '<img src="' + p.img + '" alt="' + p.name + '" class="modal-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="modal-img-placeholder" style="display:none">' + p.emoji + '</div>'
+        ? '<img src="' + p.img + '" alt="' + p.name + '" class="modal-img" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="modal-img-placeholder" style="display:none">' + p.emoji + '</div>'
         : '<div class="modal-img-placeholder">' + p.emoji + '</div>';
 
     var specsHtml = '';
@@ -6146,7 +6154,7 @@ function openProduct(id) {
         ? '<div class="modal-price-row"><span class="modal-price">¥' + p.price + '</span><span class="modal-retail">¥' + p.retail + '</span></div>'
         : '';
 
-    var waLink = 'https://wa.me/' + 8617681555093 + '?text=' + Hi%20Style%20Vault%2C%20I%27m%20interested%20in%3A + '%20' + encodeURIComponent(p.name);
+    var waLink = 'https://wa.me/8617681555093?text=' + encodeURIComponent('Hi Style Vault, I am interested in: ' + p.name);
     var yupooHtml = p.yupoo ? '<a class="modal-yupoo-btn" href="' + p.yupoo + '" target="_blank" rel="noopener">📸 View Full Album on Yupoo</a>' : '';
 
     document.getElementById('modalContent').innerHTML =
@@ -6176,7 +6184,7 @@ for (var i = 0; i < catBtns.length; i++) {
                 catBtns[j].classList.remove('active');
             }
             this.classList.add('active');
-            currentCategory = this.getAttribute('data-cat');
+            currentCategory = this.getAttribute('data-cat').toLowerCase().trim();
             document.getElementById('searchInput').value = '';
             document.getElementById('searchClear').classList.remove('show');
             searchQuery = '';
