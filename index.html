@@ -112,6 +112,16 @@ body {
     display: flex; align-items: center; justify-content: center;
     font-size: 40px;
 }
+/* No-image cards: hide image area completely */
+.product-card.no-img-yes {
+    padding-top: 8px;
+}
+.product-card.no-img-yes .card-img-wrap {
+    display: none;
+}
+.product-card.no-img-yes .card-img-placeholder {
+    display: none !important;
+}
 .card-tag {
     position: absolute; top: 8px; left: 8px; z-index: 2;
     background: var(--accent); color: white; font-size: 10px; font-weight: 700;
@@ -198,6 +208,13 @@ body {
 .modal-gallery-item .placeholder {
     width: 100%; height: 250px; display: flex; align-items: center;
     justify-content: center; font-size: 60px;
+}
+.modal-gallery-item img {
+    width: 100%; height: auto; object-fit: contain; display: block;
+    opacity: 0; transition: opacity 0.4s ease;
+}
+.modal-gallery-item img.loaded {
+    opacity: 1;
 }
 .modal-gallery-dots {
     display: flex; justify-content: center; gap: 6px; margin-top: 8px;
@@ -368,7 +385,7 @@ function renderProducts() {
         html += '<div class="product-card no-img-' + (!hasImg ? 'yes' : 'no') + '" onclick="openProduct(' + p.id + ')">' +
             tagHtml +
             yupooHtml +
-            imgWrapHtml +
+            (hasImg ? imgWrapHtml : '') +
             '<div class="card-body">' +
                 '<div class="card-brand">' + p.brand + '</div>' +
                 '<div class="card-name">' + p.name + '</div>' +
@@ -403,6 +420,13 @@ function openProduct(id) {
         }
     }
 
+    // Preload all gallery images before showing
+    for (var pi = 0; pi < galleryImgs.length; pi++) {
+        var preImg = new Image();
+        preImg.src = galleryImgs[pi];
+    }
+
+    // First image loads immediately, rest use data-src for lazy load
     var galleryHtml = '';
     if (galleryImgs.length > 0) {
         galleryHtml = '<div class="modal-gallery">';
@@ -411,7 +435,8 @@ function openProduct(id) {
         }
         galleryHtml += '<div class="modal-gallery-scroll" id="galleryScroll">';
         for (var si = 0; si < galleryImgs.length; si++) {
-            galleryHtml += '<div class="modal-gallery-item"><img src="' + galleryImgs[si] + '" alt="' + p.name + ' ' + (si+1) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=placeholder>' + p.emoji + '</div>\'"></div>';
+            var imgSrc = si === 0 ? 'src="' + galleryImgs[si] + '"' : 'data-src="' + galleryImgs[si] + '"';
+            galleryHtml += '<div class="modal-gallery-item"><img ' + imgSrc + ' alt="' + p.name + ' ' + (si+1) + '" loading="lazy" onload="this.classList.add(\'loaded\')" onerror="this.parentElement.innerHTML=\'<div class=placeholder>' + p.emoji + '</div>\'"></div>';
         }
         galleryHtml += '</div>';
         if (galleryImgs.length > 1) {
@@ -462,6 +487,17 @@ function openProduct(id) {
                 dots[di].classList.toggle('active', di === idx);
             }
             if (counter) counter.textContent = (idx + 1) + ' / ' + galleryImgs.length;
+            // Preload current + adjacent images
+            var preloadIdx = [idx - 1, idx, idx + 1];
+            for (var pi = 0; pi < preloadIdx.length; pi++) {
+                var ci = preloadIdx[pi];
+                if (ci >= 0 && ci < galleryImgs.length) {
+                    var imgs = scrollEl.querySelectorAll('img');
+                    if (imgs[ci] && imgs[ci].dataset.src) {
+                        imgs[ci].src = imgs[ci].dataset.src;
+                    }
+                }
+            }
         });
         // Click dot to scroll
         dots.forEach(function(dot, di) {
