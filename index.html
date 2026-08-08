@@ -168,7 +168,10 @@ a{color:var(--accent);text-decoration:none}
 
 .section-label{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .section-label span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.section-label .sec-emoji{font-size:16px}
 .section-label::after{content:'';flex:1;height:1px;background:var(--border);opacity:.5}
+.warehouse-section{margin-bottom:28px}
+.warehouse-section:last-child{margin-bottom:0}
 
 .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:480px){.gallery{grid-template-columns:repeat(3,1fr);gap:12px}}
@@ -235,7 +238,7 @@ a{color:var(--accent);text-decoration:none}
     <div class="about-hero">
       <div class="badge">Trust</div>
       <h1>About Our Store</h1>
-      <p>We are a direct-source supplier backed by a physical warehouse. Every piece is inspected before shipment to guarantee top condition. Ample stock ensures fast handling and reliable worldwide delivery.</p>
+      <p>We are a factory‑direct supplier with independent workshops &amp; warehouse. Each product category has its own production &amp; inspection line. All goods are strictly checked before worldwide shipment. Below are real‑shot working environments for each category.</p>
     </div>
 
     <div class="trust-grid">
@@ -245,8 +248,7 @@ a{color:var(--accent);text-decoration:none}
       <div class="trust-item"><span class="t-icon">🌍</span><div class="t-title">Global Shipping</div><div class="t-text">Reliable delivery to most countries.</div></div>
     </div>
 
-    <div class="section-label"><span>Our Warehouse</span></div>
-    <div class="gallery" id="warehouseGallery"></div>
+    <div id="warehouseSections"></div>
   </div>
 </div>
 
@@ -304,13 +306,29 @@ const CATEGORIES = [
    msg:'Hi, I am interested in your Watches collection.'}
 ];
 
-const WAREHOUSE_IMAGES = [
-  {src:'https://images.unsplash.com/photo-1553410580-0e9e4ac8f0d1?w=800&q=80',label:'Warehouse Overview'},
-  {src:'https://images.unsplash.com/photo-1586528116316-ad5505b49d8d?w=800&q=80',label:'Packing Station'},
-  {src:'https://images.unsplash.com/photo-1605281317010-fe5ffe7d0e0a?w=800&q=80',label:'Quality Check Area'},
-  {src:'https://images.unsplash.com/photo-1494412574643-ff11b0a5c533?w=800&q=80',label:'Inventory Storage'},
-  {src:'https://images.unsplash.com/photo-1551288049-bebda4e38f47?w=800&q=80',label:'Shipping Preparation'},
-  {src:'https://images.unsplash.com/photo-1566842600175-97dca489844f?w=800&q=80',label:'Working Environment'}
+const WAREHOUSE_APPAREL = [
+  {src:'https://images.unsplash.com/photo-1553410580-0e9e4ac8f0d1?w=800&q=80',label:'Apparel Warehouse'},
+  {src:'https://images.unsplash.com/photo-1586528116316-ad5505b49d8d?w=800&q=80',label:'Apparel Packing'},
+  {src:'https://images.unsplash.com/photo-1605281317010-fe5ffe7d0e0a?w=800&q=80',label:'Apparel QC Check'},
+  {src:'https://images.unsplash.com/photo-1494412574643-ff11b0a5c533?w=800&q=80',label:'Apparel Storage'}
+];
+const WAREHOUSE_SHOES = [
+  {src:'https://images.unsplash.com/photo-1551288049-bebda4e38f47?w=800&q=80',label:'Shoes Workshop'},
+  {src:'https://images.unsplash.com/photo-1566842600175-97dca489844f?w=800&q=80',label:'Shoes Packing'},
+  {src:'https://images.unsplash.com/photo-1553410580-0e9e4ac8f0d1?w=800&q=80',label:'Shoes Storage'},
+  {src:'https://images.unsplash.com/photo-1586528116316-ad5505b49d8d?w=800&q=80',label:'Shoes QC Area'}
+];
+const WAREHOUSE_BAGS = [
+  {src:'https://images.unsplash.com/photo-1605281317010-fe5ffe7d0e0a?w=800&q=80',label:'Bags Workshop'},
+  {src:'https://images.unsplash.com/photo-1494412574643-ff11b0a5c533?w=800&q=80',label:'Bags Packing'},
+  {src:'https://images.unsplash.com/photo-1551288049-bebda4e38f47?w=800&q=80',label:'Bags Storage'},
+  {src:'https://images.unsplash.com/photo-1566842600175-97dca489844f?w=800&q=80',label:'Bags QC Area'}
+];
+const WAREHOUSE_WATCHES = [
+  {src:'https://images.unsplash.com/photo-1553410580-0e9e4ac8f0d1?w=800&q=80',label:'Watches Workshop'},
+  {src:'https://images.unsplash.com/photo-1586528116316-ad5505b49d8d?w=800&q=80',label:'Watches Packing'},
+  {src:'https://images.unsplash.com/photo-1605281317010-fe5ffe7d0e0a?w=800&q=80',label:'Watches QC Check'},
+  {src:'https://images.unsplash.com/photo-1494412574643-ff11b0a5c533?w=800&q=80',label:'Watches Storage'}
 ];
 
 // ────────────── Render ──────────────
@@ -365,18 +383,29 @@ function showHome(){
 }
 
 function renderWarehouse(){
-  document.getElementById('warehouseGallery').innerHTML = WAREHOUSE_IMAGES.map((img,i)=>
-    `<div class="gallery-item" onclick="openViewer(${i})">
-      <img src="${img.src}" alt="${img.label}" loading="lazy">
-      <div class="label">${img.label}</div>
-    </div>`
+  const sections = [
+    {emoji:'👔',title:'Apparel — Workshop & Warehouse',imgs:WAREHOUSE_APPAREL},
+    {emoji:'👟',title:'Shoes — Workshop & Warehouse',imgs:WAREHOUSE_SHOES},
+    {emoji:'👜',title:'Bags — Workshop & Warehouse',imgs:WAREHOUSE_BAGS},
+    {emoji:'⌚',title:'Watches — Workshop & Warehouse',imgs:WAREHOUSE_WATCHES}
+  ];
+  document.getElementById('warehouseSections').innerHTML = sections.map(sec =>
+    '<div class="warehouse-section">'+
+    '<div class="section-label"><span class="sec-emoji">'+sec.emoji+'</span><span>'+sec.title+'</span></div>'+
+    '<div class="gallery">'+
+    sec.imgs.map(img =>
+      '<div class="gallery-item" onclick="openViewer(\''+img.src+'\',\''+img.label+'\')">'+
+      '<img src="'+img.src+'" alt="'+img.label+'" loading="lazy">'+
+      '<div class="label">'+img.label+'</div>'+
+      '</div>'
+    ).join('')+
+    '</div></div>'
   ).join('');
 }
 
-function openViewer(i){
-  const img = WAREHOUSE_IMAGES[i];
-  document.getElementById('viewerImg').src = img.src;
-  document.getElementById('viewerCaption').textContent = img.label;
+function openViewer(src,label){
+  document.getElementById('viewerImg').src = src;
+  document.getElementById('viewerCaption').textContent = label;
   document.getElementById('imgViewer').classList.add('show');
 }
 function closeViewer(){
