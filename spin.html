@@ -131,6 +131,20 @@ a{text-decoration:none}
 .modal .mt{font-size:13px;color:var(--accent);margin-bottom:20px;font-weight:600}
 .btn-claim{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2DD46B,#1da851);color:#fff;font-size:15px;font-weight:700;margin-bottom:10px;box-shadow:0 4px 16px rgba(37,211,102,.2)}
 .btn-claim:active{transform:scale(.97)}
+/* 防篡改核销码优化 — 弹窗核销码框 */
+.claim-box{
+  background:rgba(212,168,83,.06);border:1px solid rgba(212,168,83,.2);
+  border-radius:14px;padding:14px;margin:14px 0 18px;text-align:center;
+}
+.cc-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px}
+.cc-val{
+  font-family:'Courier New',monospace;font-size:26px;font-weight:900;
+  letter-spacing:6px;color:var(--accent);background:rgba(0,0,0,.25);
+  border-radius:10px;padding:8px 0;margin-bottom:10px;
+}
+.cc-val.cc-key{font-size:22px;color:var(--gold-light);letter-spacing:4px;margin-bottom:0}
+.cc-warn{font-size:10px;color:#ef4444;line-height:1.5;margin-top:10px;opacity:.9}
+.footer-rules{font-size:10px;color:var(--muted);text-align:center;margin-top:14px;opacity:.55;line-height:1.6;padding:0 12px}
 .btn-close{width:100%;padding:12px;border-radius:14px;background:transparent;color:var(--muted);font-size:13px;border:1px solid var(--border)}
 
 /* 视觉修复/页面美化 — 彩带分层下落 */
@@ -183,6 +197,8 @@ a{text-decoration:none}
     <button class="spin-btn" id="spinBtn" onclick="doSpin()">SPIN<br>🎰</button>
     <div class="pointer"></div>
   </div>
+  <!-- 防篡改核销码优化 — 页脚规则公示 -->
+  <div class="footer-rules">All spin codes &amp; claim codes are uniquely bound. Any edited, AI-altered or forged codes will not be honored. Old winning screenshots cannot be reused for new orders.</div>
 </div>
 </div>
 
@@ -193,6 +209,14 @@ a{text-decoration:none}
     <div class="mn" id="modalName"></div>
     <div class="md" id="modalDesc"></div>
     <div class="mt" id="modalTip"></div>
+    <!-- 防篡改核销码优化 — 中奖弹窗展示核销码+校验密钥 -->
+    <div class="claim-box">
+      <div class="cc-label">🔑 Claim Code</div>
+      <div class="cc-val" id="modalClaimCode">------</div>
+      <div class="cc-label">🔐 Check Key</div>
+      <div class="cc-val cc-key" id="modalClaimKey">----</div>
+      <div class="cc-warn">⚠️ Screenshot &amp; edited codes are invalid<br>Must provide both codes + full spin recording to claim</div>
+    </div>
     <button class="btn-claim" id="claimBtn" onclick="claimPrize()">💬 Claim via WhatsApp</button>
     <button class="btn-close" onclick="closeModal()">Close</button>
   </div>
@@ -227,7 +251,10 @@ catch(e) { _rw = [95,2,1,1,0,1,0,0,0]; }
 var spinning = false;
 var currentPrize = null;
 var verified = false;
-var currentRotation = 0; // 下标&角度校准修复 — 累计旋转角度，防止反向回转
+var currentRotation = 0;
+var _lastSpinId = ''; // 唯一领奖ID，防止买家复用旧截图冒领
+var _claimCode = ''; // 防篡改核销码优化 — 6位核销码
+var _claimKey = '';  // 防篡改核销码优化 — 4位校验密钥
 
 // ============ FLOATING EMOJI BACKGROUND ============
 /* 视觉修复/页面美化 — 仅保留指定6个emoji，放慢动画 */
@@ -273,6 +300,8 @@ function validateCode(){
       used.push(input);
       try{ localStorage.setItem('sv_used_codes',JSON.stringify(used)); }catch(e){}
       try{ sessionStorage.setItem('sv_verified','1'); }catch(e){}
+      // 保存兑换码到session，用于生成可验证的领奖ID
+      try{ sessionStorage.setItem('sv_code', input); }catch(e){}
       // Reset 7-day timer — new code allows a fresh spin
       try{ localStorage.removeItem('sv_spin'); }catch(e){}
       verified = true;
@@ -419,6 +448,12 @@ function doSpin(){
   spinning = true;
   var btn = document.getElementById('spinBtn');
 
+  // 安全重置：清空旧结果，防止上一轮奖品残留
+  currentPrize = null;
+  _lastSpinId = '';
+  _claimCode = '';
+  _claimKey = '';
+
   // 加权随机选择
   var total = 0;
   for(var i=0;i<_rw.length;i++) total += _rw[i];
@@ -428,6 +463,33 @@ function doSpin(){
     rand -= _rw[i];
     if(rand <= 0){ winner = i; break; }
   }
+
+  // 修复：选完就更新 currentPrize，防止旧奖品残留导致重复显示
+  currentPrize = PRIZES[winner];
+
+  // 用兑换码前缀 + 奖品缩写生成可验证ID，防止PS改后缀冒领
+  // 格式: CODE_PREFIX-PRIZE-SUFFIX  如 SV-232C-7BYU-5OFF-A5XQ
+  // P核对: 1) 前缀匹配发出的码 2) 奖品缩写匹配买家声称的奖品
+  var codePrefix = '';
+  try{
+    var code = sessionStorage.getItem('sv_code') || '';
+    var lastDash = code.lastIndexOf('-');
+    codePrefix = lastDash > 0 ? code.substring(0, lastDash) : code.substring(0, 8);
+  }catch(e){}
+  if(!codePrefix) codePrefix = 'SV-UNKNOWN';
+  var prizeAbbr = {'$5 Coupon':'5OFF','Brand T-Shirt':'TSHIRT','3-Piece Set':'3PC','Pick Any Shoes':'SHOE','Free Order':'FREE','Apple AirPods':'AIRPOD','$100':'100','$500':'500','$1000':'1000'};
+  var abbr = prizeAbbr[currentPrize.name] || 'UNKN';
+  _lastSpinId = codePrefix + '-' + abbr + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+
+  /* 防篡改核销码优化 — 生成6位核销码 + 4位校验密钥（数字和取后4位补零） */
+  var cc = '';
+  for(var di=0;di<6;di++) cc += Math.floor(Math.random()*10);
+  _claimCode = cc;
+  var s = 0;
+  for(var di=0;di<6;di++) s += parseInt(cc.charAt(di),10);
+  _claimKey = String(s).padStart(4,'0');
+  try{ sessionStorage.setItem('sv_claimCode',_claimCode); }catch(e){}
+  try{ sessionStorage.setItem('sv_claimKey',_claimKey); }catch(e){}
 
   /* 下标&角度校准修复 — 精确计算指针落点 */
   var segDeg = 360/PRIZES.length; // 每个扇形度数 = 40
@@ -451,7 +513,7 @@ function doSpin(){
   btn.style.pointerEvents = 'none';
 
   setTimeout(function(){
-    currentPrize = PRIZES[winner]; // winner下标与画布扇形、PRIZES数组严格对应
+    // currentPrize 已在选中 winner 后立即更新，此处仅处理 UI 按钮状态
     btn.innerHTML = 'DONE<br>✅';
     btn.classList.add('done');
     btn.style.pointerEvents = 'none';
@@ -467,7 +529,10 @@ function showResult(){
   document.getElementById('modalEmoji').textContent = currentPrize.emoji;
   document.getElementById('modalName').textContent = currentPrize.name;
   document.getElementById('modalDesc').textContent = currentPrize.desc;
-  document.getElementById('modalTip').textContent = 'Contact us on WhatsApp to claim your prize! 🎉';
+  document.getElementById('modalTip').textContent = 'Claim ID: '+_lastSpinId+' · Contact us on WhatsApp! 🎉';
+  /* 防篡改核销码优化 — 弹窗展示核销码+校验密钥 */
+  document.getElementById('modalClaimCode').textContent = _claimCode || '------';
+  document.getElementById('modalClaimKey').textContent = _claimKey || '----';
   document.getElementById('resultModal').classList.add('open');
   launchConfetti();
 }
@@ -477,7 +542,8 @@ function closeModal(){
 }
 
 function claimPrize(){
-  var msg = encodeURIComponent('Hi! I just won '+currentPrize.name+' ('+currentPrize.emoji+') on Style Vault Lucky Spin! How do I claim my prize? 🎉');
+  /* 防篡改核销码优化 — WhatsApp消息带上核销码+校验密钥 */
+  var msg = encodeURIComponent('Hi! I just won '+currentPrize.name+' ('+currentPrize.emoji+') on Style Vault!\nClaim ID: '+_lastSpinId+'\nClaim Code: '+_claimCode+'\nCheck Key: '+_claimKey+'\nHow do I claim? 🎉');
   window.open('https://wa.me/8617681555093?text='+msg, '_blank');
 }
 
