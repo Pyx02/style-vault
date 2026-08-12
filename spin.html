@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Style Vault · Lucky Spin</title>
+<style>
+:root{
+  --bg:#0B121C;
+  --card:#162133;
+  --surface:#1C2940;
+  --border:rgba(212,168,83,.15);
+  --text:#E4E8F0;
+  --muted:#7D8BA3;
+  --accent:#D4A853;
+  --gold-light:#E8CC7A;
+  --green:#25D366;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+
+.container{max-width:520px;margin:0 auto;padding:20px 16px 40px;text-align:center}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
+.logo .mark{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#0B121C;font-weight:900}
+.logo span{color:var(--accent)}
+.subtitle{font-size:12px;color:var(--muted);margin-bottom:24px;letter-spacing:.5px}
+
+/* Spin note */
+.spin-note{background:linear-gradient(160deg,var(--card),var(--surface));border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:22px;display:flex;align-items:center;gap:10px;text-align:left}
+.spin-note .ico{font-size:22px;flex-shrink:0}
+.spin-note .txt{font-size:12px;color:var(--muted);line-height:1.5}
+.spin-note .txt b{color:var(--text)}
+
+/* Wheel */
+.wheel-wrap{position:relative;width:min(88vw,340px);margin:0 auto 24px}
+.wheel-ring{position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,83,.12) 0%,rgba(212,168,83,.02) 60%,transparent 70%);filter:blur(1px);pointer-events:none}
+.wheel-ring2{position:absolute;inset:-3px;border-radius:50%;border:2px solid rgba(212,168,83,.35);box-shadow:0 0 30px rgba(212,168,83,.15),inset 0 0 20px rgba(0,0,0,.4)}
+#wheel{width:100%;height:auto;display:block;border-radius:50%;transition:transform 4.2s cubic-bezier(.12,.75,.12,1)}
+#wheel.spinning{pointer-events:none}
+
+/* Pointer */
+.pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:10;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+.pointer svg{display:block}
+
+/* Center button */
+.center-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--surface),var(--card));border:2px solid var(--accent);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 18px rgba(212,168,83,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:10;transition:transform .15s}
+.center-btn:active{transform:translate(-50%,-50%) scale(.94)}
+.center-btn .cb-main{font-size:17px;font-weight:900;letter-spacing:1.5px;background:linear-gradient(135deg,var(--gold-light),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.center-btn .cb-sub{font-size:9px;color:var(--muted);letter-spacing:.5px}
+.center-btn.disabled{cursor:not-allowed;opacity:.65}
+.center-btn.disabled:active{transform:translate(-50%,-50%)}
+
+/* Prize list */
+.prize-list{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px;text-align:left}
+.prize-list h3{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.prize-list h3::after{content:'';flex:1;height:1px;background:var(--border)}
+.prize-row{display:flex;align-items:center;justify-content:space-between;padding:7px 2px;border-bottom:1px dashed rgba(212,168,83,.1)}
+.prize-row:last-child{border-bottom:none}
+.prize-row .p-name{font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px}
+.prize-row .p-emoji{font-size:16px}
+.prize-row .p-prob{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.prize-row .p-prob.big{color:var(--green);font-weight:700}
+
+/* Rules */
+.rules{font-size:11px;color:var(--muted);line-height:1.7;margin-top:6px}
+.rules b{color:var(--accent)}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(6,10,18,.92);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.overlay.open{display:flex}
+.modal{background:linear-gradient(170deg,var(--card),var(--surface));border:1px solid var(--border);border-radius:22px;padding:32px 24px;text-align:center;max-width:360px;width:100%;animation:pop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .m-emoji{font-size:56px;margin-bottom:12px;animation:bounce .6s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.modal h2{font-size:20px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,var(--gold-light),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.modal .m-prize{font-size:15px;color:var(--text);margin-bottom:4px;font-weight:600}
+.modal .m-desc{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2DD46B,#25A55F);color:#fff;font-size:15px;font-weight:700;box-shadow:0 6px 20px rgba(37,211,102,.3);margin-bottom:10px;text-decoration:none}
+.btn-wa:active{transform:scale(.97)}
+.btn-wa .wa-ico{font-size:20px}
+.btn-close{width:100%;padding:12px;border-radius:14px;background:var(--surface);color:var(--muted);font-size:13px;border:1px solid var(--border)}
+.btn-close:active{transform:scale(.97)}
+
+/* Confetti */
+.confetti{position:fixed;top:-10px;width:10px;height:14px;border-radius:2px;z-index:200;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.2}}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo"><div class="mark">SV</div><div>Style<span> Vault</span></div></div>
+  </div>
+  <div class="subtitle">LUCKY SPIN · SPIN &amp; WIN</div>
+
+  <!-- Note -->
+  <div class="spin-note">
+    <div class="ico">🎁</div>
+    <div class="txt"><b>Every order gets a free spin!</b><br>Spin once a day. Hit WhatsApp to claim your prize instantly.</div>
+  </div>
+
+  <!-- Wheel -->
+  <div class="wheel-wrap">
+    <div class="wheel-ring"></div>
+    <div class="wheel-ring2"></div>
+    <div class="pointer">
+      <svg width="34" height="30" viewBox="0 0 34 30"><path d="M17 30 L2 8 L32 8 Z" fill="#D4A853" stroke="#E8CC7A" stroke-width="1.5"/></svg>
+    </div>
+    <canvas id="wheel" width="680" height="680"></canvas>
+    <button class="center-btn" id="spinBtn">
+      <span class="cb-main">SPIN</span>
+      <span class="cb-sub">1X / DAY</span>
+    </button>
+  </div>
+
+  <!-- Prize list -->
+  <div class="prize-list">
+    <h3>🎯 Prize Pool</h3>
+    <div id="prizeList"></div>
+  </div>
+
+  <div class="rules">
+    <b>Rules:</b> 1 spin per day · Prizes claimed via WhatsApp within 7 days · Winners must provide order number.<br>
+    Style Vault reserves the right of final interpretation.
+  </div>
+</div>
+
+<!-- Result modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="m-emoji" id="mEmoji">🎉</div>
+    <h2 id="mTitle">Congratulations!</h2>
+    <div class="m-prize" id="mPrize"></div>
+    <div class="m-desc" id="mDesc"></div>
+    <a class="btn-wa" id="waBtn" target="_blank" rel="noopener">
+      <span class="wa-ico">💬</span> Claim via WhatsApp
+    </a>
+    <button class="btn-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+// ─────────────── Config ───────────────
+const WHATSAPP_NUMBER = '8617681555093';
+const PRIZES = [
+  {name:'$5 Coupon', desc:'No-threshold coupon for your next order', emoji:'🎫', weight:95},
+  {name:'Brand T-Shirt', desc:'Premium brand tee, your size', emoji:'👕', weight:2},
+  {name:'3-Piece Set', desc:'Montirex / Nike matching set', emoji:'👔', weight:1},
+  {name:'Pick Any Shoes', desc:'Choose any pair from our album', emoji:'👟', weight:1},
+  {name:'Apple Earphones', desc:'High-quality wireless earphones', emoji:'🎧', weight:1},
+  {name:'$100', desc:'Cash prize', emoji:'💵', weight:0},
+  {name:'$500', desc:'Cash prize', emoji:'💰', weight:0},
+  {name:'$1000', desc:'Grand cash prize', emoji:'💎', weight:0}
+];
+const SEG_COLORS = ['#162133','#1C2940'];
+const STORAGE_KEY = 'sv_lucky_spin';
+
+// ─────────────── State ───────────────
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const spinBtn = document.getElementById('spinBtn');
+const overlay = document.getElementById('overlay');
+const SIZE = canvas.width;
+const CX = SIZE / 2, CY = SIZE / 2;
+const R = SIZE / 2 - 6;
+const SEG = 360 / PRIZES.length;
+let isSpinning = false;
+let currentRotation = 0;
+let lastSpinDate = localStorage.getItem(STORAGE_KEY) || '';
+
+// ─────────────── Draw wheel ───────────────
+function drawWheel(){
+  ctx.clearRect(0,0,SIZE,SIZE);
+  for(let i=0;i<PRIZES.length;i++){
+    const start = (i * SEG - 90) * Math.PI / 180;
+    const end = ((i+1) * SEG - 90) * Math.PI / 180;
+    // Segment
+    ctx.beginPath();
+    ctx.moveTo(CX,CY);
+    ctx.arc(CX,CY,R,start,end);
+    ctx.closePath();
+    ctx.fillStyle = SEG_COLORS[i % 2];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(212,168,83,.35)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Text
+    ctx.save();
+    ctx.translate(CX,CY);
+    ctx.rotate((i * SEG + SEG/2) * Math.PI / 180);
+    ctx.textAlign = 'center';
+    // Emoji
+    ctx.font = '26px sans-serif';
+    ctx.fillText(PRIZES[i].emoji, R * 0.68, 9);
+    // Name
+    ctx.fillStyle = '#E4E8F0';
+    ctx.font = 'bold 15px -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif';
+    ctx.fillText(PRIZES[i].name, R * 0.38, 4);
+    // Probability
+    ctx.fillStyle = PRIZES[i].weight > 10 ? '#2DD46B' : '#D4A853';
+    ctx.font = '11px -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif';
+    ctx.fillText(PRIZES[i].weight + '%', R * 0.38, 18);
+    ctx.restore();
+  }
+  // Center hub
+  ctx.beginPath();
+  ctx.arc(CX,CY,40,0,Math.PI*2);
+  ctx.fillStyle = '#162133';
+  ctx.fill();
+  ctx.strokeStyle = '#D4A853';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+}
+
+// ─────────────── Prize list ───────────────
+function renderPrizeList(){
+  document.getElementById('prizeList').innerHTML = PRIZES.map(p =>
+    '<div class="prize-row">' +
+      '<span class="p-name"><span class="p-emoji">'+p.emoji+'</span>'+p.name+'</span>' +
+      '<span class="p-prob'+(p.weight>=10?' big':'')+'">'+p.weight+'%</span>' +
+    '</div>'
+  ).join('');
+}
+
+// ─────────────── Weighted pick ───────────────
+function pickPrize(){
+  const total = PRIZES.reduce((s,p)=>s+p.weight,0);
+  let r = Math.random() * total;
+  for(let i=0;i<PRIZES.length;i++){
+    r -= PRIZES[i].weight;
+    if(r <= 0) return i;
+  }
+  return PRIZES.length - 1;
+}
+
+// ─────────────── Spin ───────────────
+function spin(){
+  if(isSpinning) return;
+  const today = new Date().toISOString().slice(0,10);
+  if(lastSpinDate === today){
+    spinBtn.classList.add('disabled');
+    spinBtn.querySelector('.cb-main').textContent = 'DONE';
+    spinBtn.querySelector('.cb-sub').textContent = 'COME BACK TMR';
+    showResult(6, true); // show $100 as "already spun" placeholder? No - show info
+    return;
+  }
+  isSpinning = true;
+  spinBtn.classList.add('disabled');
+
+  const idx = pickPrize();
+  // Target angle: center of segment at top pointer
+  const segCenter = idx * SEG + SEG/2;
+  const extra = 5 + Math.random() * (SEG - 10); // random within segment
+  const targetDeg = segCenter + extra;
+  const fullSpins = 5 + Math.floor(Math.random() * 4); // 5-8 full turns
+  const totalRotation = currentRotation + fullSpins * 360 + (360 - targetDeg);
+
+  canvas.style.transform = 'rotate(' + totalRotation + 'deg)';
+  currentRotation = totalRotation;
+
+  setTimeout(() => {
+    isSpinning = false;
+    lastSpinDate = today;
+    localStorage.setItem(STORAGE_KEY, today);
+    spinBtn.querySelector('.cb-main').textContent = 'DONE';
+    spinBtn.querySelector('.cb-sub').textContent = 'COME BACK TMR';
+    showResult(idx);
+  }, 4400);
+}
+
+// ─────────────── Result ───────────────
+function showResult(idx){
+  const p = PRIZES[idx];
+  document.getElementById('mEmoji').textContent = p.emoji;
+  document.getElementById('mPrize').textContent = p.name;
+  document.getElementById('mDesc').textContent = p.desc;
+  const msg = encodeURIComponent('Hi! I just won 🎉 ' + p.name + ' on Style Vault Lucky Spin! How do I claim my prize? (Order #: )');
+  document.getElementById('waBtn').href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + msg;
+  overlay.classList.add('open');
+  if(p.weight >= 5) launchConfetti();
+}
+
+function closeModal(){
+  overlay.classList.remove('open');
+}
+
+// ─────────────── Confetti ───────────────
+function launchConfetti(){
+  const colors = ['#D4A853','#E8CC7A','#2DD46B','#7D8BA3','#FFFFFF'];
+  for(let i=0;i<50;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (2.5 + Math.random()*2) + 's';
+    el.style.animationDelay = (Math.random()*0.6) + 's';
+    el.style.transform = 'rotate(' + Math.random()*360 + 'deg)';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 5500);
+  }
+}
+
+// ─────────────── Init ───────────────
+function init(){
+  drawWheel();
+  renderPrizeList();
+  const today = new Date().toISOString().slice(0,10);
+  if(lastSpinDate === today){
+    spinBtn.classList.add('disabled');
+    spinBtn.querySelector('.cb-main').textContent = 'DONE';
+    spinBtn.querySelector('.cb-sub').textContent = 'COME BACK TMR';
+  }
+  spinBtn.addEventListener('click', spin);
+}
+init();
+</script>
+</body>
+</html>
