@@ -35,6 +35,8 @@ a{color:var(--accent);text-decoration:none}
   border:1px solid var(--border);letter-spacing:.3px;transition:all .2s;
 }
 .about-btn:active{background:var(--border);color:var(--text)}
+.spin-nav-btn{font-size:12px;font-weight:600;color:#fff;background:linear-gradient(135deg,#E8CC7A,var(--accent));padding:8px 16px;border-radius:20px;letter-spacing:.3px;transition:all .2s;white-space:nowrap;box-shadow:0 2px 12px rgba(212,168,83,.25)}
+.spin-nav-btn:active{transform:scale(.95);opacity:.9}
 
 /* Hero */
 .hero{margin-bottom:22px}
@@ -214,6 +216,7 @@ a{color:var(--accent);text-decoration:none}
     <div class="header">
       <div class="logo"><div class="mark">SV</div>Style Vault</div>
       <button class="about-btn" onclick="showAbout()">About Us →</button>
+      <button class="spin-nav-btn" onclick="window.open('spin.html','_self')">🎡 Lucky Spin</button>
     </div>
 
     <div class="hero">
