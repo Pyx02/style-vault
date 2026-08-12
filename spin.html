@@ -138,11 +138,10 @@ a{text-decoration:none}
 }
 .cc-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px}
 .cc-val{
-  font-family:'Courier New',monospace;font-size:26px;font-weight:900;
-  letter-spacing:6px;color:var(--accent);background:rgba(0,0,0,.25);
-  border-radius:10px;padding:8px 0;margin-bottom:10px;
+  font-family:'Courier New',monospace;font-size:24px;font-weight:900;
+  letter-spacing:4px;color:var(--accent);background:rgba(0,0,0,.25);
+  border-radius:10px;padding:8px 0;margin-bottom:0;
 }
-.cc-val.cc-key{font-size:22px;color:var(--gold-light);letter-spacing:4px;margin-bottom:0}
 .cc-warn{font-size:10px;color:#ef4444;line-height:1.5;margin-top:10px;opacity:.9}
 .footer-rules{font-size:10px;color:var(--muted);text-align:center;margin-top:14px;opacity:.55;line-height:1.6;padding:0 12px}
 .btn-close{width:100%;padding:12px;border-radius:14px;background:transparent;color:var(--muted);font-size:13px;border:1px solid var(--border)}
@@ -211,11 +210,9 @@ a{text-decoration:none}
     <div class="mt" id="modalTip"></div>
     <!-- 防篡改核销码优化 — 中奖弹窗展示核销码+校验密钥 -->
     <div class="claim-box">
-      <div class="cc-label">🔑 Claim Code</div>
-      <div class="cc-val" id="modalClaimCode">------</div>
-      <div class="cc-label">🔐 Check Key</div>
-      <div class="cc-val cc-key" id="modalClaimKey">----</div>
-      <div class="cc-warn">⚠️ Screenshot &amp; edited codes are invalid<br>Must provide both codes + full spin recording to claim</div>
+      <div class="cc-label">🔑 核销码</div>
+      <div class="cc-val" id="modalClaimCode">----------</div>
+      <div class="cc-warn">📸 Please screenshot this page and send it to us via WhatsApp</div>
     </div>
     <button class="btn-claim" id="claimBtn" onclick="claimPrize()">💬 Claim via WhatsApp</button>
     <button class="btn-close" onclick="closeModal()">Close</button>
@@ -530,10 +527,13 @@ function showResult(){
   document.getElementById('modalName').textContent = currentPrize.name;
   document.getElementById('modalDesc').textContent = currentPrize.desc;
   document.getElementById('modalTip').textContent = 'Claim ID: '+_lastSpinId+' · Contact us on WhatsApp! 🎉';
-  /* 防篡改核销码优化 — 弹窗展示核销码+校验密钥 */
-  document.getElementById('modalClaimCode').textContent = _claimCode || '------';
-  document.getElementById('modalClaimKey').textContent = _claimKey || '----';
+  /* 合并核销码 — 6位码+4位密钥组合成一个10位数字 */
+  document.getElementById('modalClaimCode').textContent = (_claimCode && _claimKey) ? _claimCode + _claimKey : '----------';
   document.getElementById('resultModal').classList.add('open');
+  setTimeout(function(){
+    var cb = document.querySelector('.claim-box');
+    if(cb) cb.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 500);
   launchConfetti();
 }
 
@@ -542,9 +542,9 @@ function closeModal(){
 }
 
 function claimPrize(){
-  /* 防篡改核销码优化 — WhatsApp消息带上核销码+校验密钥 */
-  var msg = encodeURIComponent('Hi! I just won '+currentPrize.name+' ('+currentPrize.emoji+') on Style Vault!\nClaim ID: '+_lastSpinId+'\nClaim Code: '+_claimCode+'\nCheck Key: '+_claimKey+'\nHow do I claim? 🎉');
-  window.open('https://wa.me/8617681555093?text='+msg, '_blank');
+  var code10 = (_claimCode && _claimKey) ? _claimCode+_claimKey : '';
+  var text = 'Hi! I just won '+currentPrize.name+' on Style Vault!\nClaim ID: '+_lastSpinId+'\n核销码: '+code10+'\nHow do I claim?';
+  window.open('https://wa.me/8617681555093?text='+encodeURIComponent(text), '_blank');
 }
 
 // ============ CONFETTI ============
