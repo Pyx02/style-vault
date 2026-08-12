@@ -287,6 +287,25 @@ function unlockWheel(){
 function initWheel(){
   drawWheel();
   renderSparkles();
+  checkDailyLimit();
+}
+
+// 7天限制：同一设备抽奖后7天内不能重复抽（不显示任何文案，仅代码层限制）
+function checkDailyLimit(){
+  try{
+    var last = localStorage.getItem('sv_spin');
+    if(last){
+      var lastTs = parseInt(last, 10) || 0;
+      var now = Date.now();
+      var SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+      if(lastTs && (now - lastTs) < SEVEN_DAYS){
+        var btn = document.getElementById('spinBtn');
+        btn.innerHTML = 'DONE<br>✅';
+        btn.classList.add('done');
+        btn.style.pointerEvents = 'none';
+      }
+    }
+  }catch(e){}
 }
 
 (function(){
@@ -419,6 +438,8 @@ function doSpin(){
     btn.classList.add('done');
     btn.style.pointerEvents = 'none';
     spinning = false;
+    // 7天限制：记录抽奖时间戳，7天内返回再进入无法再次抽奖
+    try{ localStorage.setItem('sv_spin', String(Date.now())); }catch(e){}
     showResult();
   }, 4700);
 }
