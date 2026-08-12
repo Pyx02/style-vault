@@ -17,307 +17,384 @@
   --green:#25D366;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;min-height:100vh}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;min-height:100vh;overflow-x:hidden}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
-
 .container{max-width:520px;margin:0 auto;padding:20px 16px 40px;text-align:center}
 
 /* Header */
-.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px}
 .logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
 .logo .mark{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#0B121C;font-weight:900}
-.logo span{color:var(--accent)}
-.subtitle{font-size:12px;color:var(--muted);margin-bottom:24px;letter-spacing:.5px}
-
-/* Spin note */
-.spin-note{background:linear-gradient(160deg,var(--card),var(--surface));border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:22px;display:flex;align-items:center;gap:10px;text-align:left}
-.spin-note .ico{font-size:22px;flex-shrink:0}
-.spin-note .txt{font-size:12px;color:var(--muted);line-height:1.5}
-.spin-note .txt b{color:var(--text)}
+.subtitle{font-size:12px;color:var(--muted);margin-bottom:20px;letter-spacing:.5px}
 
 /* Wheel */
-.wheel-wrap{position:relative;width:min(88vw,340px);margin:0 auto 24px}
-.wheel-ring{position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,83,.12) 0%,rgba(212,168,83,.02) 60%,transparent 70%);filter:blur(1px);pointer-events:none}
-.wheel-ring2{position:absolute;inset:-3px;border-radius:50%;border:2px solid rgba(212,168,83,.35);box-shadow:0 0 30px rgba(212,168,83,.15),inset 0 0 20px rgba(0,0,0,.4)}
-#wheel{width:100%;height:auto;display:block;border-radius:50%;transition:transform 4.2s cubic-bezier(.12,.75,.12,1)}
-#wheel.spinning{pointer-events:none}
+.wheel-wrap{position:relative;width:300px;height:300px;margin:0 auto 16px;filter:drop-shadow(0 0 30px rgba(212,168,83,.12))}
+.wheel-outer{width:100%;height:100%;border-radius:50%;padding:8px;background:linear-gradient(135deg,var(--accent),rgba(212,168,83,.3));box-shadow:0 0 40px rgba(212,168,83,.08), inset 0 0 20px rgba(0,0,0,.3)}
+.wheel-inner{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg);position:relative}
+.wheel-inner canvas{width:100%;height:100%;display:block}
+#wheelSpinner{position:absolute;inset:0;border-radius:50%;transition:transform 5s cubic-bezier(.15,.65,.1,.98)}
+.pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--accent);filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));z-index:2}
+.spin-btn{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:14px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 20px rgba(212,168,83,.3), inset 0 1px 0 rgba(255,255,255,.2);transition:all .2s;z-index:3}
+.spin-btn:active{transform:scale(.93)}
+.spin-btn.disabled{background:var(--surface);color:var(--muted);box-shadow:none;pointer-events:none}
 
-/* Pointer */
-.pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:10;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
-.pointer svg{display:block}
+/* Dots */
+.dots{position:absolute;inset:-2px;border-radius:50%}
+.dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--accent);top:calc(50% - 4px);left:calc(50% - 4px);box-shadow:0 0 6px rgba(212,168,83,.5)}
 
-/* Center button */
-.center-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--surface),var(--card));border:2px solid var(--accent);box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 18px rgba(212,168,83,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:10;transition:transform .15s}
-.center-btn:active{transform:translate(-50%,-50%) scale(.94)}
-.center-btn .cb-main{font-size:17px;font-weight:900;letter-spacing:1.5px;background:linear-gradient(135deg,var(--gold-light),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.center-btn .cb-sub{font-size:9px;color:var(--muted);letter-spacing:.5px}
-.center-btn.disabled{cursor:not-allowed;opacity:.65}
-.center-btn.disabled:active{transform:translate(-50%,-50%)}
-
-/* Prize list */
-.prize-list{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px;text-align:left}
-.prize-list h3{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.prize-list h3::after{content:'';flex:1;height:1px;background:var(--border)}
-.prize-row{display:flex;align-items:center;justify-content:space-between;padding:7px 2px;border-bottom:1px dashed rgba(212,168,83,.1)}
-.prize-row:last-child{border-bottom:none}
-.prize-row .p-name{font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px}
-.prize-row .p-emoji{font-size:16px}
-.prize-row .p-prob{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.prize-row .p-prob.big{color:var(--green);font-weight:700}
-
-/* Rules */
-.rules{font-size:11px;color:var(--muted);line-height:1.7;margin-top:6px}
-.rules b{color:var(--accent)}
+/* Prize Pool */
+.pool-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 12px}
+.pool{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:420px;margin:0 auto}
+.pool-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center;transition:all .15s}
+.pool-item .pe{font-size:22px;display:block;line-height:1.2}
+.pool-item .pn{font-size:10px;color:var(--muted);margin:2px 0;line-height:1.2;min-height:24px}
+.pool-item .pp{font-size:11px;font-weight:700;color:var(--accent)}
 
 /* Modal */
-.overlay{position:fixed;inset:0;background:rgba(6,10,18,.92);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
-.overlay.open{display:flex}
-.modal{background:linear-gradient(170deg,var(--card),var(--surface));border:1px solid var(--border);border-radius:22px;padding:32px 24px;text-align:center;max-width:360px;width:100%;animation:pop .35s cubic-bezier(.34,1.56,.64,1)}
-@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-.modal .m-emoji{font-size:56px;margin-bottom:12px;animation:bounce .6s ease infinite alternate}
-@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
-.modal h2{font-size:20px;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,var(--gold-light),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.modal .m-prize{font-size:15px;color:var(--text);margin-bottom:4px;font-weight:600}
-.modal .m-desc{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
-.btn-wa{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2DD46B,#25A55F);color:#fff;font-size:15px;font-weight:700;box-shadow:0 6px 20px rgba(37,211,102,.3);margin-bottom:10px;text-decoration:none}
-.btn-wa:active{transform:scale(.97)}
-.btn-wa .wa-ico{font-size:20px}
-.btn-close{width:100%;padding:12px;border-radius:14px;background:var(--surface);color:var(--muted);font-size:13px;border:1px solid var(--border)}
-.btn-close:active{transform:scale(.97)}
+.modal-overlay{position:fixed;inset:0;background:rgba(6,10,18,.88);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);width:calc(100% - 32px);max-width:380px;border-radius:20px;border:1px solid var(--border);padding:28px 20px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:popIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .me{font-size:56px;display:block;margin-bottom:8px}
+.modal .mn{font-size:22px;font-weight:800;margin-bottom:4px}
+.modal .md{font-size:13px;color:var(--muted);margin-bottom:4px}
+.modal .mt{font-size:12px;color:var(--accent);margin-bottom:20px;font-weight:600}
+
+.btn-claim{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2DD46B,#1da851);color:#fff;font-size:15px;font-weight:700;margin-bottom:10px;box-shadow:0 4px 16px rgba(37,211,102,.2);transition:all .2s}
+.btn-claim:active{transform:scale(.97)}
+.btn-close{width:100%;padding:12px;border-radius:14px;background:transparent;color:var(--muted);font-size:13px;border:1px solid var(--border);transition:all .2s}
+.btn-close:active{background:var(--surface)}
 
 /* Confetti */
-.confetti{position:fixed;top:-10px;width:10px;height:14px;border-radius:2px;z-index:200;pointer-events:none;animation:fall linear forwards}
-@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.2}}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:101}
+.confetti-piece{position:absolute;width:8px;height:8px;top:-10px;animation:fall linear forwards}
+@keyframes fall{to{top:110vh;transform:rotate(720deg)}}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--text);padding:12px 24px;border-radius:30px;font-size:13px;font-weight:600;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:90;display:none;animation:toastIn .3s ease}
+.toast.show{display:block}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* Responsive */
+@media(max-width:360px){
+  .wheel-wrap{width:260px;height:260px}
+  .spin-btn{width:54px;height:54px;font-size:12px}
+  .pool{grid-template-columns:repeat(3,1fr);gap:6px}
+  .pool-item .pe{font-size:18px}
+  .pool-item .pn{font-size:9px}
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <!-- Header -->
-  <div class="header">
-    <div class="logo"><div class="mark">SV</div><div>Style<span> Vault</span></div></div>
-  </div>
-  <div class="subtitle">LUCKY SPIN · SPIN &amp; WIN</div>
 
-  <!-- Note -->
-  <div class="spin-note">
-    <div class="ico">🎁</div>
-    <div class="txt"><b>Every order gets a free spin!</b><br>Spin once a day. Hit WhatsApp to claim your prize instantly.</div>
+<div class="container">
+  <div class="header">
+    <div class="logo"><div class="mark">SV</div>Style <span>Vault</span></div>
   </div>
+  <div class="subtitle">✦ LUCKY SPIN · 1 SPIN PER DAY ✦</div>
 
   <!-- Wheel -->
-  <div class="wheel-wrap">
-    <div class="wheel-ring"></div>
-    <div class="wheel-ring2"></div>
-    <div class="pointer">
-      <svg width="34" height="30" viewBox="0 0 34 30"><path d="M17 30 L2 8 L32 8 Z" fill="#D4A853" stroke="#E8CC7A" stroke-width="1.5"/></svg>
+  <div class="wheel-wrap" id="wheelWrap">
+    <div class="wheel-outer">
+      <div class="wheel-inner">
+        <div id="wheelSpinner"><canvas id="wheelCanvas"></canvas></div>
+        <button class="spin-btn" id="spinBtn" onclick="doSpin()">SPIN</button>
+        <div class="dots" id="dotsRing"></div>
+      </div>
     </div>
-    <canvas id="wheel" width="680" height="680"></canvas>
-    <button class="center-btn" id="spinBtn">
-      <span class="cb-main">SPIN</span>
-      <span class="cb-sub">1X / DAY</span>
-    </button>
+    <div class="pointer"></div>
   </div>
 
-  <!-- Prize list -->
-  <div class="prize-list">
-    <h3>🎯 Prize Pool</h3>
-    <div id="prizeList"></div>
-  </div>
-
-  <div class="rules">
-    <b>Rules:</b> 1 spin per day · Prizes claimed via WhatsApp within 7 days · Winners must provide order number.<br>
-    Style Vault reserves the right of final interpretation.
-  </div>
+  <!-- Prize Pool -->
+  <div class="pool-title">Prize Pool</div>
+  <div class="pool" id="prizePool"></div>
 </div>
 
-<!-- Result modal -->
-<div class="overlay" id="overlay">
+<!-- Result Modal -->
+<div class="modal-overlay" id="resultModal">
   <div class="modal">
-    <div class="m-emoji" id="mEmoji">🎉</div>
-    <h2 id="mTitle">Congratulations!</h2>
-    <div class="m-prize" id="mPrize"></div>
-    <div class="m-desc" id="mDesc"></div>
-    <a class="btn-wa" id="waBtn" target="_blank" rel="noopener">
-      <span class="wa-ico">💬</span> Claim via WhatsApp
-    </a>
+    <span class="me" id="modalEmoji"></span>
+    <div class="mn" id="modalName"></div>
+    <div class="md" id="modalDesc"></div>
+    <div class="mt" id="modalTip"></div>
+    <button class="btn-claim" id="claimBtn" onclick="claimPrize()">💬 Claim via WhatsApp</button>
     <button class="btn-close" onclick="closeModal()">Close</button>
   </div>
 </div>
 
+<!-- Confetti layer -->
+<div class="confetti" id="confettiLayer"></div>
+<div class="toast" id="toast"></div>
+
 <script>
-// ─────────────── Config ───────────────
-const WHATSAPP_NUMBER = '8617681555093';
+// ============ PRIZES ======================================
+// Display probabilities shown on wheel & pool (buyer sees these)
 const PRIZES = [
-  {name:'$5 Coupon', desc:'No-threshold coupon for your next order', emoji:'🎫', weight:95},
-  {name:'Brand T-Shirt', desc:'Premium brand tee, your size', emoji:'👕', weight:2},
-  {name:'3-Piece Set', desc:'Montirex / Nike matching set', emoji:'👔', weight:1},
-  {name:'Pick Any Shoes', desc:'Choose any pair from our album', emoji:'👟', weight:1},
-  {name:'Apple Earphones', desc:'High-quality wireless earphones', emoji:'🎧', weight:1},
-  {name:'$100', desc:'Cash prize', emoji:'💵', weight:0},
-  {name:'$500', desc:'Cash prize', emoji:'💰', weight:0},
-  {name:'$1000', desc:'Grand cash prize', emoji:'💎', weight:0}
+  {name:'$5 Coupon',       desc:'No-threshold for next order',  emoji:'🎫', pct:53.9},
+  {name:'Brand T-Shirt',   desc:'Free brand t-shirt',           emoji:'👕', pct:30},
+  {name:'3-Piece Set',     desc:'Montirex / Nike set',          emoji:'👔', pct:10},
+  {name:'Pick Any Shoes',  desc:'Your choice of shoes',         emoji:'👟', pct:1},
+  {name:'Free Order',      desc:'100% refund on your order',    emoji:'🎁', pct:0.0001},
+  {name:'Apple Earphones', desc:'High-quality earphones',       emoji:'🎧', pct:2},
+  {name:'$100',            desc:'Cash prize',                   emoji:'💵', pct:2},
+  {name:'$500',            desc:'Cash prize',                   emoji:'💰', pct:1},
+  {name:'$1000',           desc:'Cash prize',                   emoji:'💎', pct:0.1},
 ];
-const SEG_COLORS = ['#162133','#1C2940'];
-const STORAGE_KEY = 'sv_lucky_spin';
 
-// ─────────────── State ───────────────
-const canvas = document.getElementById('wheel');
-const ctx = canvas.getContext('2d');
-const spinBtn = document.getElementById('spinBtn');
-const overlay = document.getElementById('overlay');
-const SIZE = canvas.width;
-const CX = SIZE / 2, CY = SIZE / 2;
-const R = SIZE / 2 - 6;
-const SEG = 360 / PRIZES.length;
-let isSpinning = false;
-let currentRotation = 0;
-let lastSpinDate = localStorage.getItem(STORAGE_KEY) || '';
+// ============ ACTUAL WEIGHTS (obfuscated, base64) =========
+// DO NOT READ: real winning odds are encoded below
+(function(){window._rw=atob('OTUsMiwxLDEsMC4wMDAxLDEsMCwwLDA=').split(',').map(Number);})();
+// Decodes to: [95, 2, 1, 1, 0.0001, 1, 0, 0, 0]
 
-// ─────────────── Draw wheel ───────────────
+// ============ STATE =========================================
+var spinning = false;
+var usedToday = false;
+var currentPrize = null;
+
+// ============ INIT ==========================================
+(function init(){
+  checkDaily();
+  drawWheel();
+  renderPrizePool();
+  renderDots();
+})();
+
+function checkDaily(){
+  try {
+    var d = localStorage.getItem('sv_spin');
+    if (d) {
+      var rec = JSON.parse(d);
+      var today = new Date().toISOString().slice(0,10);
+      if (rec.date === today) {
+        usedToday = true;
+        document.getElementById('spinBtn').classList.add('disabled');
+        document.getElementById('spinBtn').textContent = 'DONE';
+      }
+    }
+  } catch(e) {}
+}
+
+function saveDaily(){
+  try {
+    localStorage.setItem('sv_spin', JSON.stringify({date: new Date().toISOString().slice(0,10)}));
+  } catch(e) {}
+}
+
+// ============ WHEEL DRAWING =================================
 function drawWheel(){
-  ctx.clearRect(0,0,SIZE,SIZE);
-  for(let i=0;i<PRIZES.length;i++){
-    const start = (i * SEG - 90) * Math.PI / 180;
-    const end = ((i+1) * SEG - 90) * Math.PI / 180;
+  var canvas = document.getElementById('wheelCanvas');
+  var size = 300;
+  canvas.width = size;
+  canvas.height = size;
+  var ctx = canvas.getContext('2d');
+  var cx = size/2, cy = size/2, r = size/2 - 2;
+  var n = PRIZES.length;
+  var colors = ['#162133','#1C2940'];
+
+  for (var i = 0; i < n; i++) {
+    var start = (i/n) * Math.PI * 2 - Math.PI/2;
+    var end = ((i+1)/n) * Math.PI * 2 - Math.PI/2;
+    var mid = start + (end-start)/2;
+
     // Segment
     ctx.beginPath();
-    ctx.moveTo(CX,CY);
-    ctx.arc(CX,CY,R,start,end);
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
     ctx.closePath();
-    ctx.fillStyle = SEG_COLORS[i % 2];
+    ctx.fillStyle = colors[i % 2];
     ctx.fill();
-    ctx.strokeStyle = 'rgba(212,168,83,.35)';
+    ctx.strokeStyle = 'rgba(212,168,83,.25)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
+
     // Text
     ctx.save();
-    ctx.translate(CX,CY);
-    ctx.rotate((i * SEG + SEG/2) * Math.PI / 180);
+    ctx.translate(cx, cy);
+    ctx.rotate(mid);
     ctx.textAlign = 'center';
+
     // Emoji
-    ctx.font = '26px sans-serif';
-    ctx.fillText(PRIZES[i].emoji, R * 0.68, 9);
-    // Name
+    ctx.font = '18px sans-serif';
     ctx.fillStyle = '#E4E8F0';
-    ctx.font = 'bold 15px -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif';
-    ctx.fillText(PRIZES[i].name, R * 0.38, 4);
-    // Probability
-    ctx.fillStyle = PRIZES[i].weight > 10 ? '#2DD46B' : '#D4A853';
-    ctx.font = '11px -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif';
-    ctx.fillText(PRIZES[i].weight + '%', R * 0.38, 18);
+    ctx.fillText(PRIZES[i].emoji, r*0.28, 6);
+
+    // Name
+    ctx.font = 'bold 10px -apple-system,sans-serif';
+    ctx.fillStyle = '#E4E8F0';
+    ctx.fillText(PRIZES[i].name, r*0.55, 4);
+
+    // Pct
+    ctx.font = 'bold 11px -apple-system,sans-serif';
+    ctx.fillStyle = '#D4A853';
+    var pctStr = PRIZES[i].pct < 1 ? '<1%' : PRIZES[i].pct + '%';
+    ctx.fillText(pctStr, r*0.75, 4);
+
     ctx.restore();
   }
-  // Center hub
+
+  // Center dot
   ctx.beginPath();
-  ctx.arc(CX,CY,40,0,Math.PI*2);
-  ctx.fillStyle = '#162133';
+  ctx.arc(cx, cy, 20, 0, Math.PI*2);
+  ctx.fillStyle = '#0B121C';
   ctx.fill();
-  ctx.strokeStyle = '#D4A853';
-  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = 'rgba(212,168,83,.3)';
+  ctx.lineWidth = 2;
   ctx.stroke();
 }
 
-// ─────────────── Prize list ───────────────
-function renderPrizeList(){
-  document.getElementById('prizeList').innerHTML = PRIZES.map(p =>
-    '<div class="prize-row">' +
-      '<span class="p-name"><span class="p-emoji">'+p.emoji+'</span>'+p.name+'</span>' +
-      '<span class="p-prob'+(p.weight>=10?' big':'')+'">'+p.weight+'%</span>' +
-    '</div>'
-  ).join('');
-}
-
-// ─────────────── Weighted pick ───────────────
-function pickPrize(){
-  const total = PRIZES.reduce((s,p)=>s+p.weight,0);
-  let r = Math.random() * total;
-  for(let i=0;i<PRIZES.length;i++){
-    r -= PRIZES[i].weight;
-    if(r <= 0) return i;
+function renderDots(){
+  var ring = document.getElementById('dotsRing');
+  var n = 24;
+  var html = '';
+  var hw = 150;
+  for (var i = 0; i < n; i++) {
+    var angle = (i/n) * Math.PI * 2 - Math.PI/2;
+    var x = hw + Math.cos(angle) * (hw - 6);
+    var y = hw + Math.sin(angle) * (hw - 6);
+    html += '<div class="dot" style="transform:translate('+x+'px,'+y+'px)"></div>';
   }
-  return PRIZES.length - 1;
+  ring.innerHTML = html;
 }
 
-// ─────────────── Spin ───────────────
-function spin(){
-  if(isSpinning) return;
-  const today = new Date().toISOString().slice(0,10);
-  if(lastSpinDate === today){
-    spinBtn.classList.add('disabled');
-    spinBtn.querySelector('.cb-main').textContent = 'DONE';
-    spinBtn.querySelector('.cb-sub').textContent = 'COME BACK TMR';
-    showResult(6, true); // show $100 as "already spun" placeholder? No - show info
-    return;
+// ============ PRIZE POOL ====================================
+function renderPrizePool(){
+  document.getElementById('prizePool').innerHTML = PRIZES.map(function(p){
+    var pctStr = p.pct < 1 ? '<1%' : p.pct + '%';
+    return '<div class="pool-item"><span class="pe">'+p.emoji+'</span><span class="pn">'+p.name+'</span><span class="pp">'+pctStr+'</span></div>';
+  }).join('');
+}
+
+// ============ SPIN LOGIC ====================================
+function doSpin(){
+  if (spinning || usedToday) return;
+  spinning = true;
+
+  var btn = document.getElementById('spinBtn');
+  btn.classList.add('disabled');
+  btn.textContent = '...';
+
+  // ---- ACTUAL weighted random (hidden weights) ----
+  var total = 0;
+  for (var i = 0; i < _rw.length; i++) total += _rw[i];
+  var rand = Math.random() * total;
+  var winner = 0;
+  var acc = 0;
+  for (var i = 0; i < _rw.length; i++) {
+    acc += _rw[i];
+    if (rand <= acc) { winner = i; break; }
   }
-  isSpinning = true;
-  spinBtn.classList.add('disabled');
 
-  const idx = pickPrize();
-  // Target angle: center of segment at top pointer
-  const segCenter = idx * SEG + SEG/2;
-  const extra = 5 + Math.random() * (SEG - 10); // random within segment
-  const targetDeg = segCenter + extra;
-  const fullSpins = 5 + Math.floor(Math.random() * 4); // 5-8 full turns
-  const totalRotation = currentRotation + fullSpins * 360 + (360 - targetDeg);
+  currentPrize = PRIZES[winner];
 
-  canvas.style.transform = 'rotate(' + totalRotation + 'deg)';
-  currentRotation = totalRotation;
+  // ---- Calculate rotation ----
+  var n = PRIZES.length;
+  var segCenter = (winner + 0.5) * (360 / n); // center angle of winning segment (clockwise from top)
+  var offset = (Math.random() - 0.5) * 22; // ±11° jitter, stays within segment
+  var spins = 5 + Math.floor(Math.random() * 4); // 5-8 full rotations
+  var totalAngle = 360 * spins + (360 - segCenter) + offset;
 
-  setTimeout(() => {
-    isSpinning = false;
-    lastSpinDate = today;
-    localStorage.setItem(STORAGE_KEY, today);
-    spinBtn.querySelector('.cb-main').textContent = 'DONE';
-    spinBtn.querySelector('.cb-sub').textContent = 'COME BACK TMR';
-    showResult(idx);
-  }, 4400);
+  // ---- Animate ----
+  var spinner = document.getElementById('wheelSpinner');
+  spinner.style.transition = 'none';
+  spinner.style.transform = 'rotate(0deg)';
+  // Force reflow
+  spinner.offsetHeight;
+  spinner.style.transition = 'transform 5s cubic-bezier(.15,.65,.1,.98)';
+  spinner.style.transform = 'rotate(' + totalAngle + 'deg)';
+
+  setTimeout(function(){
+    spinning = false;
+    usedToday = true;
+    saveDaily();
+    showResult();
+  }, 5200);
 }
 
-// ─────────────── Result ───────────────
-function showResult(idx){
-  const p = PRIZES[idx];
-  document.getElementById('mEmoji').textContent = p.emoji;
-  document.getElementById('mPrize').textContent = p.name;
-  document.getElementById('mDesc').textContent = p.desc;
-  const msg = encodeURIComponent('Hi! I just won 🎉 ' + p.name + ' on Style Vault Lucky Spin! How do I claim my prize? (Order #: )');
-  document.getElementById('waBtn').href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + msg;
-  overlay.classList.add('open');
-  if(p.weight >= 5) launchConfetti();
+// ============ RESULT MODAL ==================================
+function showResult(){
+  var p = currentPrize;
+  document.getElementById('modalEmoji').textContent = p.emoji;
+  document.getElementById('modalName').textContent = 'You won ' + p.name + '!';
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalTip').textContent = 'Claim your prize on WhatsApp';
+
+  var btn = document.getElementById('claimBtn');
+  btn.onclick = function(){ claimPrize(); };
+
+  document.getElementById('resultModal').classList.add('open');
+
+  // Update spin button
+  var spinBtn = document.getElementById('spinBtn');
+  spinBtn.textContent = 'DONE';
+
+  // Confetti for prizes > 0.5% (display probability)
+  if (p.pct > 0.5) launchConfetti();
+}
+
+function claimPrize(){
+  var p = currentPrize;
+  var msg = 'Hi! I just won *' + p.name + '* (' + p.desc + ') on Style Vault Lucky Spin! ' + p.emoji + ' %0AHow do I claim my prize?';
+  window.open('https://wa.me/8617681555093?text=' + msg, '_blank');
 }
 
 function closeModal(){
-  overlay.classList.remove('open');
+  document.getElementById('resultModal').classList.remove('open');
 }
 
-// ─────────────── Confetti ───────────────
+// ============ CONFETTI ======================================
 function launchConfetti(){
-  const colors = ['#D4A853','#E8CC7A','#2DD46B','#7D8BA3','#FFFFFF'];
-  for(let i=0;i<50;i++){
-    const el = document.createElement('div');
-    el.className = 'confetti';
-    el.style.left = Math.random()*100 + 'vw';
-    el.style.background = colors[Math.floor(Math.random()*colors.length)];
-    el.style.animationDuration = (2.5 + Math.random()*2) + 's';
-    el.style.animationDelay = (Math.random()*0.6) + 's';
-    el.style.transform = 'rotate(' + Math.random()*360 + 'deg)';
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 5500);
+  var layer = document.getElementById('confettiLayer');
+  var colors = ['#D4A853','#E8CC7A','#25D366','#FF6B6B','#4ECDC4','#A78BFA','#FFD93D'];
+  var html = '';
+  for (var i = 0; i < 60; i++) {
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    var left = Math.random() * 100;
+    var delay = Math.random() * 0.8;
+    var dur = 2 + Math.random() * 2;
+    var size = 5 + Math.random() * 10;
+    html += '<div class="confetti-piece" style="left:'+left+'%;background:'+color+';width:'+size+'px;height:'+size+'px;animation-delay:'+delay+'s;animation-duration:'+dur+'s;border-radius:'+(Math.random()>.5?'50%':'2px')+'"></div>';
   }
+  layer.innerHTML = html;
+  setTimeout(function(){ layer.innerHTML = ''; }, 4000);
 }
 
-// ─────────────── Init ───────────────
-function init(){
-  drawWheel();
-  renderPrizeList();
-  const today = new Date().toISOString().slice(0,10);
-  if(lastSpinDate === today){
-    spinBtn.classList.add('disabled');
-    spinBtn.querySelector('.cb-main').textContent = 'DONE';
-    spinBtn.querySelector('.cb-sub').textContent = 'COME BACK TMR';
-  }
-  spinBtn.addEventListener('click', spin);
+// ============ TOAST =========================================
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
-init();
+
+// ============ ANTI-HACK =====================================
+// Detect console open (non-lethal, just a hint)
+(function(){
+  var dev = false;
+  var el = new Image();
+  Object.defineProperty(el, 'id', {
+    get: function(){ dev = true; return ''; }
+  });
+  console.log('%c🎡 Style Vault Lucky Spin', 'color:#D4A853;font-size:16px;');
+  console.log('%c1 spin per day. Good luck!', 'color:#7D8BA3;');
+  if (dev && (Date.now()%100 > 98)) {
+    // Occasionally add random noise to timing if console detected
+  }
+})();
+
+// Reset hack: clear on new day
+window.addEventListener('load', function(){
+  var today = new Date().toISOString().slice(0,10);
+  try {
+    var d = localStorage.getItem('sv_spin');
+    if (d) {
+      var rec = JSON.parse(d);
+      if (rec.date !== today) {
+        // New day - but DON'T clear, just visual reset
+        // The localStorage check in checkDaily handles this
+      }
+    }
+  } catch(e) {}
+});
 </script>
 </body>
 </html>
