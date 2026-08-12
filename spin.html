@@ -17,18 +17,33 @@
   --green:#25D366;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+/* 视觉修复/页面美化 — 渐变底色+金色颗粒噪点 */
+html,body{
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(212,168,83,.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(28,41,64,.5) 0%, transparent 50%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+  min-height:100vh;overflow-x:hidden;
+}
+/* 视觉修复/页面美化 — 微弱金色颗粒噪点叠加 */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;
+  background-image:radial-gradient(circle, var(--accent) 1px, transparent 1px);
+  background-size:3px 3px;
+}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
 a{text-decoration:none}
 
-/* Floating emoji background */
+/* 视觉修复/页面美化 — 漂浮表情放慢+降低透明度 */
 .emoji-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.emoji-bg span{position:absolute;bottom:-40px;animation:floatUp linear infinite;opacity:.12;font-size:22px}
+.emoji-bg span{position:absolute;bottom:-40px;animation:floatUp linear infinite;opacity:.07;font-size:22px}
 @keyframes floatUp{
   0%{transform:translateY(0) rotate(0deg);opacity:0}
-  10%{opacity:.14}
-  90%{opacity:.08}
-  100%{transform:translateY(-110vh) rotate(360deg);opacity:0}
+  8%{opacity:.08}
+  92%{opacity:.05}
+  100%{transform:translateY(-110vh) rotate(200deg);opacity:0}
 }
 
 /* Code gate */
@@ -47,31 +62,63 @@ a{text-decoration:none}
 
 /* Main view */
 #mainView{display:none;position:relative;z-index:1}
-.container{max-width:500px;margin:0 auto;padding:20px 16px 40px;text-align:center}
+/* 视觉修复/页面美化 — 上下留白优化 */
+.container{max-width:500px;margin:0 auto;padding:32px 16px 48px;text-align:center}
 
 /* Header */
-.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
 .logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
 .logo .mark{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#0B121C;font-weight:900}
-.subtitle{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:24px;letter-spacing:.5px}
+/* 视觉修复/页面美化 — 标题金色发光+留白 */
+.subtitle{font-size:16px;font-weight:700;color:var(--accent);margin:12px 0 28px;letter-spacing:.5px;
+  text-shadow:0 0 12px rgba(212,168,83,.35),0 0 24px rgba(212,168,83,.15);
+}
 
-/* Wheel */
-.wheel-wrap{position:relative;width:300px;height:300px;margin:0 auto}
-.wheel-face{width:100%;height:100%;border-radius:50%;overflow:hidden;position:relative;z-index:1;box-shadow:0 0 50px rgba(212,168,83,.1), inset 0 0 30px rgba(0,0,0,.4);border:3px solid rgba(212,168,83,.35)}
+/* 视觉修复 — 转盘居中+1:1正方形+同心定位 */
+.wheel-wrap{position:relative;width:300px;height:300px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+/* 视觉修复 — 删除错位边框，重做同心规整发光外环 */
+.wheel-ring{
+  position:absolute;inset:-6px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),rgba(212,168,83,.2),var(--gold-light));
+  box-shadow:0 0 30px rgba(212,168,83,.12);
+  z-index:0;
+}
+.wheel-face{
+  position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;
+  z-index:1;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.35);
+  border:none;
+}
 .wheel-face canvas{width:100%;height:100%;display:block;border-radius:50%}
 
 /* Pointer */
-.pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:28px solid var(--accent);filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));z-index:5}
+.pointer{position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--accent);filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));z-index:5}
 
-/* Spin button */
-.spin-btn{position:absolute;inset:0;margin:auto;width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:13px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 24px rgba(212,168,83,.35), inset 0 1px 0 rgba(255,255,255,.25);transition:all .2s;z-index:3}
-.spin-btn:active{transform:scale(.92)}
-.spin-btn.done{background:var(--surface);color:var(--muted);box-shadow:0 2px 8px rgba(0,0,0,.3);pointer-events:none;font-size:11px}
+/* 视觉修复/页面美化 — SPIN按钮多层发光+顺滑缩放 */
+.spin-btn{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:68px;height:68px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--gold-light));
+  color:#0B121C;font-size:12px;font-weight:800;letter-spacing:.5px;
+  box-shadow:
+    0 4px 24px rgba(212,168,83,.35),
+    0 0 0 4px rgba(212,168,83,.1),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -2px 6px rgba(0,0,0,.15);
+  transition:transform .15s cubic-bezier(.4,0,.2,1),box-shadow .2s;
+  z-index:3;text-align:center;line-height:1.3;
+}
+.spin-btn:active{transform:translate(-50%,-50%) scale(.9)}
+.spin-btn.done{
+  background:var(--surface);color:var(--muted);
+  box-shadow:0 2px 8px rgba(0,0,0,.3),0 0 0 4px rgba(212,168,83,.05);
+  pointer-events:none;font-size:11px;font-weight:600;
+}
 
-/* Sparkles around wheel */
-.sparkles{position:absolute;inset:-20px;pointer-events:none;z-index:0}
-.sparkle{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:sparklePulse 1.5s ease-in-out infinite;box-shadow:0 0 8px var(--accent)}
-@keyframes sparklePulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.4)}}
+/* 视觉修复/页面美化 — 6颗均匀环绕星光 */
+.sparkles{position:absolute;inset:-20px;pointer-events:none;z-index:2}
+.sparkle{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:sparklePulse 2s ease-in-out infinite;box-shadow:0 0 8px var(--accent)}
+@keyframes sparklePulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:.9;transform:scale(1.3)}}
 
 /* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(6,10,20,.88);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;z-index:100}
@@ -86,9 +133,9 @@ a{text-decoration:none}
 .btn-claim:active{transform:scale(.97)}
 .btn-close{width:100%;padding:12px;border-radius:14px;background:transparent;color:var(--muted);font-size:13px;border:1px solid var(--border)}
 
-/* Confetti */
+/* 视觉修复/页面美化 — 彩带分层下落 */
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:101}
-.confetti-piece{position:absolute;width:8px;height:8px;top:-10px;animation:fall linear forwards}
+.confetti-piece{position:absolute;top:-10px;animation:fall linear forwards}
 @keyframes fall{to{top:110vh;transform:rotate(720deg)}}
 
 /* Toast */
@@ -125,14 +172,15 @@ a{text-decoration:none}
   <div class="header">
     <div class="logo"><div class="mark">SV</div>Style <span style="color:var(--accent)">Vault</span></div>
   </div>
-  <div class="subtitle">🎉 LUCKY SPIN 🎉 · Good luck! 🍀</div>
+  <div class="subtitle">🎉 LUCKY SPIN · 祝您好运 🍀</div>
 
   <div class="wheel-wrap" id="wheelWrap">
+    <div class="wheel-ring"></div>
     <div class="sparkles" id="sparklesLayer"></div>
     <div class="wheel-face" id="wheelFace">
       <canvas id="wheelCanvas"></canvas>
     </div>
-    <button class="spin-btn" id="spinBtn" onclick="doSpin()">🎰<br>SPIN</button>
+    <button class="spin-btn" id="spinBtn" onclick="doSpin()">SPIN<br>🎰</button>
     <div class="pointer"></div>
   </div>
 </div>
@@ -159,15 +207,15 @@ var CODE_B64 = 'U1YtMjMyQy03QllVLUQ5QVUgU1YtMjNIRC1WN0FKLUc0NVcgU1YtMjZVVS05OVRF
 
 // ============ PRIZES ============
 var PRIZES = [
-  {name:'$5 Coupon',       desc:'No-threshold for next order',  emoji:'🎫', pct:54.9,  short:'$5 OFF'},
-  {name:'Brand T-Shirt',   desc:'Free brand t-shirt',           emoji:'👕', pct:30,    short:'T-SHIRT'},
-  {name:'3-Piece Set',     desc:'Montirex / Nike set',          emoji:'👔', pct:10,    short:'3-PIECE'},
-  {name:'Pick Any Shoes',  desc:'Your choice of shoes',         emoji:'👟', pct:1,     short:'SHOES'},
-  {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', pct:0.5,   short:'FREE'},
-  {name:'Apple Earphones', desc:'High-quality earphones',       emoji:'🎧', pct:0.5,   short:'🎧'},
-  {name:'$100',            desc:'Cash prize',                   emoji:'💵', pct:2,     short:'$100'},
-  {name:'$500',            desc:'Cash prize',                   emoji:'💰', pct:1,     short:'$500'},
-  {name:'$1000',           desc:'Cash prize',                   emoji:'💎', pct:0.1,   short:'$1000'},
+  {name:'$5 Coupon',       desc:'No-threshold for next order',  emoji:'🎫', short:'$5 OFF'},
+  {name:'Brand T-Shirt',   desc:'Free brand t-shirt',           emoji:'👕', short:'T-SHIRT'},
+  {name:'3-Piece Set',     desc:'Montirex / Nike set',          emoji:'👔', short:'3-PIECE'},
+  {name:'Pick Any Shoes',  desc:'Your choice of shoes',         emoji:'👟', short:'SHOES'},
+  {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', short:'FREE'},
+  {name:'Apple Earphones', desc:'High-quality earphones',       emoji:'🎧', short:'🎧'},
+  {name:'$100',            desc:'Cash prize',                   emoji:'💵', short:'$100'},
+  {name:'$500',            desc:'Cash prize',                   emoji:'💰', short:'$500'},
+  {name:'$1000',           desc:'Cash prize',                   emoji:'💎', short:'$1000'},
 ];
 
 // ============ ACTUAL WEIGHTS (encoded) ============
@@ -179,18 +227,20 @@ catch(e) { _rw = [95,2,1,1,0,1,0,0,0]; }
 var spinning = false;
 var currentPrize = null;
 var verified = false;
+var currentRotation = 0; // 下标&角度校准修复 — 累计旋转角度，防止反向回转
 
 // ============ FLOATING EMOJI BACKGROUND ============
+/* 视觉修复/页面美化 — 仅保留指定6个emoji，放慢动画 */
 (function initFunBg(){
-  var emojis = ['💖','🎉','😊','✨','🎈','🥳','💛','🌟','🎊','💫','🎀','⭐','🍀','🎯','💎'];
+  var emojis = ['💖','🎉','😊','✨','🎈','🥳'];
   var bg = document.getElementById('emojiBg');
-  for(var i=0;i<25;i++){
+  for(var i=0;i<22;i++){
     var s = document.createElement('span');
     s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
     s.style.left = Math.random()*100+'%';
-    s.style.fontSize = (16+Math.random()*20)+'px';
-    s.style.animationDuration = (8+Math.random()*12)+'s';
-    s.style.animationDelay = Math.random()*10+'s';
+    s.style.fontSize = (16+Math.random()*18)+'px';
+    s.style.animationDuration = (14+Math.random()*16)+'s';
+    s.style.animationDelay = Math.random()*12+'s';
     bg.appendChild(s);
   }
 })();
@@ -230,7 +280,7 @@ function validateCode(){
 function unlockWheel(){
   document.getElementById('codeGate').style.display = 'none';
   document.getElementById('mainView').style.display = 'block';
-  setTimeout(initWheel, 80); // Wait for reflow
+  setTimeout(initWheel, 80);
 }
 
 // ============ INIT ============
@@ -239,7 +289,6 @@ function initWheel(){
   renderSparkles();
 }
 
-// Check if already verified this session
 (function(){
   try{
     if(sessionStorage.getItem('sv_verified')==='1'){
@@ -250,27 +299,29 @@ function initWheel(){
 })();
 
 // ============ SPARKLES ============
+/* 视觉修复/页面美化 — 6颗均匀环绕 */
 function renderSparkles(){
   var wrap = document.getElementById('wheelWrap');
   var size = wrap.offsetWidth || 300;
   var layer = document.getElementById('sparklesLayer');
   layer.innerHTML = '';
-  for(var i=0;i<8;i++){
-    var angle = (i/8)*2*Math.PI - Math.PI/2;
-    var r = size/2 + 12;
-    var cx = size/2, cy = size/2;
-    var x = cx + r*Math.cos(angle);
-    var y = cy + r*Math.sin(angle);
+  var cx = size/2, cy = size/2;
+  var r = size/2 + 14;
+  for(var i=0;i<6;i++){
+    var angle = (i/6)*2*Math.PI - Math.PI/2;
+    var x = cx + r*Math.cos(angle) - 3;
+    var y = cy + r*Math.sin(angle) - 3;
     var dot = document.createElement('div');
     dot.className = 'sparkle';
     dot.style.left = x+'px';
     dot.style.top = y+'px';
-    dot.style.animationDelay = (i*0.2)+'s';
+    dot.style.animationDelay = (i*0.33)+'s';
     layer.appendChild(dot);
   }
 }
 
 // ============ WHEEL DRAWING ============
+/* 下标&角度校准修复 — 画布扇形与PRIZES数组严格一一对应 */
 function drawWheel(){
   var wrap = document.getElementById('wheelWrap');
   var size = wrap.offsetWidth || 300;
@@ -283,17 +334,16 @@ function drawWheel(){
   var ctx = canvas.getContext('2d');
   ctx.scale(dpr,dpr);
   var cx = size/2, cy = size/2, r = size/2-4;
-  var seg = 2*Math.PI/PRIZES.length;
-
-  // Colors
+  var seg = 2*Math.PI/PRIZES.length; // 每个扇形弧度
   var colors = ['#162133','#1C2940'];
 
+  /* 下标&角度校准修复 — 第i个扇形起始角 = i*seg - PI/2，指针在顶部(-PI/2) */
   for(var i=0;i<PRIZES.length;i++){
     var p = PRIZES[i];
-    var start = i*seg - Math.PI/2;
-    var end = start+seg;
+    var start = i*seg - Math.PI/2; // 扇形起始角，0号扇形从顶部开始
+    var end = start + seg;
 
-    // Segment
+    // 扇形填充
     ctx.beginPath();
     ctx.moveTo(cx,cy);
     ctx.arc(cx,cy,r,start,end);
@@ -304,20 +354,20 @@ function drawWheel(){
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Text
-    var mid = start+seg/2;
+    // 文字 — 扇形中心角
+    var mid = start + seg/2;
     ctx.save();
     ctx.translate(cx,cy);
     ctx.rotate(mid);
     ctx.textAlign = 'center';
 
-    // Emoji at outer (74% radius)
+    // emoji外圈(74%半径)
     ctx.font = '20px sans-serif';
     ctx.fillStyle = '#fff';
     ctx.fillText(p.emoji, r*0.74, 6);
 
-    // Short name at inner (50% radius)
-    ctx.font = 'bold 11px ' + getComputedStyle(document.body).fontFamily;
+    // 短名内圈(48%半径)
+    ctx.font = 'bold 11px sans-serif';
     ctx.fillStyle = '#E4E8F0';
     ctx.fillText(p.short, r*0.48, 6);
 
@@ -326,12 +376,13 @@ function drawWheel(){
 }
 
 // ============ SPIN ============
+/* 下标&角度校准修复 — 重写旋转角度计算，PRIZES[winner]=画布第winner扇形=指针落点 */
 function doSpin(){
   if(spinning) return;
   spinning = true;
   var btn = document.getElementById('spinBtn');
 
-  // Weighted random selection using actual (hidden) weights
+  // 加权随机选择
   var total = 0;
   for(var i=0;i<_rw.length;i++) total += _rw[i];
   var rand = Math.random()*total;
@@ -341,26 +392,30 @@ function doSpin(){
     if(rand <= 0){ winner = i; break; }
   }
 
-  // Calculate rotation angle
-  var seg = 360/PRIZES.length;
-  var targetAngle = 360 - (winner*seg + seg/2) - 90;
-  targetAngle += (Math.random()-0.5)*seg*0.6;
+  /* 下标&角度校准修复 — 精确计算指针落点 */
+  var segDeg = 360/PRIZES.length; // 每个扇形度数 = 40
+  // 扇形winner的中心角(从顶部顺时针) = winner*segDeg + segDeg/2
+  // 要让指针(顶部)对准winner扇形中心，需旋转: 360 - (winner*segDeg + segDeg/2)
+  var targetAngle = 360 - (winner * segDeg + segDeg / 2);
+  // 微随机偏移(扇形内部，不超过±30%)
+  targetAngle += (Math.random()-0.5) * segDeg * 0.5;
+  // 加5-8圈整转
   var spins = 5 + Math.floor(Math.random()*4);
-  var finalAngle = targetAngle + spins*360;
+  // 下标&角度校准修复 — 累计旋转，防止第二次回转
+  currentRotation += spins * 360 + (targetAngle - (currentRotation % 360));
+  var finalAngle = currentRotation;
 
-  // Animate wheel
+  // 动画
   var face = document.getElementById('wheelFace');
   face.style.transition = 'transform 4.5s cubic-bezier(.12,.6,.1,.97)';
   face.style.transform = 'rotate('+finalAngle+'deg)';
 
-  // Disable button
   btn.textContent = '...';
   btn.style.pointerEvents = 'none';
 
-  // Result
   setTimeout(function(){
-    currentPrize = PRIZES[winner];
-    btn.innerHTML = '✅<br>DONE';
+    currentPrize = PRIZES[winner]; // winner下标与画布扇形、PRIZES数组严格对应
+    btn.innerHTML = 'DONE<br>✅';
     btn.classList.add('done');
     btn.style.pointerEvents = 'none';
     spinning = false;
@@ -373,7 +428,7 @@ function showResult(){
   document.getElementById('modalEmoji').textContent = currentPrize.emoji;
   document.getElementById('modalName').textContent = currentPrize.name;
   document.getElementById('modalDesc').textContent = currentPrize.desc;
-  document.getElementById('modalTip').textContent = 'Contact us on WhatsApp to claim your prize!';
+  document.getElementById('modalTip').textContent = 'Contact us on WhatsApp to claim your prize! 🎉';
   document.getElementById('resultModal').classList.add('open');
   launchConfetti();
 }
@@ -388,31 +443,33 @@ function claimPrize(){
 }
 
 // ============ CONFETTI ============
+/* 视觉修复/页面美化 — 仅指定素材，分层下落 */
 function launchConfetti(){
   var colors = ['#D4A853','#E8CC7A','#25D366','#ef4444','#8b5cf6','#60a5fa','#f472b6'];
-  var emojis = ['🎉','✨','💛','⭐','💖','🎊','💫'];
+  var emojis = ['🎉','✨','💛','⭐','💖'];
   var layer = document.getElementById('confettiLayer');
   layer.innerHTML = '';
-  for(var i=0;i<50;i++){
+  for(var i=0;i<60;i++){
     var el = document.createElement('div');
     el.className = 'confetti-piece';
     el.style.left = Math.random()*100+'%';
-    el.style.width = (5+Math.random()*8)+'px';
-    el.style.height = (5+Math.random()*8)+'px';
-    el.style.background = colors[Math.floor(Math.random()*colors.length)];
-    el.style.borderRadius = Math.random()>.5?'50%':'2px';
-    el.style.animationDuration = (2+Math.random()*3)+'s';
-    el.style.animationDelay = Math.random()*.8+'s';
-    if(Math.random()>.7){
+    var isEmoji = Math.random() > .65;
+    if(isEmoji){
       el.style.background = 'transparent';
-      el.style.width = '16px';
-      el.style.height = '16px';
-      el.style.fontSize = '14px';
+      el.style.width = '16px'; el.style.height = '16px'; el.style.fontSize = '14px';
       el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.animationDuration = (2.5+Math.random()*3.5)+'s';
+    }else{
+      el.style.width = (5+Math.random()*8)+'px';
+      el.style.height = (5+Math.random()*8)+'px';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.borderRadius = Math.random()>.5?'50%':'2px';
+      el.style.animationDuration = (1.8+Math.random()*3)+'s';
     }
+    el.style.animationDelay = Math.random()*.8+'s';
     layer.appendChild(el);
   }
-  setTimeout(function(){ layer.innerHTML = ''; }, 4000);
+  setTimeout(function(){ layer.innerHTML = ''; }, 4500);
 }
 
 // ============ TOAST ============
