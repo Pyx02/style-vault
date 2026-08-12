@@ -79,8 +79,8 @@ a{text-decoration:none}
 /* 视觉修复 — 删除错位边框，重做同心规整发光外环 */
 .wheel-ring{
   position:absolute;inset:-6px;border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),rgba(212,168,83,.2),var(--gold-light));
-  box-shadow:0 0 30px rgba(212,168,83,.12);
+  background:linear-gradient(135deg,rgba(212,168,83,.9),rgba(212,168,83,.18) 40%,rgba(232,204,122,.85));
+  box-shadow:0 0 40px rgba(212,168,83,.18),0 0 80px rgba(212,168,83,.08),inset 0 0 20px rgba(212,168,83,.08);
   z-index:0;
 }
 .wheel-face{
@@ -172,7 +172,7 @@ a{text-decoration:none}
   <div class="header">
     <div class="logo"><div class="mark">SV</div>Style <span style="color:var(--accent)">Vault</span></div>
   </div>
-  <div class="subtitle">🎉 LUCKY SPIN · 祝您好运 🍀</div>
+  <div class="subtitle">🎉 LUCKY SPIN · GOOD LUCK 🍀</div>
 
   <div class="wheel-wrap" id="wheelWrap">
     <div class="wheel-ring"></div>
@@ -212,7 +212,7 @@ var PRIZES = [
   {name:'3-Piece Set',     desc:'Montirex / Nike set',          emoji:'👔', short:'3-PIECE'},
   {name:'Pick Any Shoes',  desc:'Your choice of shoes',         emoji:'👟', short:'SHOES'},
   {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', short:'FREE'},
-  {name:'Apple Earphones', desc:'High-quality earphones',       emoji:'🎧', short:'🎧'},
+  {name:'Apple AirPods',   desc:'High-quality earphones',       emoji:'🎧', short:'AIRPODS'},
   {name:'$100',            desc:'Cash prize',                   emoji:'💵', short:'$100'},
   {name:'$500',            desc:'Cash prize',                   emoji:'💰', short:'$500'},
   {name:'$1000',           desc:'Cash prize',                   emoji:'💎', short:'$1000'},
@@ -237,10 +237,16 @@ var currentRotation = 0; // 下标&角度校准修复 — 累计旋转角度，�
   for(var i=0;i<22;i++){
     var s = document.createElement('span');
     s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-    s.style.left = Math.random()*100+'%';
+    /* 视觉修复/页面美化 — 表情分散两侧，避开转盘中心区域 */
+    var side = Math.random();
+    if(side < 0.5){
+      s.style.left = (Math.random()*22)+'%'; // 左侧0-22%
+    }else{
+      s.style.left = (78 + Math.random()*22)+'%'; // 右侧78-100%
+    }
     s.style.fontSize = (16+Math.random()*18)+'px';
-    s.style.animationDuration = (14+Math.random()*16)+'s';
-    s.style.animationDelay = Math.random()*12+'s';
+    s.style.animationDuration = (20+Math.random()*18)+'s'; // 视觉修复 — 上浮更慢
+    s.style.animationDelay = Math.random()*15+'s';
     bg.appendChild(s);
   }
 })();
@@ -267,6 +273,8 @@ function validateCode(){
       used.push(input);
       try{ localStorage.setItem('sv_used_codes',JSON.stringify(used)); }catch(e){}
       try{ sessionStorage.setItem('sv_verified','1'); }catch(e){}
+      // Reset 7-day timer — new code allows a fresh spin
+      try{ localStorage.removeItem('sv_spin'); }catch(e){}
       verified = true;
       unlockWheel();
     }else{
@@ -317,17 +325,18 @@ function checkDailyLimit(){
   }catch(e){}
 })();
 
-// ============ SPARKLES ============
-/* 视觉修复/页面美化 — 6颗均匀环绕 */
+/* 视觉修复/页面美化 — 6颗均匀环绕，位于转盘外圈外侧 */
 function renderSparkles(){
   var wrap = document.getElementById('wheelWrap');
   var size = wrap.offsetWidth || 300;
   var layer = document.getElementById('sparklesLayer');
   layer.innerHTML = '';
-  var cx = size/2, cy = size/2;
-  var r = size/2 + 14;
+  /* 视觉修复 — sparkles层inset:-20px，中心点需加20偏移，否则6颗星整体偏左上 */
+  var cx = layer.offsetWidth/2, cy = layer.offsetHeight/2;
+  /* 视觉修复 — 星光半径：转盘外环(inset:-6px)之外，间距一致 */
+  var r = size/2 + 24;
   for(var i=0;i<6;i++){
-    var angle = (i/6)*2*Math.PI - Math.PI/2;
+    var angle = (i/6)*2*Math.PI - Math.PI/2; // 正六边形均匀分布，顶部开始
     var x = cx + r*Math.cos(angle) - 3;
     var y = cy + r*Math.sin(angle) - 3;
     var dot = document.createElement('div');
@@ -372,6 +381,15 @@ function drawWheel(){
     ctx.strokeStyle = 'rgba(212,168,83,.3)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
+    /* 视觉修复/页面美化 — 扇形内阴影，区分区块层次 */
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r*0.98,start,end);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,0,0,.08)';
+    ctx.fill();
+    ctx.restore();
 
     // 文字 — 扇形中心角
     var mid = start + seg/2;
