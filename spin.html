@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Style Vault · Lucky Spin 🎡</title>
+<title>Style Vault · Lucky Spin</title>
 <style>
 :root{
   --bg:#0B121C;
@@ -14,81 +14,73 @@
   --muted:#7D8BA3;
   --accent:#D4A853;
   --gold-light:#E8CC7A;
-  --green:#2DD46B;
-  --pink:#FF6B9D;
+  --green:#25D366;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;min-height:100vh;overflow-x:hidden}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
+a{text-decoration:none}
 
-/* Floating fun emojis background */
-.fun-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.fun-bg .fb{position:absolute;font-size:22px;opacity:.12;animation:floatUp linear infinite}
+/* Floating emoji background */
+.emoji-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.emoji-bg span{position:absolute;bottom:-40px;animation:floatUp linear infinite;opacity:.12;font-size:22px}
 @keyframes floatUp{
-  0%{transform:translateY(110vh) rotate(0deg);opacity:0}
+  0%{transform:translateY(0) rotate(0deg);opacity:0}
   10%{opacity:.14}
-  90%{opacity:.1}
-  100%{transform:translateY(-10vh) rotate(360deg);opacity:0}
+  90%{opacity:.08}
+  100%{transform:translateY(-110vh) rotate(360deg);opacity:0}
 }
 
-.container{max-width:520px;margin:0 auto;padding:20px 16px 40px;text-align:center;position:relative;z-index:1}
+/* Code gate */
+.code-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.gate-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 24px;text-align:center;max-width:360px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.gate-icon{font-size:48px;display:block;margin-bottom:12px}
+.gate-title{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px}
+.gate-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.gate-input{width:100%;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;text-align:center;letter-spacing:1px;font-family:monospace;margin-bottom:8px;outline:none}
+.gate-input:focus{border-color:var(--accent)}
+.gate-input::placeholder{color:var(--muted);letter-spacing:0;font-family:inherit}
+.gate-err{font-size:12px;color:#ef4444;min-height:18px;margin-bottom:12px}
+.gate-btn{width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:15px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 16px rgba(212,168,83,.25);margin-bottom:16px;transition:all .2s}
+.gate-btn:active{transform:scale(.96)}
+.gate-hint{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* Main view */
+#mainView{display:none;position:relative;z-index:1}
+.container{max-width:500px;margin:0 auto;padding:20px 16px 40px;text-align:center}
 
 /* Header */
-.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px}
+.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
 .logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
 .logo .mark{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#0B121C;font-weight:900}
-.subtitle{font-size:12px;color:var(--muted);margin-bottom:20px;letter-spacing:.5px}
-.subtitle b{color:var(--pink)}
+.subtitle{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:24px;letter-spacing:.5px}
 
 /* Wheel */
-.wheel-wrap{position:relative;width:300px;height:300px;margin:0 auto 16px;filter:drop-shadow(0 0 30px rgba(212,168,83,.15))}
-.wheel-ring{width:100%;height:100%;border-radius:50%;padding:8px;background:linear-gradient(135deg,var(--accent),rgba(212,168,83,.25));box-shadow:0 0 40px rgba(212,168,83,.1), inset 0 0 20px rgba(0,0,0,.3)}
-.wheel-face{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg);position:relative;transition:transform 5s cubic-bezier(.15,.65,.1,.98)}
-.wheel-face canvas{width:100%;height:100%;display:block}
-.spin-btn{position:absolute;inset:0;margin:auto;width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:13px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 20px rgba(212,168,83,.35), inset 0 1px 0 rgba(255,255,255,.25);transition:all .2s;z-index:3;border:3px solid #0B121C}
-.spin-btn:active{transform:scale(.93)}
-.spin-btn.disabled{background:var(--surface);color:var(--muted);box-shadow:none;pointer-events:none}
-.pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--accent);filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));z-index:2}
+.wheel-wrap{position:relative;width:300px;height:300px;margin:0 auto}
+.wheel-face{width:100%;height:100%;border-radius:50%;overflow:hidden;position:relative;z-index:1;box-shadow:0 0 50px rgba(212,168,83,.1), inset 0 0 30px rgba(0,0,0,.4);border:3px solid rgba(212,168,83,.35)}
+.wheel-face canvas{width:100%;height:100%;display:block;border-radius:50%}
 
-/* Sparkle dots around wheel */
-.sparkle{position:absolute;z-index:2;animation:twinkle 1.6s ease-in-out infinite;pointer-events:none}
-@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+/* Pointer */
+.pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:28px solid var(--accent);filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));z-index:5}
 
-/* Prize Pool */
-.pool-title{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin:20px 0 12px}
-.pool{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:420px;margin:0 auto}
-.pool-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center;transition:all .2s}
-.pool-item.hot{border-color:rgba(212,168,83,.45);background:linear-gradient(160deg,var(--card),rgba(212,168,83,.08))}
-.pi-emoji{font-size:20px;display:block;margin-bottom:4px}
-.pi-name{font-size:10px;color:var(--muted);font-weight:600;line-height:1.3}
+/* Spin button */
+.spin-btn{position:absolute;inset:0;margin:auto;width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:13px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 24px rgba(212,168,83,.35), inset 0 1px 0 rgba(255,255,255,.25);transition:all .2s;z-index:3}
+.spin-btn:active{transform:scale(.92)}
+.spin-btn.done{background:var(--surface);color:var(--muted);box-shadow:0 2px 8px rgba(0,0,0,.3);pointer-events:none;font-size:11px}
 
-/* Code Gate */
-.code-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
-.gate-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 24px;width:100%;max-width:340px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.4)}
-.gate-icon{font-size:48px;display:block;margin-bottom:12px;animation:bounce 2s ease-in-out infinite}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.gate-title{font-size:19px;font-weight:800;margin-bottom:6px;color:var(--text)}
-.gate-title span{color:var(--accent)}
-.gate-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:20px}
-.gate-input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;text-align:center;letter-spacing:1px;outline:none;margin-bottom:10px;text-transform:uppercase}
-.gate-input:focus{border-color:var(--accent)}
-.gate-err{font-size:12px;color:var(--pink);min-height:16px;margin-bottom:6px;font-weight:600}
-.gate-btn{width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:15px;font-weight:800;box-shadow:0 4px 16px rgba(212,168,83,.3);transition:all .2s}
-.gate-btn:active{transform:scale(.97)}
-.gate-hint{font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6}
-.gate-hint b{color:var(--accent)}
+/* Sparkles around wheel */
+.sparkles{position:absolute;inset:-20px;pointer-events:none;z-index:0}
+.sparkle{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:sparklePulse 1.5s ease-in-out infinite;box-shadow:0 0 8px var(--accent)}
+@keyframes sparklePulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.4)}}
 
-/* Main view hidden until code validated */
-#mainView{display:none}
-
-/* Result Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(6,10,18,.88);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(6,10,20,.88);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;z-index:100}
 .modal-overlay.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px 24px;width:100%;max-width:360px;text-align:center;animation:pop .35s cubic-bezier(.34,1.56,.64,1)}
-@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal{background:var(--card);width:100%;max-width:500px;border-radius:24px 24px 0 0;border:1px solid var(--border);border-bottom:none;padding:32px 20px 36px;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);text-align:center;max-height:90vh;overflow:auto;box-shadow:0 -8px 40px rgba(0,0,0,.5)}
+.modal-overlay.open .modal{transform:translateY(0)}
 .modal .me{font-size:56px;display:block;margin-bottom:12px}
-.modal .mn{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--text)}
-.modal .md{font-size:13px;color:var(--muted);margin-bottom:6px}
+.modal .mn{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.modal .md{font-size:13px;color:var(--muted);margin-bottom:4px}
 .modal .mt{font-size:13px;color:var(--accent);margin-bottom:20px;font-weight:600}
 .btn-claim{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2DD46B,#1da851);color:#fff;font-size:15px;font-weight:700;margin-bottom:10px;box-shadow:0 4px 16px rgba(37,211,102,.2)}
 .btn-claim:active{transform:scale(.97)}
@@ -104,48 +96,45 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 .toast.show{display:block}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
-.footer-note{font-size:11px;color:var(--muted);margin-top:20px;opacity:.7}
-@media(max-width:360px){.wheel-wrap{width:260px;height:260px}}
+@media(max-width:360px){
+  .wheel-wrap{width:260px;height:260px}
+}
 </style>
 </head>
 <body>
 
-<!-- Floating fun background -->
-<div class="fun-bg" id="funBg"></div>
+<!-- Floating emoji background -->
+<div class="emoji-bg" id="emojiBg"></div>
 
-<!-- ===== CODE GATE ===== -->
+<!-- Code gate -->
 <div class="code-gate" id="codeGate">
   <div class="gate-card">
     <span class="gate-icon">🎡</span>
-    <div class="gate-title">Lucky Spin <span>Access</span></div>
-    <div class="gate-sub">Enter your redemption code to unlock the wheel 🎁<br>Codes are issued after order confirmation.</div>
+    <div class="gate-title">Lucky Spin Access</div>
+    <div class="gate-sub">Enter your redemption code to unlock the wheel.<br>Codes are issued after order confirmation.</div>
     <input class="gate-input" id="codeInput" placeholder="SV-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
     <div class="gate-err" id="codeErr"></div>
     <button class="gate-btn" onclick="validateCode()">Unlock Wheel 🎰</button>
-    <div class="gate-hint">No code yet? Message us on <b>WhatsApp</b> after placing your order and we'll send you one 💬</div>
+    <div class="gate-hint">No code yet? Message us on <b>WhatsApp</b> after placing your order and we'll send you one.</div>
   </div>
 </div>
 
-<!-- ===== MAIN VIEW ===== -->
+<!-- Main view -->
 <div id="mainView">
 <div class="container">
   <div class="header">
     <div class="logo"><div class="mark">SV</div>Style <span style="color:var(--accent)">Vault</span></div>
   </div>
-  <div class="subtitle">🎉 <b>LUCKY SPIN</b> 🎉 · 1 spin per day · Good luck! 🍀</div>
+  <div class="subtitle">🎉 LUCKY SPIN 🎉 · Good luck! 🍀</div>
 
   <div class="wheel-wrap" id="wheelWrap">
-    <div class="wheel-ring"></div>
+    <div class="sparkles" id="sparklesLayer"></div>
     <div class="wheel-face" id="wheelFace">
       <canvas id="wheelCanvas"></canvas>
     </div>
-    <button class="spin-btn" id="spinBtn" onclick="doSpin()">SPIN<br>🎰</button>
+    <button class="spin-btn" id="spinBtn" onclick="doSpin()">🎰<br>SPIN</button>
     <div class="pointer"></div>
   </div>
-
-  <div class="pool-title">🎁 Prize Pool</div>
-  <div class="pool" id="prizePool"></div>
-  <div class="footer-note">Prizes claimed via WhatsApp 💬 · Spins reset daily at midnight 🌙</div>
 </div>
 </div>
 
@@ -168,64 +157,70 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 // ============ REDEMPTION CODES (encoded) ============
 var CODE_B64 = 'U1YtMjMyQy03QllVLUQ5QVUgU1YtMjNIRC1WN0FKLUc0NVcgU1YtMjZVVS05OVRFLVNKWTggU1YtMjhORS1XQkNHLUhHWkMgU1YtMjk1SC1NOVY0LVhNNlUgU1YtMjlHNi01U0dTLVo2UFYgU1YtMkM4Vy1DRE1XLVBIWFIgU1YtMkNWOC0zNDVRLUNKUDIgU1YtMkQ4Uy1NNzg4LUhCTVAgU1YtMkRIRi1SOUFOLUVaS0UgU1YtMkdZUi1QN0JQLVNOWksgU1YtMkpKOC1NSjkyLTlWWVIgU1YtMkpKUC1EV1gzLUZNS0ogU1YtMk01Ry00VUU4LUVWOTcgU1YtMk5OTS1FV05HLUI4VTUgU1YtMlIzOC0yVDlQLVROVVogU1YtMlNHMy1ZNEo5LUY2MlggU1YtMlZYWS03M0dELVBLM1MgU1YtMlhXNy1LQVZaLVk5RTYgU1YtMzI2TS1QUDVKLVg2VjYgU1YtMzU2Ui1TVThWLVdZNkYgU1YtMzZCWS02NVlOLTRZNlYgU1YtMzZNSy1WWjVDLVlKNzMgU1YtMzZRMy1YOU00LTJaWTMgU1YtMzZZVC1CRjVELUVXVzcgU1YtMzdGTi1QTU5BLUczTVEgU1YtMzlKSy1XQkJXLTc2VVUgU1YtM0czOS1DOFRVLVVYNkcgU1YtM0pHWC1HU1dCLUpHSjYgU1YtM004Sy1TM002LU1NWk0gU1YtM05ZQS1EUE02LU1RWUUgU1YtM1BQSy1aSjdNLVM4M1ogU1YtM1JFRC02VFE4LUFFNjIgU1YtM1JaUi1DODhKLUs3WlogU1YtM1VFSi1GUVU0LUJLUVAgU1YtM1ZSTi1DSDlQLU5QMjIgU1YtM1dLVi0zTlhELVBBM0ogU1YtNDJXRi1HWkZZLUZNNzcgU1YtNDNORC00RDhRLUVLR1QgU1YtNDdDTi1OWUhBLURBR0QgU1YtNDhESi1YVDhHLUhSVUYgU1YtNEFNVy1QVUc4LVhLWkIgU1YtNEJXNy1TVllBLVpNTlggU1YtNENHNy1ER1FQLTNONjQgU1YtNERCMi1TRlQzLVpVRDcgU1YtNEVYRC04NlBYLVY3VUUgU1YtNEdHUC1GSFZTLVRNNjMgU1YtNEpOQi02M1RYLVFGSjYgU1YtNE4zUS1ENEVHLVNRNVIgU1YtNFFUSy1STTVWLTZLVUMgU1YtNFI1NS05UTdNLVZLR04gU1YtNFJFRy1OWEVQLUtSR0UgU1YtNFdZQy0yTkE3LUo3QVAgU1YtNFgyVi1QVUJLLTRCN0YgU1YtNFk2QS1YN0JCLURURTYgU1YtNFpGQi1DTkNOLU1HRDIgU1YtNFpXOC1EU1RHLVBOOE4gU1YtNFpXRy05R1VHLVJXTUMgU1YtNTNDRS1KR1A3LVRCSE4gU1YtNUU5RS0yS1ZDLUo1UUsgU1YtNUo4OC1EUFdDLVZTTUYgU1YtNU1LRy1YVVVaLVpSOFcgU1YtNVA1Ry05NEI4LUo4WDggU1YtNVNVQS1BR045LTJOOE0gU1YtNVVKSi1GSjhDLVZHNUIgU1YtNVczMi05RURZLVk4MkQgU1YtNjJINC01WThSLTdOMzMgU1YtNjJaSy1YQjNDLVpBVU0gU1YtNjQyRS1VSE1CLVJHN04gU1YtNjVYRS1TMk0zLTdWRTIgU1YtNjY5My1BMk05LUYzWEcgU1YtNjZWOC1QSEJBLTRSRzkgU1YtNjhHMi1DQU5ELTNUUkEgU1YtNjk3Qy1DQUM2LUFTSDcgU1YtNkFEWi1IQlVVLVJGTVggU1YtNkJLSy1YNkhNLUtTNlIgU1YtNkpOQS1YODJELTgzSEogU1YtNldOUy0zRDRTLTMyUkYgU1YtNllORi1VTTRQLU5NS1QgU1YtNzQyQS02NFgzLUhTVDUgU1YtNzRKNi0yVDk2LVM1UzkgU1YtNzUzWC1UN1MzLThXWFMgU1YtNzZKSy1TTVUzLUVGSlggU1YtN0FQVC1FM0JBLVNVVU4gU1YtN0Q4Ni00RlpBLUZOUlIgU1YtN0dCOS1FQkVQLTJETVYgU1YtN0g0Si1ZU0haLVI1U0MgU1YtN0pXWC1ONUVRLTNGRTUgU1YtN041Wi1BN0pILTdEOUMgU1YtN1BIWi1CVEJQLVQ1UVcgU1YtN1JTRi1DNVc1LVQyVEUgU1YtN1NWTi00R1FQLVpXOVcgU1YtN1Q5NC0yNVZNLUM2Q0EgU1YtN1RYSi1XOEVRLTNKVVUgU1YtN1YzQS1YV0ZELTJIRzIgU1YtN1Y1VC1YUFBILTg5QkUgU1YtN1ZWRS1LSzJELVFNUjkgU1YtN1o0Ry05R1BTLVNKVDUgU1YtN1pVTi0yMkROLVpOWVkgU1YtODJXRC1aNFRLLThHNlcgU1YtODNCSy1BWVFOLUJENzcgU1YtODk2OC1QOVFXLVZYQUggU1YtOENGSi1HVjJZLTZRQVQgU1YtOENOVi1GU1JQLUI2R1IgU1YtOEUzWC1IWDU3LUVYQVkgU1YtOEU2Qy1TRVJDLVFVOVMgU1YtOEs0TS05SFVNLUhQUlogU1YtOFBaOC1CQkY2LVFUVUEgU1YtOFFVQS1IVFFLLU02N0cgU1YtOFJUNy1NM0tZLVg0U1ogU1YtOFU3WS1LRldaLTdQUlcgU1YtOFVNTS1VVEhXLUNXUEggU1YtOFVUTi1aWjRSLVlNRkogU1YtOFlKOS1US0ZSLTVaSlogU1YtOFpVOS04WVA0LTZIWksgU1YtOTROVi1aQTczLU5CVzIgU1YtOUFVWS1TUlRULTJVR04gU1YtOUVGNy1aUjVGLTk0VFMgU1YtOUtKQy1ZMzlULVRKTU4gU1YtQTJZOC1QRDUyLU1KMkggU1YtQTYyRi1WTjJILTNQWDQgU1YtQTZEVC1ERkNULVVESjQgU1YtQTkzMy00WUY2LVVTTVAgU1YtQUVXNC1NUkJBLVNDOEQgU1YtQU1FMy1HNFZDLUI0TjMgU1YtQVBUMi1YNFk2LTNGWEUgU1YtQVBXSy1NMjdYLTNORFggU1YtQVFUOC1RMkc4LTVKOU4gU1YtQVVHRS01N0VBLTM1R0IgU1YtQVVaSi04WEFILVc3OEMgU1YtQVhTSy0zM0g5LTZDRUogU1YtQVhXVS1CWUhHLTJGQzMgU1YtQVhYNC1DQkhVLTNUQjIgU1YtQVkzOC1UWlZXLVlCVVggU1YtQVlWTi1aNzhXLUpaM1ggU1YtQjIyVS01WVg2LTlQQ0MgU1YtQjRCTS1IQkFFLTlYQ0IgU1YtQjVLUS1BWVhHLUVGVVIgU1YtQjc4VS1FWjVSLTJUMkcgU1YtQjgyUC03QUdaLUVFVFogU1YtQjhIWS1INDRRLURCUVggU1YtQjk5OS0zVkdTLU0yQlggU1YtQkFVSC1NV1Y1LTM1UDcgU1YtQkIzTi1aVDlBLUsySEQgU1YtQkZOWS1TOEFSLU1KVDggU1YtQkhVNS0zUjNFLTdTNDUgU1YtQkpIMi1ZOUJHLUZaR0UgU1YtQk1HUi1ETllHLTVNWFcgU1YtQk1RUS1CQldILVo5RUQgU1YtQk5WTS05WUg1LUNQODcgU1YtQlBIMi1SWUJYLU0zREogU1YtQlFEUy1WOVM2LUg1QjYgU1YtQlY5My1IQU45LVJQVlUgU1YtQlZQRy1FNUg3LVNRTVYgU1YtQlZYMi1KV0dOLUNLWUIgU1YtQldVUy1DUUU5LVMzQ0cgU1YtQlg0RS1IS0U3LUZWSzMgU1YtQlo2US03VjZKLTZDTVogU1YtQzQ1Ni1HUEc5LVlCWUEgU1YtQzhGUy1TNDhGLThRNEogU1YtQ0RaRC1HNzY1LThYVlkgU1YtQ05LMy1ZNllOLTNKSFYgU1YtQ1JUUy1QUThCLUNESFMgU1YtQ1dTRy1FNEtKLVVTQkYgU1YtQ1dYUC1ZVjVVLVA1WFUgU1YtQ1hVOS1FVVU5LVdRS0UgU1YtQ1pUUS1VR1o5LUtWVUYgU1YtRDRZTS02NVNSLUcyMlIgU1YtRDZWNy0zUFg0LU1VN1QgU1YtRDlVRi1CSFBLLVVCN00gU1YtREFHMy1UOTZXLTVZV1QgU1YtREFSUS1UUFFDLVFETkIgU1YtREVQUi1HNlc1LVo0UjIgU1YtREVUNC1TWERNLURGV0QgU1YtREg5Si1CUEJELTNDMkMgU1YtREhTSi1CMzhVLUFLWUsgU1YtRFBWVS1CWUFULVVBOEogU1YtRFU0QS00VDlELTRSRjggU1YtRTQ0My03R0o3LVZDUlIgU1YtRTVSRy1UVldDLUgzVjUgU1YtRTVXNy1LSzVILUg0UEMgU1YtRTZYSC1LV0dLLVQ1MlAgU1YtRTlOSC1IWkU1LUc2QTUgU1YtRUFHRy1LR0o4LVFZQUIgU1YtRUFYUC1XS0VILU5EMzggU1YtRUMyNi1FM0M1LU4zTUQgU1YtRUZHVy0yUzNBLTlTSlcgU1YtRUtWVy0zQjNKLUdWRksgU1YtRVFKVS1QV05ELVhRSlUgU1YtRVI1NS05R0ZILUo3SkEgU1YtRVJXMi1KN0RHLVdBRVUgU1YtRVNNVS1FQjg5LUZROTkgU1YtRVVLUi00TjVRLTdKRkQgU1YtRVlRUS1DVjc1LUozSEEgU1YtRVlWUC04UUVRLTZUTk0gU1YtRVlaRC0yUzVOLVpXVksgU1YtRjc3Ui03SEFOLUszOUEgU1YtRjg2Qy1aUURaLUY2OFMgU1YtRjlNOS1UTkc1LVlBWUsgU1YtRkFaUS01SkVQLUIyS1IgU1YtRkNBRi01UVI0LUVBWVEgU1YtRkNORS1UMk1WLTU3RTggU1YtRkNQOC1CNkgzLUNCQ1kgU1YtRkRDSi1XR1JRLU4zUkcgU1YtRkZVMy1EM0Y3LVQ1QlogU1YtRkZYOS1XOVhTLUIzOVUgU1YtRkhBNy1NVFZELU1TM0YgU1YtRkhLNi1FRlRNLVI5UVcgU1YtRkpHNC1DNkRXLUVaMjUgU1YtRktRTi1ERFlELUJGWUYgU1YtRlMyQS1aNktOLVRCQkMgU1YtRlNGNi1ZVTk5LTJLWjIgU1YtRldGVy02NTNYLVgzQTUgU1YtRlk5Ri1KWVRXLVg4QlkgU1YtRlo0WC1RQ05FLUhKR1MgU1YtRzc5NC1BOUZCLTk2Q0UgU1YtRzdISi1SU1dWLTVNNVkgU1YtR0IyVC05TlhYLTlZV1AgU1YtR0NKVi1TWVdOLTc1RkEgU1YtR0dHWS1DTVBOLVpSQzQgU1YtR0hKUC1SNFU1LTQ4RDggU1YtR004Ny1RVlVDLUdYRDcgU1YtR01KUS1YOUdTLUVFOUQgU1YtR1BDUC1UNzVaLURDTUcgU1YtR1Q3Sy1DQ1BKLTJCWDUgU1YtR1U2UC1VNEJRLThaUkEgU1YtR1VFNC1QUVFGLUVLRVcgU1YtR1ZOVi1ROFcyLVZYRzggU1YtR1ZaWC1WMlJOLUJEQTggU1YtR1haNi1RRzZVLVpZWlggU1YtR1o5Vi1IUzhDLUVVTlcgU1YtSDM2TS1WOURYLTRSUVkgU1YtSDY1QS1LTjY1LThYWVEgU1YtSDdRNC1DR1daLUMzMjQgU1YtSDhWQS01TkNVLVpSVUEgU1YtSDhWUi1VUFA5LVJOOTIgU1YtSEdESC1HVk1OLU40WDUgU1YtSE1GTi1UOENCLVhNUFQgU1YtSE5KTS1CVE5GLU5RVEogU1YtSE5YRS1BRzU4LUVOTVcgU1YtSFBFQi1XRzJLLVdKOEogU1YtSFBNVy1BTUFNLVZZUTMgU1YtSFFVSy1QVzVGLVNFVUEgU1YtSFJIVi02M1NOLUE5QUUgU1YtSFJYTi1WVURTLVE4NUMgU1YtSFQ1VS1STUZQLTNZTkIgU1YtSFZORC1QR1EzLVFORlggU1YtSFlVUi1VQjVLLTQ4SlEgU1YtSFpNNC1VSDdTLVBOQlggU1YtSjRaTi1GOTUyLTNKV1IgU1YtSjlOTS1CSzk0LTRNN1MgU1YtSkZHVy00S1BGLUdGRUUgU1YtSkcyVS1QRFpELVk0RFIgU1YtSlBCMy01WllTLUZFNzUgU1YtSlBVVS04TThHLVU5R1YgU1YtSlVYNS1HR1hBLTI4RVEgU1YtSldSWC1aODNNLVlSOTkgU1YtSlpSSi05RVdWLUM2WFQgU1YtSzJBVi1TQ04yLVFUQUQgU1YtSzM0NC1ZS0NWLUg1U0cgU1YtSzNFRC04MzU3LU02TVkgU1YtSzRaOC1SUVVYLVg4UjggU1YtSzZUVC1KUkhaLTM3NkMgU1YtSzlFNy1CRDRaLThWUlYgU1YtS0FCWS01NlFOLU5YQ0UgU1YtS0RYUS1QRjVKLUgyU04gU1YtS0VKTS1XOFhNLU1OS0YgU1YtS0VUUS1UQzVNLUY1REIgU1YtS0ZQUi0zWkdSLTVVTVggU1YtS0c3US02RURZLUdUNkogU1YtS0hBNC1IUjdQLUc1WkUgU1YtS0o5RS1XU0hSLU41MlggU1YtS0pKMi02VTJCLVZGQlMgU1YtS0pRQy1RM0pOLVJCTjcgU1YtS0tVNy0ySlVZLURKUFogU1YtS05ERi0yU0VNLVlRNFggU1YtS1lGUi1TOE5KLVZYQTUgU1YtS1pTUy1NVUVULVhNNVAgU1YtTTRKVi1aNFNBLVNBM0IgU1YtTTRYUS0zNVg4LVRSVDYgU1YtTTdIMi03OEdULUJUWDUgU1YtTTdXSy0zNVJSLTdGUEggU1YtTTlFWS05RDdBLTdCRzYgU1YtTUM1Mi05VkNCLTRTRjkgU1YtTUNVWi1VNVEzLUZOSDUgU1YtTUQ2Ti1VQ0U4LU04RDcgU1YtTUcyQS1EMlhBLU5GTTkgU1YtTUc5Ti1QS1Y5LThOTUogU1YtTUdLSC1DQUc4LTZBOTUgU1YtTUpYRC1DQUdTLTVSRjQgU1YtTUsyUy1FTUo3LVpBVFogU1YtTU1ERy1HWlFDLVFXUFQgU1YtTVFENy1TWDVELVFYVk0gU1YtTVJTWC1RR0s1LTJLMjIgU1YtTVVGOS1TVVdKLTdHTk0gU1YtTVlCQS1WV1RDLUhBV1MgU1YtTjIySi1QRENZLUM5RkMgU1YtTjRFUC1XNllNLVNaOUIgU1YtTjZERC1ENEpTLU0zQkQgU1YtTjdaQS1UU0NCLUdDTUcgU1YtTkJKSC1KNE1YLUI4QzYgU1YtTkNGSC1ER1JCLVhGVlIgU1YtTkUzQS1LVVZVLVZINFYgU1YtTkU3UC1QVFJVLTUzM1cgU1YtTkZEVi1CN1ZELVEyWE4gU1YtTkhXMi1EUVRCLUdUN0YgU1YtTko5Si1VQTJBLVdYOFkgU1YtTksyVS1GOUZHLUdRQjUgU1YtTk1SVS1GWVI0LTlCOTUgU1YtTk1WMy1GSFczLU5BREggU1YtTk5SRC1WR1JGLU5HU1ggU1YtTlNSTS1LNzU4LVNUMkUgU1YtTlQ4Ny03S0pBLUJXOTcgU1YtTldTUC1QOU5KLVBDV04gU1YtUDNSNy1GVFU5LUJaOVcgU1YtUDlDVi1KWlBNLVVNWlMgU1YtUEJZUS02QTkyLVZCUUEgU1YtUENGNy1CTkE5LVFNRTQgU1YtUEU1RS00QzRULURVOUIgU1YtUEZVUS1WTThLLVJNUTQgU1YtUEhRNy0yU1BXLVI0NDYgU1YtUEpLRy02VUo4LVk4S1MgU1YtUFJINy1OQ0NZLUZKTksgU1YtUFNLMy1NUjcyLUJVWjggU1YtUFRXOC1SNVZYLUVRSFEgU1YtUFVYQS1XQkozLVNSWDUgU1YtUFZQWi0zWVVFLVBKN1cgU1YtUFdDNi01QVM0LTVZRFogU1YtUFhYUi1VTVlNLVhZSzMgU1YtUTI3US1GVjVNLVZIWlMgU1YtUTUzSi1NWUYzLTJHSlYgU1YtUUJDQS1XNFlILVhKTTUgU1YtUUY3Ni05SENFLTNNNVEgU1YtUUZRSy04M0dCLVlIWVQgU1YtUU40Ni1KTlczLUFNVlggU1YtUVI5Qi1CVkY1LVQ5RTMgU1YtUVNFUy1VUDdaLTdSVU0gU1YtUVNGRS00Q1JaLVg3SzQgU1YtUVNYRC04RjlELVFWVTIgU1YtUVRKOC02NDZELVBSQVEgU1YtUVdRUi03RFVXLUYzWjggU1YtUVdZQy03VEQ1LUZNR1MgU1YtUjNRVS1LQVJELUVOMzQgU1YtUjRQVi1GR1BKLVZSUFAgU1YtUjVVOS1DVlpELVFEUTQgU1YtUjhVRS1HRTYyLTU1NVggU1YtUjlWNS0yUVk4LTVWUUEgU1YtUkFBUC1SWlZOLUJCSjIgU1YtUkNLRy1YTjRBLVpOWTIgU1YtUkU2VS1WV05YLU1CVzMgU1YtUko1TS1DTldRLVM5UksgU1YtUk5IVy03NFgzLTdCRlogU1YtUlRKSy05VUhFLTlLVUUgU1YtUlY4Sy1TVkpZLVA5UVQgU1YtUlhESy1IWUs3LTM0RDUgU1YtUllQRi02MkRGLU42RlEgU1YtUlpFSi1OR0VaLVZUQkEgU1YtUzJGRi1WS0tZLVhUNkEgU1YtUzNLWC1QRlpCLVRKWTMgU1YtUzREMi1NWllTLVVTRE4gU1YtUzg3NS03UktGLUpXOU4gU1YtU0IyRi1RSERaLTlXRUYgU1YtU0Q0VS1SVjk2LThCWVMgU1YtU0ZNTi1EUkVKLVlCODQgU1YtU0c1RS1BN05VLVlZNkIgU1YtU0hCNS1FSjZGLU44REsgU1YtU0pLQy00OFhSLUFCOFUgU1YtU0pNSi03WEgzLTRUOFQgU1YtU042TS03OEs1LVhUUkQgU1YtU1VGTS1IWjIzLVg0TkogU1YtU1VHNC1VSkFYLU41RkEgU1YtU1dHRC05M1U1LTc3SEsgU1YtU1gyVC1CSjNFLVVRN1QgU1YtU1hHSi03NldHLUc4SkggU1YtU1lHVy0yREdDLU5XU0cgU1YtU1lRNi1FSkNYLUU4RE4gU1YtVDQ2OS01VkVBLVlLVVEgU1YtVDdCVS1EWEtaLVpRSDIgU1YtVDhFRy05M1VTLUtEODUgU1YtVENGQi1KR0RFLVU0R1YgU1YtVEUzNC1DS1FRLVo2UlAgU1YtVEVIOS1aR0ZBLVFGOEogU1YtVEpXRi1ZM0VXLUpHWFogU1YtVE1CTS1WTTc3LVhUQUMgU1YtVE5KQi1XRVBXLUtaQVUgU1YtVFBRNy1EWDlILTJOOFYgU1YtVFNBQy1COTJDLUJBTk4gU1YtVFRXTi1GQkhILTJYVkUgU1YtVFUzRS1aSFNYLUhQODggU1YtVFYyRy1YOEdELVhSWDUgU1YtVFdCMy0zV0o4LUNOUEQgU1YtVFhERy04M1NSLTlGNzcgU1YtVFhINC04U1pQLUhUSzcgU1YtVFpQNi00TTVTLTJNOUMgU1YtVTNZRS1RRVdOLUo3NDUgU1YtVTVDMi1DWktULUpYRksgU1YtVTZDNy1WOVpYLVZEUDUgU1YtVTdLUC1SUU1WLVlaUFYgU1YtVThERi05VFRSLUZZOFUgU1YtVTk0Vi0zWjZOLTVXRUggU1YtVTk5Qy1CVkhaLVFUVjggU1YtVUFBVy00R1k3LU5QS0sgU1YtVUNOTi1IREtVLURUWkEgU1YtVVBTVC02WEJCLUhBRUsgU1YtVVRLSi1ZTjNQLTVUU1AgU1YtVVVNWS1UMkdILTlZUVQgU1YtVVVWSy03VjhVLUZIUUUgU1YtVVZNSi1YOVQ0LTRSNDMgU1YtVVc4NC1TOUVQLUE3UjYgU1YtVVdHWi1ZOTdWLU5YRUMgU1YtVVhYOC1GNU5QLVNHUE4gU1YtVVk4Mi1TWURRLUhWNFcgU1YtVVlNQS1DUzZQLTRITjggU1YtVjNNVC1GRldaLTU3Q1ogU1YtVjNTRy1WQjVLLUVVV1cgU1YtVjRGSy1EQzdKLVdXUjQgU1YtVjY0Wi1RUlk0LVRXOUEgU1YtVjZDMy1SOFdVLThUWVcgU1YtVjhIVi1GQkNILTU0VEMgU1YtVkZRMy00UDI1LUc4NjYgU1YtVkZURy1IMlhZLTc0RTkgU1YtVkpUUS1ESDkyLTdURkEgU1YtVk5DRS1DSjZBLUg1UjcgU1YtVk5EOS1WWkg0LUNKUkIgU1YtVlJORy0yWkVRLVFBRzQgU1YtVlNHWi1TTko4LVU5RFogU1YtVlNIQS1FUkRELUJLVFAgU1YtVlU3VC1HS1lGLTRCWUEgU1YtVlVIQi1XTUdDLVlHNzUgU1YtVlZHUS1WRlRGLVZaSzkgU1YtVlcyNS03VzlaLUQyQVYgU1YtVlhaWS1BVVZULTU4UzIgU1YtVzJZSi00MjhFLVlEV0QgU1YtVzc2US1RUTJGLVZaRVMgU1YtVzdFRC1aM1VKLVRVRkMgU1YtV0EzSy04UFZCLTNUWFUgU1YtV0U4WS01WkozLTdERUogU1YtV0ZFNy1EQ0syLTRVNEogU1YtV0ZGMy1CM1ZKLVdYWDMgU1YtV01FRS1ZQVlXLU5NUzcgU1YtV05OTi1FRUtFLVdaUTcgU1YtV1EyQS01RzVBLVU2TUUgU1YtV1NWWS1FV0E3LTZBN04gU1YtV1Q0WS1YSkpXLUtCQVEgU1YtV1hVUC1KQktILThLOEQgU1YtV1lNQi1GSjQ3LUNWQTkgU1YtV1lNVC1LTk5RLVY0V0cgU1YtV1ozNC1WOFc4LTdTM0UgU1YtV1o4OS1SWTJILU1CRkMgU1YtWDNRVC0yTUQzLUQ2RjQgU1YtWDVIQy0zRkdSLUVZWlEgU1YtWDdEUS00TVhRLVlDN1YgU1YtWDlEUy1FUzhXLUc1SFggU1YtWEE4NC1CR1hILVZRWVAgU1YtWEFGRS05NjdZLUQzNVQgU1YtWE1NWi1LNU5VLTVKRVIgU1YtWE1YQi1CMkhaLUpHODkgU1YtWE5ZQy02NFhHLVg2QlEgU1YtWFBOUS0zWVVZLUNSM0UgU1YtWFVTMi1KQzNWLUtWWFggU1YtWFZBWS1RSDJCLTk0UEQgU1YtWFhDTS04RFYyLTI5RUIgU1YtWFhLSC1XREhaLVJNRzYgU1YtWTJYWS1GSFFELTZCMjkgU1YtWTRNRi1EWUJGLTZCRVMgU1YtWTczRi1SRjVRLVFNN00gU1YtWTdSSC1QTUFSLUJRWDkgU1YtWTdaWi1LNUEyLVFTODkgU1YtWTk2NC1TUFhBLVc2RksgU1YtWURKRi03MjU1LU5YM1YgU1YtWUhWVi05RzRSLU1DUFYgU1YtWVA0UC1GV0E0LU05QTQgU1YtWVBRNi1ERkZELTdCTVAgU1YtWVNBQS02NUNQLTNCRkQgU1YtWVVHQy1DMkFZLUdDVjMgU1YtWVVXQy1NNVhHLVpFQVYgU1YtWVY0Vi1KTVdYLVFOVDcgU1YtWVZDRC02U1Q1LURSR0EgU1YtWVdZVy1QWDQ0LUpHRzIgU1YtWVhLSi00M0FYLVZTQlMgU1YtWVk3Sy1QRVFKLUM3Vk0gU1YtWVpNUS1GTTRILTM5QjYgU1YtWVpSWi1YVFFFLVlGQkEgU1YtWjNUVS03MlhNLVEyRUggU1YtWjdSMi1ONllULTZNNkYgU1YtWjhFNy03Q1pULThQS1ogU1YtWkFUSy1BTTJGLUFCTkggU1YtWkFVNy1VU0pZLVlUU1ggU1YtWkhNVi02Qk5LLUQ4RUUgU1YtWkhOSy1EU0NSLUMzWksgU1YtWkhQNy1WRUdELTgzRkUgU1YtWkpGNi1WS0o2LU1NRlogU1YtWkpNTS1KN0MyLVlIWjkgU1YtWk05Sy00UkNCLTNQOTMgU1YtWk1GUC05VVBOLUhSSEIgU1YtWk5LVi00N042LUhEOTQgU1YtWlJWVy1VVVRGLTk1VFcgU1YtWlNUQS1EN1daLUZDRVMgU1YtWlg0Ri0zWE5LLVNRSFUgU1YtWlo3Qy03QzdHLUU5Ulg=';
 
-// ============ PRIZES (emoji + name only — NO probabilities shown) ============
+// ============ PRIZES ============
 var PRIZES = [
-  {name:'$5 Coupon',       short:'$5 OFF',        desc:'No-threshold for next order', emoji:'🎫'},
-  {name:'Brand T-Shirt',   short:'T-SHIRT',       desc:'Free brand t-shirt',          emoji:'👕'},
-  {name:'3-Piece Set',     short:'3-PIECE',       desc:'Montirex / Nike set',         emoji:'👔'},
-  {name:'Pick Any Shoes',  short:'SHOES',         desc:'Your choice of shoes',        emoji:'👟'},
-  {name:'Free Order',      short:'FREE',          desc:'100% refund on your order',   emoji:'🎁'},
-  {name:'Apple Earphones', short:'AIRPODS',       desc:'High-quality earphones',      emoji:'🎧'},
-  {name:'$100',            short:'$100',          desc:'Cash prize',                  emoji:'💵'},
-  {name:'$500',            short:'$500',          desc:'Cash prize',                  emoji:'💰'},
-  {name:'$1000',           short:'$1000',         desc:'Cash prize',                  emoji:'💎'},
+  {name:'$5 Coupon',       desc:'No-threshold for next order',  emoji:'🎫', pct:54.9,  short:'$5 OFF'},
+  {name:'Brand T-Shirt',   desc:'Free brand t-shirt',           emoji:'👕', pct:30,    short:'T-SHIRT'},
+  {name:'3-Piece Set',     desc:'Montirex / Nike set',          emoji:'👔', pct:10,    short:'3-PIECE'},
+  {name:'Pick Any Shoes',  desc:'Your choice of shoes',         emoji:'👟', pct:1,     short:'SHOES'},
+  {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', pct:0.5,   short:'FREE'},
+  {name:'Apple Earphones', desc:'High-quality earphones',       emoji:'🎧', pct:0.5,   short:'🎧'},
+  {name:'$100',            desc:'Cash prize',                   emoji:'💵', pct:2,     short:'$100'},
+  {name:'$500',            desc:'Cash prize',                   emoji:'💰', pct:1,     short:'$500'},
+  {name:'$1000',           desc:'Cash prize',                   emoji:'💎', pct:0.1,   short:'$1000'},
 ];
 
-// ============ ACTUAL WEIGHTS (encoded — buyer cannot see these) ============
+// ============ ACTUAL WEIGHTS (encoded) ============
 var _rw = null;
-try {
-  _rw = atob('OTUsMiwxLDEsMCwxLDAsMCww').split(',').map(Number);
-} catch(e) {
-  _rw = [95,2,1,1,0,1,0,0,0];
-}
+try { _rw = atob('OTUsMiwxLDEsMCwxLDAsMCww').split(',').map(Number); }
+catch(e) { _rw = [95,2,1,1,0,1,0,0,0]; }
 
 // ============ STATE ============
 var spinning = false;
-var usedToday = false;
 var currentPrize = null;
 var verified = false;
+
+// ============ FLOATING EMOJI BACKGROUND ============
+(function initFunBg(){
+  var emojis = ['💖','🎉','😊','✨','🎈','🥳','💛','🌟','🎊','💫','🎀','⭐','🍀','🎯','💎'];
+  var bg = document.getElementById('emojiBg');
+  for(var i=0;i<25;i++){
+    var s = document.createElement('span');
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100+'%';
+    s.style.fontSize = (16+Math.random()*20)+'px';
+    s.style.animationDuration = (8+Math.random()*12)+'s';
+    s.style.animationDelay = Math.random()*10+'s';
+    bg.appendChild(s);
+  }
+})();
 
 // ============ CODE VALIDATION ============
 function normalizeCode(v){
   v = (v||'').trim().toUpperCase();
-  v = v.replace(/[^A-Z0-9-]/g,'');
-  return v;
+  return v.replace(/[^A-Z0-9-]/g,'');
 }
 
 function validateCode(){
   var input = normalizeCode(document.getElementById('codeInput').value);
   var errEl = document.getElementById('codeErr');
-  if(!input){
-    errEl.textContent = 'Please enter your code ✏️';
-    return;
-  }
+  if(!input){ errEl.textContent = 'Please enter your code'; return; }
   try{
     var list = atob(CODE_B64).split(' ');
-    var found = list.indexOf(input) !== -1;
-    if(found){
+    if(list.indexOf(input) !== -1){
       var used = [];
       try{ used = JSON.parse(localStorage.getItem('sv_used_codes')||'[]'); }catch(e){}
       if(used.indexOf(input) !== -1){
-        errEl.textContent = 'This code was already used on this device ⚠️';
+        errEl.textContent = 'This code has already been used on this device';
         return;
       }
       used.push(input);
-      try{ localStorage.setItem('sv_used_codes', JSON.stringify(used)); }catch(e){}
+      try{ localStorage.setItem('sv_used_codes',JSON.stringify(used)); }catch(e){}
       try{ sessionStorage.setItem('sv_verified','1'); }catch(e){}
       verified = true;
       unlockWheel();
     }else{
-      errEl.textContent = 'Invalid code. Please check and try again ❌';
+      errEl.textContent = 'Invalid code. Please check and try again.';
     }
   }catch(e){
     errEl.textContent = 'Error validating code. Please try again.';
@@ -235,32 +230,44 @@ function validateCode(){
 function unlockWheel(){
   document.getElementById('codeGate').style.display = 'none';
   document.getElementById('mainView').style.display = 'block';
-  // Wait for layout so canvas gets real size
-  setTimeout(initWheel, 60);
+  setTimeout(initWheel, 80); // Wait for reflow
 }
 
 // ============ INIT ============
 function initWheel(){
-  checkDaily();
   drawWheel();
-  renderPrizePool();
-  addSparkles();
+  renderSparkles();
 }
 
-// ============ DAILY LIMIT ============
-function checkDaily(){
+// Check if already verified this session
+(function(){
   try{
-    var d = localStorage.getItem('sv_spin');
-    if(d){
-      var rec = JSON.parse(d);
-      var today = new Date().toISOString().slice(0,10);
-      if(rec.date === today){
-        usedToday = true;
-        document.getElementById('spinBtn').classList.add('disabled');
-        document.getElementById('spinBtn').innerHTML = 'DONE<br>✅';
-      }
+    if(sessionStorage.getItem('sv_verified')==='1'){
+      verified = true;
+      unlockWheel();
     }
   }catch(e){}
+})();
+
+// ============ SPARKLES ============
+function renderSparkles(){
+  var wrap = document.getElementById('wheelWrap');
+  var size = wrap.offsetWidth || 300;
+  var layer = document.getElementById('sparklesLayer');
+  layer.innerHTML = '';
+  for(var i=0;i<8;i++){
+    var angle = (i/8)*2*Math.PI - Math.PI/2;
+    var r = size/2 + 12;
+    var cx = size/2, cy = size/2;
+    var x = cx + r*Math.cos(angle);
+    var y = cy + r*Math.sin(angle);
+    var dot = document.createElement('div');
+    dot.className = 'sparkle';
+    dot.style.left = x+'px';
+    dot.style.top = y+'px';
+    dot.style.animationDelay = (i*0.2)+'s';
+    layer.appendChild(dot);
+  }
 }
 
 // ============ WHEEL DRAWING ============
@@ -271,136 +278,104 @@ function drawWheel(){
   var dpr = window.devicePixelRatio || 1;
   canvas.width = size * dpr;
   canvas.height = size * dpr;
-  canvas.style.width = size + 'px';
-  canvas.style.height = size + 'px';
+  canvas.style.width = size+'px';
+  canvas.style.height = size+'px';
   var ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-  var cx = size/2, cy = size/2, r = size/2 - 4;
-  var seg = 2*Math.PI / PRIZES.length;
+  ctx.scale(dpr,dpr);
+  var cx = size/2, cy = size/2, r = size/2-4;
+  var seg = 2*Math.PI/PRIZES.length;
 
-  // Colors — richer alternating tones
-  var colors = ['#162133','#1E2C45','#15202F','#20304D'];
+  // Colors
+  var colors = ['#162133','#1C2940'];
+
   for(var i=0;i<PRIZES.length;i++){
+    var p = PRIZES[i];
     var start = i*seg - Math.PI/2;
-    var end = start + seg;
+    var end = start+seg;
+
+    // Segment
     ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, start, end);
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,end);
     ctx.closePath();
-    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillStyle = colors[i%2];
     ctx.fill();
-    ctx.strokeStyle = 'rgba(212,168,83,.45)';
+    ctx.strokeStyle = 'rgba(212,168,83,.3)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Segment label: emoji on outer ring, short text on inner ring — no overlap
-    var mid = start + seg/2;
+    // Text
+    var mid = start+seg/2;
     ctx.save();
-    ctx.translate(cx, cy);
+    ctx.translate(cx,cy);
     ctx.rotate(mid);
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // Emoji at outer radius
-    ctx.font = '18px sans-serif';
-    ctx.fillText(PRIZES[i].emoji, r * 0.74, 0);
-    // Short name at inner radius
-    ctx.font = 'bold 10px -apple-system, sans-serif';
+
+    // Emoji at outer (74% radius)
+    ctx.font = '20px sans-serif';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(p.emoji, r*0.74, 6);
+
+    // Short name at inner (50% radius)
+    ctx.font = 'bold 11px ' + getComputedStyle(document.body).fontFamily;
     ctx.fillStyle = '#E4E8F0';
-    ctx.fillText(PRIZES[i].short, r * 0.5, 0);
+    ctx.fillText(p.short, r*0.48, 6);
+
     ctx.restore();
-  }
-
-  // Center hub overlay (drawn on top so segments don't show through)
-  ctx.beginPath();
-  ctx.arc(cx, cy, 44, 0, 2*Math.PI);
-  ctx.fillStyle = '#0B121C';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(212,168,83,.6)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-}
-
-// ============ PRIZE POOL (no probabilities) ============
-function renderPrizePool(){
-  var pool = document.getElementById('prizePool');
-  pool.innerHTML = PRIZES.map(function(p,i){
-    return '<div class="pool-item' + (i===0?' hot':'') + '">' +
-      '<span class="pi-emoji">' + p.emoji + '</span>' +
-      '<div class="pi-name">' + p.name + '</div></div>';
-  }).join('');
-}
-
-// ============ SPARKLE DECORATION ============
-function addSparkles(){
-  var wrap = document.getElementById('wheelWrap');
-  var w = wrap.offsetWidth || 300;
-  var sparks = ['✨','⭐','💛','🌟'];
-  for(var i=0;i<6;i++){
-    var s = document.createElement('span');
-    s.className = 'sparkle';
-    s.textContent = sparks[i % sparks.length];
-    s.style.fontSize = (10 + Math.random()*8) + 'px';
-    var ang = (Math.PI * 2 / 6) * i + 0.3;
-    var dist = w * 0.52;
-    s.style.left = (w/2 + Math.cos(ang)*dist - 8) + 'px';
-    s.style.top = (w/2 + Math.sin(ang)*dist - 8) + 'px';
-    s.style.animationDelay = (Math.random()*1.5) + 's';
-    wrap.appendChild(s);
   }
 }
 
 // ============ SPIN ============
 function doSpin(){
-  if(spinning || usedToday) return;
+  if(spinning) return;
   spinning = true;
-  // Pick winner using actual weights
+  var btn = document.getElementById('spinBtn');
+
+  // Weighted random selection using actual (hidden) weights
   var total = 0;
   for(var i=0;i<_rw.length;i++) total += _rw[i];
-  var r = Math.random() * total;
-  var idx = 0;
+  var rand = Math.random()*total;
+  var winner = 0;
   for(var i=0;i<_rw.length;i++){
-    r -= _rw[i];
-    if(r <= 0){ idx = i; break; }
+    rand -= _rw[i];
+    if(rand <= 0){ winner = i; break; }
   }
-  if(idx >= PRIZES.length) idx = PRIZES.length - 1;
-  currentPrize = idx;
-  // Target angle: center of segment idx at pointer (top)
-  var segDeg = 360 / PRIZES.length;
-  var target = (idx * segDeg) + segDeg/2;
-  var spins = 5 + Math.floor(Math.random()*3); // 5-7 full turns
-  var offset = (Math.random()-0.5) * segDeg * 0.5;
-  var finalDeg = spins*360 + (360 - target) + offset;
+
+  // Calculate rotation angle
+  var seg = 360/PRIZES.length;
+  var targetAngle = 360 - (winner*seg + seg/2) - 90;
+  targetAngle += (Math.random()-0.5)*seg*0.6;
+  var spins = 5 + Math.floor(Math.random()*4);
+  var finalAngle = targetAngle + spins*360;
+
+  // Animate wheel
   var face = document.getElementById('wheelFace');
-  face.style.transform = 'rotate(' + finalDeg + 'deg)';
-  document.getElementById('spinBtn').classList.add('disabled');
-  document.getElementById('spinBtn').innerHTML = '...<br>🎰';
+  face.style.transition = 'transform 4.5s cubic-bezier(.12,.6,.1,.97)';
+  face.style.transform = 'rotate('+finalAngle+'deg)';
+
+  // Disable button
+  btn.textContent = '...';
+  btn.style.pointerEvents = 'none';
+
+  // Result
   setTimeout(function(){
+    currentPrize = PRIZES[winner];
+    btn.innerHTML = '✅<br>DONE';
+    btn.classList.add('done');
+    btn.style.pointerEvents = 'none';
     spinning = false;
-    usedToday = true;
-    try{
-      localStorage.setItem('sv_spin', JSON.stringify({date:new Date().toISOString().slice(0,10)}));
-    }catch(e){}
-    document.getElementById('spinBtn').innerHTML = 'DONE<br>✅';
     showResult();
-  }, 5200);
+  }, 4700);
 }
 
 // ============ RESULT MODAL ============
 function showResult(){
-  var p = PRIZES[currentPrize];
-  document.getElementById('modalEmoji').textContent = p.emoji;
-  document.getElementById('modalName').textContent = p.name;
-  document.getElementById('modalDesc').textContent = p.desc;
-  var isCoupon = (currentPrize === 0);
-  var isCash = p.name.indexOf('$') === 0 && currentPrize >= 6;
-  var isGift = !isCoupon && !isCash;
-  var tip = '';
-  if(isCoupon) tip = '💛 Coupon unlocked! Claim it via WhatsApp.';
-  else if(isCash) tip = '🌟 JACKPOT! Contact us right now to claim.';
-  else tip = '🎉 Lucky you! Claim your prize via WhatsApp.';
-  document.getElementById('modalTip').textContent = tip;
+  document.getElementById('modalEmoji').textContent = currentPrize.emoji;
+  document.getElementById('modalName').textContent = currentPrize.name;
+  document.getElementById('modalDesc').textContent = currentPrize.desc;
+  document.getElementById('modalTip').textContent = 'Contact us on WhatsApp to claim your prize!';
   document.getElementById('resultModal').classList.add('open');
-  if(!isCoupon) launchConfetti();
+  launchConfetti();
 }
 
 function closeModal(){
@@ -408,78 +383,45 @@ function closeModal(){
 }
 
 function claimPrize(){
-  var p = PRIZES[currentPrize];
-  var msg = 'Hi! I won ' + p.name + ' on the Style Vault Lucky Spin! 🎉 How do I claim my prize?';
-  window.open('https://wa.me/8617681555093?text=' + encodeURIComponent(msg), '_blank');
+  var msg = encodeURIComponent('Hi! I just won '+currentPrize.name+' ('+currentPrize.emoji+') on Style Vault Lucky Spin! How do I claim my prize? 🎉');
+  window.open('https://wa.me/8617681555093?text='+msg, '_blank');
 }
 
 // ============ CONFETTI ============
 function launchConfetti(){
+  var colors = ['#D4A853','#E8CC7A','#25D366','#ef4444','#8b5cf6','#60a5fa','#f472b6'];
+  var emojis = ['🎉','✨','💛','⭐','💖','🎊','💫'];
   var layer = document.getElementById('confettiLayer');
   layer.innerHTML = '';
-  var colors = ['#D4A853','#2DD46B','#E8CC7A','#FF6B9D','#7DD3FC','#E4E8F0'];
-  var emojis = ['🎉','✨','💛','🎊','⭐','💖'];
-  for(var i=0;i<36;i++){
-    var piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    var useEmoji = i % 3 === 0;
-    if(useEmoji){
-      piece.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-      piece.style.fontSize = '16px';
-      piece.style.width = 'auto';
-      piece.style.height = 'auto';
-      piece.style.background = 'transparent';
-    }else{
-      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
-      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+  for(var i=0;i<50;i++){
+    var el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random()*100+'%';
+    el.style.width = (5+Math.random()*8)+'px';
+    el.style.height = (5+Math.random()*8)+'px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.borderRadius = Math.random()>.5?'50%':'2px';
+    el.style.animationDuration = (2+Math.random()*3)+'s';
+    el.style.animationDelay = Math.random()*.8+'s';
+    if(Math.random()>.7){
+      el.style.background = 'transparent';
+      el.style.width = '16px';
+      el.style.height = '16px';
+      el.style.fontSize = '14px';
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
     }
-    piece.style.left = Math.random()*100 + 'vw';
-    piece.style.animationDuration = (2 + Math.random()*2.5) + 's';
-    piece.style.animationDelay = Math.random()*0.5 + 's';
-    layer.appendChild(piece);
+    layer.appendChild(el);
   }
-  setTimeout(function(){ layer.innerHTML = ''; }, 6000);
+  setTimeout(function(){ layer.innerHTML = ''; }, 4000);
 }
 
-// ============ FUN FLOATING BACKGROUND ============
-function initFunBg(){
-  var bg = document.getElementById('funBg');
-  var emojis = ['💖','🎉','😊','✨','🎈','🌟','💛','🥳','⭐','💫'];
-  var html = '';
-  for(var i=0;i<16;i++){
-    var e = emojis[Math.floor(Math.random()*emojis.length)];
-    var left = Math.random()*100;
-    var dur = 9 + Math.random()*14;
-    var delay = Math.random()*12;
-    var size = 16 + Math.random()*14;
-    html += '<span class="fb" style="left:' + left + 'vw;font-size:' + size.toFixed(1) + 'px;animation-duration:' + dur.toFixed(1) + 's;animation-delay:' + delay.toFixed(1) + 's">' + e + '</span>';
-  }
-  bg.innerHTML = html;
+// ============ TOAST ============
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
-
-// ============ START ============
-(function start(){
-  initFunBg();
-  // Auto-unlock if already verified this session
-  var s = '';
-  try{ s = sessionStorage.getItem('sv_verified') || ''; }catch(e){}
-  if(s === '1'){
-    verified = true;
-    document.getElementById('codeGate').style.display = 'none';
-    document.getElementById('mainView').style.display = 'block';
-    setTimeout(initWheel, 60);
-  }
-})();
-
-// Enter key on code input
-document.addEventListener('DOMContentLoaded', function(){
-  var inp = document.getElementById('codeInput');
-  if(inp){
-    inp.addEventListener('keydown', function(e){
-      if(e.key === 'Enter') validateCode();
-    });
-  }
-});
 </script>
 </body>
 </html>
