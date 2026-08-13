@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Style Vault · Lucky Spin</title>
+<style>
+:root{
+  --bg:#0B121C;
+  --card:#162133;
+  --surface:#1C2940;
+  --border:rgba(212,168,83,.15);
+  --text:#E4E8F0;
+  --muted:#7D8BA3;
+  --accent:#D4A853;
+  --gold-light:#E8CC7A;
+  --green:#25D366;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+/* 视觉修复/页面美化 — 渐变底色+金色颗粒噪点 */
+html,body{
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(212,168,83,.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(28,41,64,.5) 0%, transparent 50%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+  min-height:100vh;overflow-x:hidden;
+}
+/* 视觉修复/页面美化 — 微弱金色颗粒噪点叠加 */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;
+  background-image:radial-gradient(circle, var(--accent) 1px, transparent 1px);
+  background-size:3px 3px;
+}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+a{text-decoration:none}
+
+/* 视觉修复/页面美化 — 漂浮表情放慢+降低透明度 */
+.emoji-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.emoji-bg span{position:absolute;bottom:-40px;animation:floatUp linear infinite;opacity:.07;font-size:22px}
+@keyframes floatUp{
+  0%{transform:translateY(0) rotate(0deg);opacity:0}
+  8%{opacity:.08}
+  92%{opacity:.05}
+  100%{transform:translateY(-110vh) rotate(200deg);opacity:0}
+}
+
+/* Code gate */
+.code-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.gate-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 24px;text-align:center;max-width:360px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.gate-icon{font-size:48px;display:block;margin-bottom:12px}
+.gate-title{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px}
+.gate-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.gate-input{width:100%;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;text-align:center;letter-spacing:1px;font-family:monospace;margin-bottom:8px;outline:none}
+.gate-input:focus{border-color:var(--accent)}
+.gate-input::placeholder{color:var(--muted);letter-spacing:0;font-family:inherit}
+.gate-err{font-size:12px;color:#ef4444;min-height:18px;margin-bottom:12px}
+.gate-btn{width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:15px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 16px rgba(212,168,83,.25);margin-bottom:16px;transition:all .2s}
+.gate-btn:active{transform:scale(.96)}
+.gate-hint{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* Main view */
+#mainView{display:none;position:relative;z-index:1}
+/* 视觉修复/页面美化 — 上下留白优化 */
+.container{max-width:500px;margin:0 auto;padding:32px 16px 48px;text-align:center}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
+.logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
+.logo .mark{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#0B121C;font-weight:900}
+/* 视觉修复/页面美化 — 标题金色发光+留白 */
+.subtitle{font-size:16px;font-weight:700;color:var(--accent);margin:12px 0 28px;letter-spacing:.5px;
+  text-shadow:0 0 12px rgba(212,168,83,.35),0 0 24px rgba(212,168,83,.15);
+}
+
+/* 视觉修复 — 转盘居中+1:1正方形+同心定位 */
+.wheel-wrap{position:relative;width:300px;height:300px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+/* 视觉修复 — 删除错位边框，重做同心规整发光外环 */
+.wheel-ring{
+  position:absolute;inset:-6px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(212,168,83,.9),rgba(212,168,83,.18) 40%,rgba(232,204,122,.85));
+  box-shadow:0 0 40px rgba(212,168,83,.18),0 0 80px rgba(212,168,83,.08),inset 0 0 20px rgba(212,168,83,.08);
+  z-index:0;
+}
+.wheel-face{
+  position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;
+  z-index:1;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.35);
+  border:none;
+}
+.wheel-face canvas{width:100%;height:100%;display:block;border-radius:50%}
+
+/* Pointer */
+.pointer{position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--accent);filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));z-index:5}
+
+/* 视觉修复/页面美化 — SPIN按钮多层发光+顺滑缩放 */
+.spin-btn{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:68px;height:68px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--gold-light));
+  color:#0B121C;font-size:12px;font-weight:800;letter-spacing:.5px;
+  box-shadow:
+    0 4px 24px rgba(212,168,83,.35),
+    0 0 0 4px rgba(212,168,83,.1),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -2px 6px rgba(0,0,0,.15);
+  transition:transform .15s cubic-bezier(.4,0,.2,1),box-shadow .2s;
+  z-index:3;text-align:center;line-height:1.3;
+}
+.spin-btn:active{transform:translate(-50%,-50%) scale(.9)}
+.spin-btn.done{
+  background:var(--surface);color:var(--muted);
+  box-shadow:0 2px 8px rgba(0,0,0,.3),0 0 0 4px rgba(212,168,83,.05);
+  pointer-events:none;font-size:11px;font-weight:600;
+}
+
+/* 视觉修复/页面美化 — 6颗均匀环绕星光 */
+.sparkles{position:absolute;inset:-20px;pointer-events:none;z-index:2}
+.sparkle{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:sparklePulse 2s ease-in-out infinite;box-shadow:0 0 8px var(--accent)}
+@keyframes sparklePulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:.9;transform:scale(1.3)}}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(6,10,20,.88);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;z-index:100}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);width:100%;max-width:500px;border-radius:24px 24px 0 0;border:1px solid var(--border);border-bottom:none;padding:32px 20px 36px;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);text-align:center;max-height:90vh;overflow:auto;box-shadow:0 -8px 40px rgba(0,0,0,.5)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal .me{font-size:56px;display:block;margin-bottom:12px}
+.modal .mn{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.modal .md{font-size:13px;color:var(--muted);margin-bottom:4px}
+.modal .mt{font-size:13px;color:var(--accent);margin-bottom:20px;font-weight:600}
+.btn-claim{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2DD46B,#1da851);color:#fff;font-size:15px;font-weight:700;margin-bottom:10px;box-shadow:0 4px 16px rgba(37,211,102,.2)}
+.btn-claim:active{transform:scale(.97)}
+/* 防篡改核销码优化 — 弹窗核销码框 */
+.claim-box{
+  background:rgba(212,168,83,.06);border:1px solid rgba(212,168,83,.2);
+  border-radius:14px;padding:14px;margin:14px 0 18px;text-align:center;
+}
+.cc-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px}
+.cc-val{
+  font-family:'Courier New',monospace;font-size:24px;font-weight:900;
+  letter-spacing:4px;color:var(--accent);background:rgba(0,0,0,.25);
+  border-radius:10px;padding:8px 0;margin-bottom:0;
+}
+.cc-warn{font-size:10px;color:#ef4444;line-height:1.5;margin-top:10px;opacity:.9}
+.footer-rules{font-size:10px;color:var(--muted);text-align:center;margin-top:14px;opacity:.55;line-height:1.6;padding:0 12px}
+.btn-close{width:100%;padding:12px;border-radius:14px;background:transparent;color:var(--muted);font-size:13px;border:1px solid var(--border)}
+
+/* 视觉修复/页面美化 — 彩带分层下落 */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:101}
+.confetti-piece{position:absolute;top:-10px;animation:fall linear forwards}
+@keyframes fall{to{top:110vh;transform:rotate(720deg)}}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--text);padding:12px 24px;border-radius:30px;font-size:13px;font-weight:600;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:90;display:none;animation:toastIn .3s ease}
+.toast.show{display:block}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+@media(max-width:360px){
+  .wheel-wrap{width:260px;height:260px}
+}
+</style>
+</head>
+<body>
+
+<!-- Floating emoji background -->
+<div class="emoji-bg" id="emojiBg"></div>
+
+<!-- Code gate -->
+<div class="code-gate" id="codeGate">
+  <div class="gate-card">
+    <span class="gate-icon">🎡</span>
+    <div class="gate-title">Lucky Spin Access</div>
+    <div class="gate-sub">Enter your redemption code to unlock the wheel.<br>Codes are issued after order confirmation.</div>
+    <input class="gate-input" id="codeInput" placeholder="SV-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <div class="gate-err" id="codeErr"></div>
+    <button class="gate-btn" onclick="validateCode()">Unlock Wheel 🎰</button>
+    <div class="gate-hint">No code yet? Message us on <b>WhatsApp</b> after placing your order and we'll send you one.</div>
+  </div>
+</div>
+
+<!-- Main view -->
+<div id="mainView">
+<div class="container">
+  <div class="header">
+    <div class="logo"><div class="mark">SV</div>Style <span style="color:var(--accent)">Vault</span></div>
+  </div>
+  <div class="subtitle">🎉 LUCKY SPIN · GOOD LUCK 🍀</div>
+
+  <div class="wheel-wrap" id="wheelWrap">
+    <div class="wheel-ring"></div>
+    <div class="sparkles" id="sparklesLayer"></div>
+    <div class="wheel-face" id="wheelFace">
+      <canvas id="wheelCanvas"></canvas>
+    </div>
+    <button class="spin-btn" id="spinBtn" onclick="doSpin()">SPIN<br>🎰</button>
+    <div class="pointer"></div>
+  </div>
+  <!-- 防篡改核销码优化 — 页脚规则公示 -->
+  <div class="footer-rules">All spin codes &amp; claim codes are uniquely bound. Any edited, AI-altered or forged codes will not be honored. Old winning screenshots cannot be reused for new orders.</div>
+</div>
+</div>
+
+<!-- Result Modal -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal">
+    <span class="me" id="modalEmoji"></span>
+    <div class="mn" id="modalName"></div>
+    <div class="md" id="modalDesc"></div>
+    <div class="mt" id="modalTip"></div>
+    <!-- 防篡改核销码优化 — 中奖弹窗展示核销码+校验密钥 -->
+    <div class="claim-box">
+      <div class="cc-label">🔑 核销码</div>
+      <div class="cc-val" id="modalClaimCode">----------</div>
+      <div class="cc-warn">📸 Please screenshot this page and send it to us via WhatsApp</div>
+    </div>
+    <button class="btn-claim" id="claimBtn" onclick="claimPrize()">💬 Claim via WhatsApp</button>
+    <button class="btn-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<div class="confetti" id="confettiLayer"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ REDEMPTION CODES (encoded) ============
+var CODE_B64 = 'U1YtMjMyQy03QllVLUQ5QVUgU1YtMjNIRC1WN0FKLUc0NVcgU1YtMjZVVS05OVRFLVNKWTggU1YtMjhORS1XQkNHLUhHWkMgU1YtMjk1SC1NOVY0LVhNNlUgU1YtMjlHNi01U0dTLVo2UFYgU1YtMkM4Vy1DRE1XLVBIWFIgU1YtMkNWOC0zNDVRLUNKUDIgU1YtMkQ4Uy1NNzg4LUhCTVAgU1YtMkRIRi1SOUFOLUVaS0UgU1YtMkdZUi1QN0JQLVNOWksgU1YtMkpKOC1NSjkyLTlWWVIgU1YtMkpKUC1EV1gzLUZNS0ogU1YtMk01Ry00VUU4LUVWOTcgU1YtMk5OTS1FV05HLUI4VTUgU1YtMlIzOC0yVDlQLVROVVogU1YtMlNHMy1ZNEo5LUY2MlggU1YtMlZYWS03M0dELVBLM1MgU1YtMlhXNy1LQVZaLVk5RTYgU1YtMzI2TS1QUDVKLVg2VjYgU1YtMzU2Ui1TVThWLVdZNkYgU1YtMzZCWS02NVlOLTRZNlYgU1YtMzZNSy1WWjVDLVlKNzMgU1YtMzZRMy1YOU00LTJaWTMgU1YtMzZZVC1CRjVELUVXVzcgU1YtMzdGTi1QTU5BLUczTVEgU1YtMzlKSy1XQkJXLTc2VVUgU1YtM0czOS1DOFRVLVVYNkcgU1YtM0pHWC1HU1dCLUpHSjYgU1YtM004Sy1TM002LU1NWk0gU1YtM05ZQS1EUE02LU1RWUUgU1YtM1BQSy1aSjdNLVM4M1ogU1YtM1JFRC02VFE4LUFFNjIgU1YtM1JaUi1DODhKLUs3WlogU1YtM1VFSi1GUVU0LUJLUVAgU1YtM1ZSTi1DSDlQLU5QMjIgU1YtM1dLVi0zTlhELVBBM0ogU1YtNDJXRi1HWkZZLUZNNzcgU1YtNDNORC00RDhRLUVLR1QgU1YtNDdDTi1OWUhBLURBR0QgU1YtNDhESi1YVDhHLUhSVUYgU1YtNEFNVy1QVUc4LVhLWkIgU1YtNEJXNy1TVllBLVpNTlggU1YtNENHNy1ER1FQLTNONjQgU1YtNERCMi1TRlQzLVpVRDcgU1YtNEVYRC04NlBYLVY3VUUgU1YtNEdHUC1GSFZTLVRNNjMgU1YtNEpOQi02M1RYLVFGSjYgU1YtNE4zUS1ENEVHLVNRNVIgU1YtNFFUSy1STTVWLTZLVUMgU1YtNFI1NS05UTdNLVZLR04gU1YtNFJFRy1OWEVQLUtSR0UgU1YtNFdZQy0yTkE3LUo3QVAgU1YtNFgyVi1QVUJLLTRCN0YgU1YtNFk2QS1YN0JCLURURTYgU1YtNFpGQi1DTkNOLU1HRDIgU1YtNFpXOC1EU1RHLVBOOE4gU1YtNFpXRy05R1VHLVJXTUMgU1YtNTNDRS1KR1A3LVRCSE4gU1YtNUU5RS0yS1ZDLUo1UUsgU1YtNUo4OC1EUFdDLVZTTUYgU1YtNU1LRy1YVVVaLVpSOFcgU1YtNVA1Ry05NEI4LUo4WDggU1YtNVNVQS1BR045LTJOOE0gU1YtNVVKSi1GSjhDLVZHNUIgU1YtNVczMi05RURZLVk4MkQgU1YtNjJINC01WThSLTdOMzMgU1YtNjJaSy1YQjNDLVpBVU0gU1YtNjQyRS1VSE1CLVJHN04gU1YtNjVYRS1TMk0zLTdWRTIgU1YtNjY5My1BMk05LUYzWEcgU1YtNjZWOC1QSEJBLTRSRzkgU1YtNjhHMi1DQU5ELTNUUkEgU1YtNjk3Qy1DQUM2LUFTSDcgU1YtNkFEWi1IQlVVLVJGTVggU1YtNkJLSy1YNkhNLUtTNlIgU1YtNkpOQS1YODJELTgzSEogU1YtNldOUy0zRDRTLTMyUkYgU1YtNllORi1VTTRQLU5NS1QgU1YtNzQyQS02NFgzLUhTVDUgU1YtNzRKNi0yVDk2LVM1UzkgU1YtNzUzWC1UN1MzLThXWFMgU1YtNzZKSy1TTVUzLUVGSlggU1YtN0FQVC1FM0JBLVNVVU4gU1YtN0Q4Ni00RlpBLUZOUlIgU1YtN0dCOS1FQkVQLTJETVYgU1YtN0g0Si1ZU0haLVI1U0MgU1YtN0pXWC1ONUVRLTNGRTUgU1YtN041Wi1BN0pILTdEOUMgU1YtN1BIWi1CVEJQLVQ1UVcgU1YtN1JTRi1DNVc1LVQyVEUgU1YtN1NWTi00R1FQLVpXOVcgU1YtN1Q5NC0yNVZNLUM2Q0EgU1YtN1RYSi1XOEVRLTNKVVUgU1YtN1YzQS1YV0ZELTJIRzIgU1YtN1Y1VC1YUFBILTg5QkUgU1YtN1ZWRS1LSzJELVFNUjkgU1YtN1o0Ry05R1BTLVNKVDUgU1YtN1pVTi0yMkROLVpOWVkgU1YtODJXRC1aNFRLLThHNlcgU1YtODNCSy1BWVFOLUJENzcgU1YtODk2OC1QOVFXLVZYQUggU1YtOENGSi1HVjJZLTZRQVQgU1YtOENOVi1GU1JQLUI2R1IgU1YtOEUzWC1IWDU3LUVYQVkgU1YtOEU2Qy1TRVJDLVFVOVMgU1YtOEs0TS05SFVNLUhQUlogU1YtOFBaOC1CQkY2LVFUVUEgU1YtOFFVQS1IVFFLLU02N0cgU1YtOFJUNy1NM0tZLVg0U1ogU1YtOFU3WS1LRldaLTdQUlcgU1YtOFVNTS1VVEhXLUNXUEggU1YtOFVUTi1aWjRSLVlNRkogU1YtOFlKOS1US0ZSLTVaSlogU1YtOFpVOS04WVA0LTZIWksgU1YtOTROVi1aQTczLU5CVzIgU1YtOUFVWS1TUlRULTJVR04gU1YtOUVGNy1aUjVGLTk0VFMgU1YtOUtKQy1ZMzlULVRKTU4gU1YtQTJZOC1QRDUyLU1KMkggU1YtQTYyRi1WTjJILTNQWDQgU1YtQTZEVC1ERkNULVVESjQgU1YtQTkzMy00WUY2LVVTTVAgU1YtQUVXNC1NUkJBLVNDOEQgU1YtQU1FMy1HNFZDLUI0TjMgU1YtQVBUMi1YNFk2LTNGWEUgU1YtQVBXSy1NMjdYLTNORFggU1YtQVFUOC1RMkc4LTVKOU4gU1YtQVVHRS01N0VBLTM1R0IgU1YtQVVaSi04WEFILVc3OEMgU1YtQVhTSy0zM0g5LTZDRUogU1YtQVhXVS1CWUhHLTJGQzMgU1YtQVhYNC1DQkhVLTNUQjIgU1YtQVkzOC1UWlZXLVlCVVggU1YtQVlWTi1aNzhXLUpaM1ggU1YtQjIyVS01WVg2LTlQQ0MgU1YtQjRCTS1IQkFFLTlYQ0IgU1YtQjVLUS1BWVhHLUVGVVIgU1YtQjc4VS1FWjVSLTJUMkcgU1YtQjgyUC03QUdaLUVFVFogU1YtQjhIWS1INDRRLURCUVggU1YtQjk5OS0zVkdTLU0yQlggU1YtQkFVSC1NV1Y1LTM1UDcgU1YtQkIzTi1aVDlBLUsySEQgU1YtQkZOWS1TOEFSLU1KVDggU1YtQkhVNS0zUjNFLTdTNDUgU1YtQkpIMi1ZOUJHLUZaR0UgU1YtQk1HUi1ETllHLTVNWFcgU1YtQk1RUS1CQldILVo5RUQgU1YtQk5WTS05WUg1LUNQODcgU1YtQlBIMi1SWUJYLU0zREogU1YtQlFEUy1WOVM2LUg1QjYgU1YtQlY5My1IQU45LVJQVlUgU1YtQlZQRy1FNUg3LVNRTVYgU1YtQlZYMi1KV0dOLUNLWUIgU1YtQldVUy1DUUU5LVMzQ0cgU1YtQlg0RS1IS0U3LUZWSzMgU1YtQlo2US03VjZKLTZDTVogU1YtQzQ1Ni1HUEc5LVlCWUEgU1YtQzhGUy1TNDhGLThRNEogU1YtQ0RaRC1HNzY1LThYVlkgU1YtQ05LMy1ZNllOLTNKSFYgU1YtQ1JUUy1QUThCLUNESFMgU1YtQ1dTRy1FNEtKLVVTQkYgU1YtQ1dYUC1ZVjVVLVA1WFUgU1YtQ1hVOS1FVVU5LVdRS0UgU1YtQ1pUUS1VR1o5LUtWVUYgU1YtRDRZTS02NVNSLUcyMlIgU1YtRDZWNy0zUFg0LU1VN1QgU1YtRDlVRi1CSFBLLVVCN00gU1YtREFHMy1UOTZXLTVZV1QgU1YtREFSUS1UUFFDLVFETkIgU1YtREVQUi1HNlc1LVo0UjIgU1YtREVUNC1TWERNLURGV0QgU1YtREg5Si1CUEJELTNDMkMgU1YtREhTSi1CMzhVLUFLWUsgU1YtRFBWVS1CWUFULVVBOEogU1YtRFU0QS00VDlELTRSRjggU1YtRTQ0My03R0o3LVZDUlIgU1YtRTVSRy1UVldDLUgzVjUgU1YtRTVXNy1LSzVILUg0UEMgU1YtRTZYSC1LV0dLLVQ1MlAgU1YtRTlOSC1IWkU1LUc2QTUgU1YtRUFHRy1LR0o4LVFZQUIgU1YtRUFYUC1XS0VILU5EMzggU1YtRUMyNi1FM0M1LU4zTUQgU1YtRUZHVy0yUzNBLTlTSlcgU1YtRUtWVy0zQjNKLUdWRksgU1YtRVFKVS1QV05ELVhRSlUgU1YtRVI1NS05R0ZILUo3SkEgU1YtRVJXMi1KN0RHLVdBRVUgU1YtRVNNVS1FQjg5LUZROTkgU1YtRVVLUi00TjVRLTdKRkQgU1YtRVlRUS1DVjc1LUozSEEgU1YtRVlWUC04UUVRLTZUTk0gU1YtRVlaRC0yUzVOLVpXVksgU1YtRjc3Ui03SEFOLUszOUEgU1YtRjg2Qy1aUURaLUY2OFMgU1YtRjlNOS1UTkc1LVlBWUsgU1YtRkFaUS01SkVQLUIyS1IgU1YtRkNBRi01UVI0LUVBWVEgU1YtRkNORS1UMk1WLTU3RTggU1YtRkNQOC1CNkgzLUNCQ1kgU1YtRkRDSi1XR1JRLU4zUkcgU1YtRkZVMy1EM0Y3LVQ1QlogU1YtRkZYOS1XOVhTLUIzOVUgU1YtRkhBNy1NVFZELU1TM0YgU1YtRkhLNi1FRlRNLVI5UVcgU1YtRkpHNC1DNkRXLUVaMjUgU1YtRktRTi1ERFlELUJGWUYgU1YtRlMyQS1aNktOLVRCQkMgU1YtRlNGNi1ZVTk5LTJLWjIgU1YtRldGVy02NTNYLVgzQTUgU1YtRlk5Ri1KWVRXLVg4QlkgU1YtRlo0WC1RQ05FLUhKR1MgU1YtRzc5NC1BOUZCLTk2Q0UgU1YtRzdISi1SU1dWLTVNNVkgU1YtR0IyVC05TlhYLTlZV1AgU1YtR0NKVi1TWVdOLTc1RkEgU1YtR0dHWS1DTVBOLVpSQzQgU1YtR0hKUC1SNFU1LTQ4RDggU1YtR004Ny1RVlVDLUdYRDcgU1YtR01KUS1YOUdTLUVFOUQgU1YtR1BDUC1UNzVaLURDTUcgU1YtR1Q3Sy1DQ1BKLTJCWDUgU1YtR1U2UC1VNEJRLThaUkEgU1YtR1VFNC1QUVFGLUVLRVcgU1YtR1ZOVi1ROFcyLVZYRzggU1YtR1ZaWC1WMlJOLUJEQTggU1YtR1haNi1RRzZVLVpZWlggU1YtR1o5Vi1IUzhDLUVVTlcgU1YtSDM2TS1WOURYLTRSUVkgU1YtSDY1QS1LTjY1LThYWVEgU1YtSDdRNC1DR1daLUMzMjQgU1YtSDhWQS01TkNVLVpSVUEgU1YtSDhWUi1VUFA5LVJOOTIgU1YtSEdESC1HVk1OLU40WDUgU1YtSE1GTi1UOENCLVhNUFQgU1YtSE5KTS1CVE5GLU5RVEogU1YtSE5YRS1BRzU4LUVOTVcgU1YtSFBFQi1XRzJLLVdKOEogU1YtSFBNVy1BTUFNLVZZUTMgU1YtSFFVSy1QVzVGLVNFVUEgU1YtSFJIVi02M1NOLUE5QUUgU1YtSFJYTi1WVURTLVE4NUMgU1YtSFQ1VS1STUZQLTNZTkIgU1YtSFZORC1QR1EzLVFORlggU1YtSFlVUi1VQjVLLTQ4SlEgU1YtSFpNNC1VSDdTLVBOQlggU1YtSjRaTi1GOTUyLTNKV1IgU1YtSjlOTS1CSzk0LTRNN1MgU1YtSkZHVy00S1BGLUdGRUUgU1YtSkcyVS1QRFpELVk0RFIgU1YtSlBCMy01WllTLUZFNzUgU1YtSlBVVS04TThHLVU5R1YgU1YtSlVYNS1HR1hBLTI4RVEgU1YtSldSWC1aODNNLVlSOTkgU1YtSlpSSi05RVdWLUM2WFQgU1YtSzJBVi1TQ04yLVFUQUQgU1YtSzM0NC1ZS0NWLUg1U0cgU1YtSzNFRC04MzU3LU02TVkgU1YtSzRaOC1SUVVYLVg4UjggU1YtSzZUVC1KUkhaLTM3NkMgU1YtSzlFNy1CRDRaLThWUlYgU1YtS0FCWS01NlFOLU5YQ0UgU1YtS0RYUS1QRjVKLUgyU04gU1YtS0VKTS1XOFhNLU1OS0YgU1YtS0VUUS1UQzVNLUY1REIgU1YtS0ZQUi0zWkdSLTVVTVggU1YtS0c3US02RURZLUdUNkogU1YtS0hBNC1IUjdQLUc1WkUgU1YtS0o5RS1XU0hSLU41MlggU1YtS0pKMi02VTJCLVZGQlMgU1YtS0pRQy1RM0pOLVJCTjcgU1YtS0tVNy0ySlVZLURKUFogU1YtS05ERi0yU0VNLVlRNFggU1YtS1lGUi1TOE5KLVZYQTUgU1YtS1pTUy1NVUVULVhNNVAgU1YtTTRKVi1aNFNBLVNBM0IgU1YtTTRYUS0zNVg4LVRSVDYgU1YtTTdIMi03OEdULUJUWDUgU1YtTTdXSy0zNVJSLTdGUEggU1YtTTlFWS05RDdBLTdCRzYgU1YtTUM1Mi05VkNCLTRTRjkgU1YtTUNVWi1VNVEzLUZOSDUgU1YtTUQ2Ti1VQ0U4LU04RDcgU1YtTUcyQS1EMlhBLU5GTTkgU1YtTUc5Ti1QS1Y5LThOTUogU1YtTUdLSC1DQUc4LTZBOTUgU1YtTUpYRC1DQUdTLTVSRjQgU1YtTUsyUy1FTUo3LVpBVFogU1YtTU1ERy1HWlFDLVFXUFQgU1YtTVFENy1TWDVELVFYVk0gU1YtTVJTWC1RR0s1LTJLMjIgU1YtTVVGOS1TVVdKLTdHTk0gU1YtTVlCQS1WV1RDLUhBV1MgU1YtTjIySi1QRENZLUM5RkMgU1YtTjRFUC1XNllNLVNaOUIgU1YtTjZERC1ENEpTLU0zQkQgU1YtTjdaQS1UU0NCLUdDTUcgU1YtTkJKSC1KNE1YLUI4QzYgU1YtTkNGSC1ER1JCLVhGVlIgU1YtTkUzQS1LVVZVLVZINFYgU1YtTkU3UC1QVFJVLTUzM1cgU1YtTkZEVi1CN1ZELVEyWE4gU1YtTkhXMi1EUVRCLUdUN0YgU1YtTko5Si1VQTJBLVdYOFkgU1YtTksyVS1GOUZHLUdRQjUgU1YtTk1SVS1GWVI0LTlCOTUgU1YtTk1WMy1GSFczLU5BREggU1YtTk5SRC1WR1JGLU5HU1ggU1YtTlNSTS1LNzU4LVNUMkUgU1YtTlQ4Ny03S0pBLUJXOTcgU1YtTldTUC1QOU5KLVBDV04gU1YtUDNSNy1GVFU5LUJaOVcgU1YtUDlDVi1KWlBNLVVNWlMgU1YtUEJZUS02QTkyLVZCUUEgU1YtUENGNy1CTkE5LVFNRTQgU1YtUEU1RS00QzRULURVOUIgU1YtUEZVUS1WTThLLVJNUTQgU1YtUEhRNy0yU1BXLVI0NDYgU1YtUEpLRy02VUo4LVk4S1MgU1YtUFJINy1OQ0NZLUZKTksgU1YtUFNLMy1NUjcyLUJVWjggU1YtUFRXOC1SNVZYLUVRSFEgU1YtUFVYQS1XQkozLVNSWDUgU1YtUFZQWi0zWVVFLVBKN1cgU1YtUFdDNi01QVM0LTVZRFogU1YtUFhYUi1VTVlNLVhZSzMgU1YtUTI3US1GVjVNLVZIWlMgU1YtUTUzSi1NWUYzLTJHSlYgU1YtUUJDQS1XNFlILVhKTTUgU1YtUUY3Ni05SENFLTNNNVEgU1YtUUZRSy04M0dCLVlIWVQgU1YtUU40Ni1KTlczLUFNVlggU1YtUVI5Qi1CVkY1LVQ5RTMgU1YtUVNFUy1VUDdaLTdSVU0gU1YtUVNGRS00Q1JaLVg3SzQgU1YtUVNYRC04RjlELVFWVTIgU1YtUVRKOC02NDZELVBSQVEgU1YtUVdRUi03RFVXLUYzWjggU1YtUVdZQy03VEQ1LUZNR1MgU1YtUjNRVS1LQVJELUVOMzQgU1YtUjRQVi1GR1BKLVZSUFAgU1YtUjVVOS1DVlpELVFEUTQgU1YtUjhVRS1HRTYyLTU1NVggU1YtUjlWNS0yUVk4LTVWUUEgU1YtUkFBUC1SWlZOLUJCSjIgU1YtUkNLRy1YTjRBLVpOWTIgU1YtUkU2VS1WV05YLU1CVzMgU1YtUko1TS1DTldRLVM5UksgU1YtUk5IVy03NFgzLTdCRlogU1YtUlRKSy05VUhFLTlLVUUgU1YtUlY4Sy1TVkpZLVA5UVQgU1YtUlhESy1IWUs3LTM0RDUgU1YtUllQRi02MkRGLU42RlEgU1YtUlpFSi1OR0VaLVZUQkEgU1YtUzJGRi1WS0tZLVhUNkEgU1YtUzNLWC1QRlpCLVRKWTMgU1YtUzREMi1NWllTLVVTRE4gU1YtUzg3NS03UktGLUpXOU4gU1YtU0IyRi1RSERaLTlXRUYgU1YtU0Q0VS1SVjk2LThCWVMgU1YtU0ZNTi1EUkVKLVlCODQgU1YtU0c1RS1BN05VLVlZNkIgU1YtU0hCNS1FSjZGLU44REsgU1YtU0pLQy00OFhSLUFCOFUgU1YtU0pNSi03WEgzLTRUOFQgU1YtU042TS03OEs1LVhUUkQgU1YtU1VGTS1IWjIzLVg0TkogU1YtU1VHNC1VSkFYLU41RkEgU1YtU1dHRC05M1U1LTc3SEsgU1YtU1gyVC1CSjNFLVVRN1QgU1YtU1hHSi03NldHLUc4SkggU1YtU1lHVy0yREdDLU5XU0cgU1YtU1lRNi1FSkNYLUU4RE4gU1YtVDQ2OS01VkVBLVlLVVEgU1YtVDdCVS1EWEtaLVpRSDIgU1YtVDhFRy05M1VTLUtEODUgU1YtVENGQi1KR0RFLVU0R1YgU1YtVEUzNC1DS1FRLVo2UlAgU1YtVEVIOS1aR0ZBLVFGOEogU1YtVEpXRi1ZM0VXLUpHWFogU1YtVE1CTS1WTTc3LVhUQUMgU1YtVE5KQi1XRVBXLUtaQVUgU1YtVFBRNy1EWDlILTJOOFYgU1YtVFNBQy1COTJDLUJBTk4gU1YtVFRXTi1GQkhILTJYVkUgU1YtVFUzRS1aSFNYLUhQODggU1YtVFYyRy1YOEdELVhSWDUgU1YtVFdCMy0zV0o4LUNOUEQgU1YtVFhERy04M1NSLTlGNzcgU1YtVFhINC04U1pQLUhUSzcgU1YtVFpQNi00TTVTLTJNOUMgU1YtVTNZRS1RRVdOLUo3NDUgU1YtVTVDMi1DWktULUpYRksgU1YtVTZDNy1WOVpYLVZEUDUgU1YtVTdLUC1SUU1WLVlaUFYgU1YtVThERi05VFRSLUZZOFUgU1YtVTk0Vi0zWjZOLTVXRUggU1YtVTk5Qy1CVkhaLVFUVjggU1YtVUFBVy00R1k3LU5QS0sgU1YtVUNOTi1IREtVLURUWkEgU1YtVVBTVC02WEJCLUhBRUsgU1YtVVRLSi1ZTjNQLTVUU1AgU1YtVVVNWS1UMkdILTlZUVQgU1YtVVVWSy03VjhVLUZIUUUgU1YtVVZNSi1YOVQ0LTRSNDMgU1YtVVc4NC1TOUVQLUE3UjYgU1YtVVdHWi1ZOTdWLU5YRUMgU1YtVVhYOC1GNU5QLVNHUE4gU1YtVVk4Mi1TWURRLUhWNFcgU1YtVVlNQS1DUzZQLTRITjggU1YtVjNNVC1GRldaLTU3Q1ogU1YtVjNTRy1WQjVLLUVVV1cgU1YtVjRGSy1EQzdKLVdXUjQgU1YtVjY0Wi1RUlk0LVRXOUEgU1YtVjZDMy1SOFdVLThUWVcgU1YtVjhIVi1GQkNILTU0VEMgU1YtVkZRMy00UDI1LUc4NjYgU1YtVkZURy1IMlhZLTc0RTkgU1YtVkpUUS1ESDkyLTdURkEgU1YtVk5DRS1DSjZBLUg1UjcgU1YtVk5EOS1WWkg0LUNKUkIgU1YtVlJORy0yWkVRLVFBRzQgU1YtVlNHWi1TTko4LVU5RFogU1YtVlNIQS1FUkRELUJLVFAgU1YtVlU3VC1HS1lGLTRCWUEgU1YtVlVIQi1XTUdDLVlHNzUgU1YtVlZHUS1WRlRGLVZaSzkgU1YtVlcyNS03VzlaLUQyQVYgU1YtVlhaWS1BVVZULTU4UzIgU1YtVzJZSi00MjhFLVlEV0QgU1YtVzc2US1RUTJGLVZaRVMgU1YtVzdFRC1aM1VKLVRVRkMgU1YtV0EzSy04UFZCLTNUWFUgU1YtV0U4WS01WkozLTdERUogU1YtV0ZFNy1EQ0syLTRVNEogU1YtV0ZGMy1CM1ZKLVdYWDMgU1YtV01FRS1ZQVlXLU5NUzcgU1YtV05OTi1FRUtFLVdaUTcgU1YtV1EyQS01RzVBLVU2TUUgU1YtV1NWWS1FV0E3LTZBN04gU1YtV1Q0WS1YSkpXLUtCQVEgU1YtV1hVUC1KQktILThLOEQgU1YtV1lNQi1GSjQ3LUNWQTkgU1YtV1lNVC1LTk5RLVY0V0cgU1YtV1ozNC1WOFc4LTdTM0UgU1YtV1o4OS1SWTJILU1CRkMgU1YtWDNRVC0yTUQzLUQ2RjQgU1YtWDVIQy0zRkdSLUVZWlEgU1YtWDdEUS00TVhRLVlDN1YgU1YtWDlEUy1FUzhXLUc1SFggU1YtWEE4NC1CR1hILVZRWVAgU1YtWEFGRS05NjdZLUQzNVQgU1YtWE1NWi1LNU5VLTVKRVIgU1YtWE1YQi1CMkhaLUpHODkgU1YtWE5ZQy02NFhHLVg2QlEgU1YtWFBOUS0zWVVZLUNSM0UgU1YtWFVTMi1KQzNWLUtWWFggU1YtWFZBWS1RSDJCLTk0UEQgU1YtWFhDTS04RFYyLTI5RUIgU1YtWFhLSC1XREhaLVJNRzYgU1YtWTJYWS1GSFFELTZCMjkgU1YtWTRNRi1EWUJGLTZCRVMgU1YtWTczRi1SRjVRLVFNN00gU1YtWTdSSC1QTUFSLUJRWDkgU1YtWTdaWi1LNUEyLVFTODkgU1YtWTk2NC1TUFhBLVc2RksgU1YtWURKRi03MjU1LU5YM1YgU1YtWUhWVi05RzRSLU1DUFYgU1YtWVA0UC1GV0E0LU05QTQgU1YtWVBRNi1ERkZELTdCTVAgU1YtWVNBQS02NUNQLTNCRkQgU1YtWVVHQy1DMkFZLUdDVjMgU1YtWVVXQy1NNVhHLVpFQVYgU1YtWVY0Vi1KTVdYLVFOVDcgU1YtWVZDRC02U1Q1LURSR0EgU1YtWVdZVy1QWDQ0LUpHRzIgU1YtWVhLSi00M0FYLVZTQlMgU1YtWVk3Sy1QRVFKLUM3Vk0gU1YtWVpNUS1GTTRILTM5QjYgU1YtWVpSWi1YVFFFLVlGQkEgU1YtWjNUVS03MlhNLVEyRUggU1YtWjdSMi1ONllULTZNNkYgU1YtWjhFNy03Q1pULThQS1ogU1YtWkFUSy1BTTJGLUFCTkggU1YtWkFVNy1VU0pZLVlUU1ggU1YtWkhNVi02Qk5LLUQ4RUUgU1YtWkhOSy1EU0NSLUMzWksgU1YtWkhQNy1WRUdELTgzRkUgU1YtWkpGNi1WS0o2LU1NRlogU1YtWkpNTS1KN0MyLVlIWjkgU1YtWk05Sy00UkNCLTNQOTMgU1YtWk1GUC05VVBOLUhSSEIgU1YtWk5LVi00N042LUhEOTQgU1YtWlJWVy1VVVRGLTk1VFcgU1YtWlNUQS1EN1daLUZDRVMgU1YtWlg0Ri0zWE5LLVNRSFUgU1YtWlo3Qy03QzdHLUU5Ulg=';
+
+// ============ PRIZES ============
+var PRIZES = [
+  {name:'$5 Coupon',       desc:'No-threshold for next order',  emoji:'🎫', short:'$5 OFF'},
+  {name:'Brand T-Shirt',   desc:'Free brand t-shirt',           emoji:'👕', short:'T-SHIRT'},
+  {name:'3-Piece Set',     desc:'Montirex / Nike set',          emoji:'👔', short:'3-PIECE'},
+  {name:'Pick Any Shoes',  desc:'Your choice of shoes',         emoji:'👟', short:'SHOES'},
+  {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', short:'FREE'},
+  {name:'Apple AirPods',   desc:'High-quality earphones',       emoji:'🎧', short:'AIRPODS'},
+  {name:'$100',            desc:'Cash prize',                   emoji:'💵', short:'$100'},
+  {name:'$500',            desc:'Cash prize',                   emoji:'💰', short:'$500'},
+  {name:'$1000',           desc:'Cash prize',                   emoji:'💎', short:'$1000'},
+];
+
+// ============ ACTUAL WEIGHTS (encoded) ============
+var _rw = null;
+try { _rw = atob('OTUsMiwxLDEsMCwxLDAsMCww').split(',').map(Number); }
+catch(e) { _rw = [95,2,1,1,0,1,0,0,0]; }
+
+// ============ STATE ============
+var spinning = false;
+var currentPrize = null;
+var verified = false;
+var currentRotation = 0;
+var _lastSpinId = ''; // 唯一领奖ID，防止买家复用旧截图冒领
+var _claimCode = ''; // 防篡改核销码优化 — 6位核销码
+var _claimKey = '';  // 防篡改核销码优化 — 4位校验密钥
+
+// ============ FLOATING EMOJI BACKGROUND ============
+/* 视觉修复/页面美化 — 仅保留指定6个emoji，放慢动画 */
+(function initFunBg(){
+  var emojis = ['💖','🎉','😊','✨','🎈','🥳'];
+  var bg = document.getElementById('emojiBg');
+  for(var i=0;i<22;i++){
+    var s = document.createElement('span');
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    /* 视觉修复/页面美化 — 表情分散两侧，避开转盘中心区域 */
+    var side = Math.random();
+    if(side < 0.5){
+      s.style.left = (Math.random()*22)+'%'; // 左侧0-22%
+    }else{
+      s.style.left = (78 + Math.random()*22)+'%'; // 右侧78-100%
+    }
+    s.style.fontSize = (16+Math.random()*18)+'px';
+    s.style.animationDuration = (20+Math.random()*18)+'s'; // 视觉修复 — 上浮更慢
+    s.style.animationDelay = Math.random()*15+'s';
+    bg.appendChild(s);
+  }
+})();
+
+// ============ CODE VALIDATION ============
+function normalizeCode(v){
+  v = (v||'').trim().toUpperCase();
+  return v.replace(/[^A-Z0-9-]/g,'');
+}
+
+function validateCode(){
+  var input = normalizeCode(document.getElementById('codeInput').value);
+  var errEl = document.getElementById('codeErr');
+  if(!input){ errEl.textContent = 'Please enter your code'; return; }
+  try{
+    var list = atob(CODE_B64).split(' ');
+    if(list.indexOf(input) !== -1){
+      var used = [];
+      try{ used = JSON.parse(localStorage.getItem('sv_used_codes')||'[]'); }catch(e){}
+      if(used.indexOf(input) !== -1){
+        errEl.textContent = 'This code has already been used on this device';
+        return;
+      }
+      used.push(input);
+      try{ localStorage.setItem('sv_used_codes',JSON.stringify(used)); }catch(e){}
+      try{ sessionStorage.setItem('sv_verified','1'); }catch(e){}
+      // 保存兑换码到session，用于生成可验证的领奖ID
+      try{ sessionStorage.setItem('sv_code', input); }catch(e){}
+      // Reset 7-day timer — new code allows a fresh spin
+      try{ localStorage.removeItem('sv_spin'); }catch(e){}
+      verified = true;
+      unlockWheel();
+    }else{
+      errEl.textContent = 'Invalid code. Please check and try again.';
+    }
+  }catch(e){
+    errEl.textContent = 'Error validating code. Please try again.';
+  }
+}
+
+function unlockWheel(){
+  document.getElementById('codeGate').style.display = 'none';
+  document.getElementById('mainView').style.display = 'block';
+  setTimeout(initWheel, 80);
+}
+
+// ============ INIT ============
+function initWheel(){
+  drawWheel();
+  renderSparkles();
+  checkDailyLimit();
+}
+
+// 7天限制：同一设备抽奖后7天内不能重复抽（不显示任何文案，仅代码层限制）
+function checkDailyLimit(){
+  try{
+    var last = localStorage.getItem('sv_spin');
+    if(last){
+      var lastTs = parseInt(last, 10) || 0;
+      var now = Date.now();
+      var SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+      if(lastTs && (now - lastTs) < SEVEN_DAYS){
+        var btn = document.getElementById('spinBtn');
+        btn.innerHTML = 'DONE<br>✅';
+        btn.classList.add('done');
+        btn.style.pointerEvents = 'none';
+      }
+    }
+  }catch(e){}
+}
+
+(function(){
+  try{
+    if(sessionStorage.getItem('sv_verified')==='1'){
+      verified = true;
+      unlockWheel();
+    }
+  }catch(e){}
+})();
+
+/* 视觉修复/页面美化 — 6颗均匀环绕，位于转盘外圈外侧 */
+function renderSparkles(){
+  var wrap = document.getElementById('wheelWrap');
+  var size = wrap.offsetWidth || 300;
+  var layer = document.getElementById('sparklesLayer');
+  layer.innerHTML = '';
+  /* 视觉修复 — sparkles层inset:-20px，中心点需加20偏移，否则6颗星整体偏左上 */
+  var cx = layer.offsetWidth/2, cy = layer.offsetHeight/2;
+  /* 视觉修复 — 星光半径：转盘外环(inset:-6px)之外，间距一致 */
+  var r = size/2 + 24;
+  for(var i=0;i<6;i++){
+    var angle = (i/6)*2*Math.PI - Math.PI/2; // 正六边形均匀分布，顶部开始
+    var x = cx + r*Math.cos(angle) - 3;
+    var y = cy + r*Math.sin(angle) - 3;
+    var dot = document.createElement('div');
+    dot.className = 'sparkle';
+    dot.style.left = x+'px';
+    dot.style.top = y+'px';
+    dot.style.animationDelay = (i*0.33)+'s';
+    layer.appendChild(dot);
+  }
+}
+
+// ============ WHEEL DRAWING ============
+/* 下标&角度校准修复 — 画布扇形与PRIZES数组严格一一对应 */
+function drawWheel(){
+  var wrap = document.getElementById('wheelWrap');
+  var size = wrap.offsetWidth || 300;
+  var canvas = document.getElementById('wheelCanvas');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size+'px';
+  canvas.style.height = size+'px';
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  var cx = size/2, cy = size/2, r = size/2-4;
+  var seg = 2*Math.PI/PRIZES.length; // 每个扇形弧度
+  var colors = ['#162133','#1C2940'];
+
+  /* 下标&角度校准修复 — 第i个扇形起始角 = i*seg - PI/2，指针在顶部(-PI/2) */
+  for(var i=0;i<PRIZES.length;i++){
+    var p = PRIZES[i];
+    var start = i*seg - Math.PI/2; // 扇形起始角，0号扇形从顶部开始
+    var end = start + seg;
+
+    // 扇形填充
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,end);
+    ctx.closePath();
+    ctx.fillStyle = colors[i%2];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(212,168,83,.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    /* 视觉修复/页面美化 — 扇形内阴影，区分区块层次 */
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r*0.98,start,end);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,0,0,.08)';
+    ctx.fill();
+    ctx.restore();
+
+    // 文字 — 扇形中心角
+    var mid = start + seg/2;
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(mid);
+    ctx.textAlign = 'center';
+
+    // emoji外圈(74%半径)
+    ctx.font = '20px sans-serif';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(p.emoji, r*0.74, 6);
+
+    // 短名内圈(48%半径)
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillStyle = '#E4E8F0';
+    ctx.fillText(p.short, r*0.48, 6);
+
+    ctx.restore();
+  }
+}
+
+// ============ SPIN ============
+/* 下标&角度校准修复 — 重写旋转角度计算，PRIZES[winner]=画布第winner扇形=指针落点 */
+function doSpin(){
+  if(spinning) return;
+  spinning = true;
+  var btn = document.getElementById('spinBtn');
+
+  // 安全重置：清空旧结果，防止上一轮奖品残留
+  currentPrize = null;
+  _lastSpinId = '';
+  _claimCode = '';
+  _claimKey = '';
+
+  // 加权随机选择
+  var total = 0;
+  for(var i=0;i<_rw.length;i++) total += _rw[i];
+  var rand = Math.random()*total;
+  var winner = 0;
+  for(var i=0;i<_rw.length;i++){
+    rand -= _rw[i];
+    if(rand <= 0){ winner = i; break; }
+  }
+
+  // 修复：选完就更新 currentPrize，防止旧奖品残留导致重复显示
+  currentPrize = PRIZES[winner];
+
+  // 用兑换码前缀 + 奖品缩写生成可验证ID，防止PS改后缀冒领
+  // 格式: CODE_PREFIX-PRIZE-SUFFIX  如 SV-232C-7BYU-5OFF-A5XQ
+  // P核对: 1) 前缀匹配发出的码 2) 奖品缩写匹配买家声称的奖品
+  var codePrefix = '';
+  try{
+    var code = sessionStorage.getItem('sv_code') || '';
+    var lastDash = code.lastIndexOf('-');
+    codePrefix = lastDash > 0 ? code.substring(0, lastDash) : code.substring(0, 8);
+  }catch(e){}
+  if(!codePrefix) codePrefix = 'SV-UNKNOWN';
+  var prizeAbbr = {'$5 Coupon':'5OFF','Brand T-Shirt':'TSHIRT','3-Piece Set':'3PC','Pick Any Shoes':'SHOE','Free Order':'FREE','Apple AirPods':'AIRPOD','$100':'100','$500':'500','$1000':'1000'};
+  var abbr = prizeAbbr[currentPrize.name] || 'UNKN';
+  _lastSpinId = codePrefix + '-' + abbr + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+
+  /* 防篡改核销码优化 — 生成6位核销码 + 4位校验密钥（数字和取后4位补零） */
+  var cc = '';
+  for(var di=0;di<6;di++) cc += Math.floor(Math.random()*10);
+  _claimCode = cc;
+  var s = 0;
+  for(var di=0;di<6;di++) s += parseInt(cc.charAt(di),10);
+  _claimKey = String(s).padStart(4,'0');
+  try{ sessionStorage.setItem('sv_claimCode',_claimCode); }catch(e){}
+  try{ sessionStorage.setItem('sv_claimKey',_claimKey); }catch(e){}
+
+  /* 下标&角度校准修复 — 精确计算指针落点 */
+  var segDeg = 360/PRIZES.length; // 每个扇形度数 = 40
+  // 扇形winner的中心角(从顶部顺时针) = winner*segDeg + segDeg/2
+  // 要让指针(顶部)对准winner扇形中心，需旋转: 360 - (winner*segDeg + segDeg/2)
+  var targetAngle = 360 - (winner * segDeg + segDeg / 2);
+  // 微随机偏移(扇形内部，不超过±30%)
+  targetAngle += (Math.random()-0.5) * segDeg * 0.5;
+  // 加5-8圈整转
+  var spins = 5 + Math.floor(Math.random()*4);
+  // 下标&角度校准修复 — 累计旋转，防止第二次回转
+  currentRotation += spins * 360 + (targetAngle - (currentRotation % 360));
+  var finalAngle = currentRotation;
+
+  // 动画
+  var face = document.getElementById('wheelFace');
+  face.style.transition = 'transform 4.5s cubic-bezier(.12,.6,.1,.97)';
+  face.style.transform = 'rotate('+finalAngle+'deg)';
+
+  btn.textContent = '...';
+  btn.style.pointerEvents = 'none';
+
+  setTimeout(function(){
+    // currentPrize 已在选中 winner 后立即更新，此处仅处理 UI 按钮状态
+    btn.innerHTML = 'DONE<br>✅';
+    btn.classList.add('done');
+    btn.style.pointerEvents = 'none';
+    spinning = false;
+    // 7天限制：记录抽奖时间戳，7天内返回再进入无法再次抽奖
+    try{ localStorage.setItem('sv_spin', String(Date.now())); }catch(e){}
+    showResult();
+  }, 4700);
+}
+
+// ============ RESULT MODAL ============
+function showResult(){
+  document.getElementById('modalEmoji').textContent = currentPrize.emoji;
+  document.getElementById('modalName').textContent = currentPrize.name;
+  document.getElementById('modalDesc').textContent = currentPrize.desc;
+  document.getElementById('modalTip').textContent = 'Claim ID: '+_lastSpinId+' · Contact us on WhatsApp! 🎉';
+  /* 合并核销码 — 6位码+4位密钥组合成一个10位数字 */
+  document.getElementById('modalClaimCode').textContent = (_claimCode && _claimKey) ? _claimCode + _claimKey : '----------';
+  document.getElementById('resultModal').classList.add('open');
+  setTimeout(function(){
+    var cb = document.querySelector('.claim-box');
+    if(cb) cb.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 500);
+  launchConfetti();
+}
+
+function closeModal(){
+  document.getElementById('resultModal').classList.remove('open');
+}
+
+function claimPrize(){
+  var code10 = (_claimCode && _claimKey) ? _claimCode+_claimKey : '';
+  var text = 'Hi! I just won '+currentPrize.name+' on Style Vault!\nClaim ID: '+_lastSpinId+'\n核销码: '+code10+'\nHow do I claim?';
+  window.open('https://wa.me/8619149412697?text='+encodeURIComponent(text), '_blank');
+}
+
+// ============ CONFETTI ============
+/* 视觉修复/页面美化 — 仅指定素材，分层下落 */
+function launchConfetti(){
+  var colors = ['#D4A853','#E8CC7A','#25D366','#ef4444','#8b5cf6','#60a5fa','#f472b6'];
+  var emojis = ['🎉','✨','💛','⭐','💖'];
+  var layer = document.getElementById('confettiLayer');
+  layer.innerHTML = '';
+  for(var i=0;i<60;i++){
+    var el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random()*100+'%';
+    var isEmoji = Math.random() > .65;
+    if(isEmoji){
+      el.style.background = 'transparent';
+      el.style.width = '16px'; el.style.height = '16px'; el.style.fontSize = '14px';
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.animationDuration = (2.5+Math.random()*3.5)+'s';
+    }else{
+      el.style.width = (5+Math.random()*8)+'px';
+      el.style.height = (5+Math.random()*8)+'px';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.borderRadius = Math.random()>.5?'50%':'2px';
+      el.style.animationDuration = (1.8+Math.random()*3)+'s';
+    }
+    el.style.animationDelay = Math.random()*.8+'s';
+    layer.appendChild(el);
+  }
+  setTimeout(function(){ layer.innerHTML = ''; }, 4500);
+}
+
+// ============ TOAST ============
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+</script>
+</body>
+</html>
