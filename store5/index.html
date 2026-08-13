@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Style Vault · Factory Direct Catalog</title>
+<style>
+:root{
+  --bg:#0B121C;
+  --card:#162133;
+  --surface:#1C2940;
+  --border:rgba(212,168,83,.12);
+  --text:#E4E8F0;
+  --muted:#7D8BA3;
+  --accent:#D4A853;
+  --accent-glow:rgba(212,168,83,.1);
+  --green:#2DD46B;
+  --radius:16px;
+  --radius-sm:12px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,"Noto Sans SC",sans-serif;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+a{color:var(--accent);text-decoration:none}
+
+.container{max-width:640px;margin:0 auto;padding:16px 14px 36px}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
+.logo .mark{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),#E8CC7A);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#0B121C}
+.about-btn{
+  font-size:12px;font-weight:600;color:var(--muted);
+  background:var(--surface);padding:8px 16px;border-radius:20px;
+  border:1px solid var(--border);letter-spacing:.3px;transition:all .2s;
+}
+.about-btn:active{background:var(--border);color:var(--text)}
+
+/* Lucky Spin banner — full-width below header */
+.spin-banner{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(135deg,rgba(212,168,83,.1),rgba(212,168,83,.04));
+  border:1px solid rgba(212,168,83,.2);border-radius:var(--radius);
+  padding:14px 20px;margin-bottom:20px;text-decoration:none;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.spin-banner::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(212,168,83,.08),transparent);
+  animation:spinBannerShine 3s ease-in-out infinite;
+}
+@keyframes spinBannerShine{
+  0%,100%{transform:translateX(-100%)}
+  50%{transform:translateX(100%)}
+}
+.spin-banner:active{transform:scale(.98);opacity:.9}
+.spin-banner-icon{font-size:24px;position:relative;z-index:1}
+.spin-banner-text{font-size:14px;font-weight:700;color:var(--accent);position:relative;z-index:1;letter-spacing:.3px}
+.spin-banner-arrow{font-size:14px;color:var(--muted);position:relative;z-index:1}
+
+/* Hero */
+.hero{margin-bottom:22px}
+.hero .badge{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--accent);background:var(--accent-glow);
+  padding:5px 12px;border-radius:20px;margin-bottom:10px;
+  border:1px solid rgba(212,168,83,.18);
+}
+.hero h1{font-size:24px;font-weight:800;margin:0 0 6px;line-height:1.25}
+.hero p{color:var(--muted);font-size:13px;margin:0;line-height:1.55}
+
+/* Category Grid — responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */
+.cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:420px){.cat-grid{grid-template-columns:repeat(3,1fr);gap:12px}}
+@media(min-width:580px){.cat-grid{grid-template-columns:repeat(5,1fr);gap:12px}}
+.cat-card{
+  background:linear-gradient(160deg,var(--card) 40%,var(--surface));
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:18px 10px 14px;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:8px;
+  transition:all .2s;position:relative;overflow:hidden;
+  box-shadow:0 1px 0 rgba(212,168,83,.04) inset;
+}
+.cat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0;transition:opacity .25s;
+}
+.cat-card:active{transform:scale(.95);border-color:var(--accent)}
+.cat-card:active::before{opacity:1}
+
+.cat-card .icon{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(212,168,83,.06);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;line-height:1;
+}
+.cat-card .name{font-size:13px;font-weight:700;line-height:1.2}
+.cat-card .count{font-size:10px;color:var(--muted);font-weight:500}
+
+/* Footer */
+.footer{text-align:center;margin-top:28px;color:var(--muted);font-size:11px;opacity:.6}
+
+/* Modal — much more polished */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(6,10,18,.88);backdrop-filter:blur(10px);
+  display:none;align-items:flex-end;justify-content:center;z-index:100;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--card);width:100%;max-width:640px;border-radius:24px 24px 0 0;
+  border:1px solid var(--border);border-bottom:none;padding:28px 20px 32px;
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  max-height:90vh;overflow:auto;
+  box-shadow:0 -8px 40px rgba(0,0,0,.4);
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+.modal-icon{
+  width:64px;height:64px;border-radius:18px;
+  background:rgba(212,168,83,.07);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;margin:0 auto 12px;
+}
+.modal-title{text-align:center;font-size:20px;font-weight:800;margin:0 0 4px}
+.modal-subtitle{text-align:center;color:var(--muted);font-size:12px;margin:0 0 12px;line-height:1.4}
+
+.modal-divider{height:1px;background:var(--border);margin:0 0 16px;opacity:.6}
+
+.actions{display:flex;flex-direction:column;gap:10px}
+.btn{
+  display:flex;align-items:center;gap:12px;
+  width:100%;padding:16px 18px;border-radius:var(--radius-sm);
+  font-size:14px;font-weight:700;border:none;transition:all .15s;text-align:left;
+}
+.btn:active{transform:scale(.98)}
+
+.btn-wa{background:linear-gradient(135deg,#2DD46B,#34A86E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.2)}
+.btn-wa .btn-arrow{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);font-size:16px;flex-shrink:0}
+
+.btn-yupoo{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.03));color:var(--text);border:1px solid var(--border);justify-content:space-between}
+.btn-yupoo .badge{
+  font-size:10px;font-weight:700;background:var(--accent-glow);
+  color:var(--accent);padding:5px 10px;border-radius:8px;
+  border:1px solid rgba(212,168,83,.25);white-space:nowrap;
+}
+
+.note{
+  background:rgba(212,168,83,.05);border:1px solid rgba(212,168,83,.1);
+  border-radius:10px;padding:12px;font-size:11px;color:var(--accent);
+  text-align:center;margin-top:14px;line-height:1.5;
+}
+
+/* ============ ABOUT PAGE ============ */
+.about-page{display:none;animation:fadeIn .3s}
+.about-page.show{display:block}
+
+.back-row{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.back-btn{
+  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  color:var(--muted);background:var(--surface);padding:8px 14px;
+  border-radius:20px;border:1px solid var(--border);transition:all .2s;
+}
+.back-btn:active{background:var(--border);color:var(--text)}
+
+.about-hero{text-align:center;margin-bottom:24px}
+.about-hero .badge{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--accent);background:var(--accent-glow);
+  padding:5px 12px;border-radius:20px;margin-bottom:10px;
+  border:1px solid rgba(212,168,83,.18);
+}
+.about-hero h1{font-size:22px;font-weight:800;margin:0 0 10px}
+.about-hero p{color:var(--muted);font-size:13px;line-height:1.7;margin:0}
+
+.trust-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+@media(min-width:480px){.trust-grid{grid-template-columns:repeat(4,1fr);gap:12px}}
+.trust-item{
+  background:linear-gradient(160deg,var(--card) 40%,var(--surface));
+  border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 14px;
+  text-align:center;transition:all .2s;
+  box-shadow:0 1px 0 rgba(212,168,83,.04) inset;
+}
+.trust-item .t-icon{font-size:26px;margin-bottom:8px;display:block}
+.trust-item .t-title{font-size:12px;font-weight:700;margin-bottom:4px}
+.trust-item .t-text{font-size:11px;color:var(--muted);line-height:1.4}
+
+.section-label{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.section-label span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.section-label .sec-emoji{font-size:16px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);opacity:.5}
+.warehouse-section{margin-bottom:28px}
+.warehouse-section:last-child{margin-bottom:0}
+
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:480px){.gallery{grid-template-columns:repeat(3,1fr);gap:12px}}
+.gallery-item{
+  aspect-ratio:1/1;border-radius:var(--radius-sm);overflow:hidden;
+  background:var(--surface);border:1px solid var(--border);
+  position:relative;cursor:pointer;transition:all .15s;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.gallery-item:active{transform:scale(.97)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-item .label{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.85));
+  padding:10px;font-size:11px;font-weight:600;color:#fff;
+}
+
+/* Image viewer */
+.viewer{position:fixed;inset:0;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center;z-index:200}
+.viewer.show{display:flex}
+.viewer img{max-width:92vw;max-height:88vh;border-radius:10px}
+.viewer-close{position:absolute;top:18px;right:22px;font-size:32px;color:#fff;background:transparent;opacity:.8}
+
+.viewer-caption{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:13px;color:rgba(255,255,255,.7)}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* Last card centering — depends on column count */
+/* ≤419px: 2 cols, 5th card alone — center */
+.cat-grid .cat-card:last-child:nth-child(5){grid-column:1/-1;max-width:calc(50% - 5px);justify-self:center}
+@media(min-width:420px){.cat-grid .cat-card:last-child:nth-child(5){max-width:none;grid-column:auto}}
+@media(min-width:580px){.cat-grid .cat-card:last-child:nth-child(5){max-width:none;grid-column:auto}}
+</style>
+</head>
+<body>
+
+<!-- ================= HOME ================= -->
+<div id="homePage">
+  <div class="container">
+    <div class="header">
+      <div class="logo"><div class="mark">SV</div>Style Vault</div>
+      <button class="about-btn" onclick="showAbout()">About Us →</button>
+    </div>
+
+    <a class="spin-banner" href="spin.html">
+      <span class="spin-banner-icon">🎡</span>
+      <span class="spin-banner-text">Lucky Spin · Win Prizes!</span>
+      <span class="spin-banner-arrow">→</span>
+    </a>
+
+    <div class="hero">
+      <div class="badge">Factory Direct</div>
+      <h1>Premium<br>Product Catalog</h1>
+      <p>Curated collections sourced directly from factories. Browse albums on Yupoo. Message us on WhatsApp to order.</p>
+    </div>
+
+    <div class="cat-grid" id="catGrid"></div>
+
+    <div class="footer">Style Vault © 2026 · Factory Direct · Worldwide Shipping</div>
+  </div>
+</div>
+
+<!-- ================= ABOUT ================= -->
+<div id="aboutPage" class="about-page">
+  <div class="container">
+    <div class="back-row">
+      <button class="back-btn" onclick="showHome()">← Back to Catalog</button>
+    </div>
+
+    <div class="about-hero">
+      <div class="badge">Trust</div>
+      <h1>About Our Store</h1>
+      <p>We are a factory‑direct supplier with independent workshops &amp; warehouse. Each product category has its own production &amp; inspection line. All goods are strictly checked before worldwide shipment. Below are real‑shot working environments for each category.</p>
+    </div>
+
+    <div class="trust-grid">
+      <div class="trust-item"><span class="t-icon">🏭</span><div class="t-title">Factory Direct</div><div class="t-text">No middlemen. Competitive factory pricing.</div></div>
+      <div class="trust-item"><span class="t-icon">📦</span><div class="t-title">Own Warehouse</div><div class="t-text">Physical inventory. Fast dispatch.</div></div>
+      <div class="trust-item"><span class="t-icon">🔍</span><div class="t-title">QC Inspected</div><div class="t-text">Every item checked before shipping.</div></div>
+      <div class="trust-item"><span class="t-icon">🌍</span><div class="t-title">Global Shipping</div><div class="t-text">Reliable delivery to most countries.</div></div>
+    </div>
+
+    <div id="warehouseSections"></div>
+  </div>
+</div>
+
+<!-- ================= MODAL ================= -->
+<div id="catModal" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-icon" id="mIcon">👕</div>
+    <h2 class="modal-title" id="mTitle">Category</h2>
+    <p class="modal-subtitle" id="mDesc">Description</p>
+    <div class="modal-divider"></div>
+    <div class="actions">
+      <button class="btn btn-wa" id="mWa">
+        <span class="btn-arrow">💬</span>
+        <span>Order via WhatsApp</span>
+      </button>
+      <button class="btn btn-yupoo" id="mYupoo">
+        <span>📸 View Full Album on Yupoo</span>
+      </button>
+    </div>
+    <div class="note" id="mNote"></div>
+  </div>
+</div>
+
+<!-- ================= IMAGE VIEWER ================= -->
+<div id="imgViewer" class="viewer" onclick="closeViewer()">
+  <button class="viewer-close" onclick="closeViewer()">×</button>
+  <img id="viewerImg" src="" alt="Warehouse">
+  <div class="viewer-caption" id="viewerCaption"></div>
+</div>
+
+<script>
+const WHATSAPP = '8617630210893';
+
+const CATEGORIES = [
+  {key:'luxury-apparel',name:'Luxury\nApparel',emoji:'👔',
+   desc:'High-end designer collection',
+   url:'https://020sale.x.yupoo.com/albums?tab=gallery',pw:'',
+   msg:'Hi, I am interested in your Luxury Apparel collection.'},
+  {key:'apparel',name:'Apparel',emoji:'👕',
+   desc:'Daily & streetwear catalog',
+   url:'https://hh-vipsupply.x.yupoo.com/?utm_source=qrcode',pw:'HH1234',
+   msg:'Hi, I am interested in your Apparel collection.'},
+  {key:'bags',name:'Bags',emoji:'👜',
+   desc:'Designer bags & handbags',
+   url:'https://xx8855667799.x.yupoo.com',pw:'',
+   msg:'Hi, I am interested in your Bags collection.'},
+  {key:'shoes',name:'Shoes',emoji:'👟',
+   desc:'Premium footwear catalog',
+   url:'https://xilanhua666.x.yupoo.com/albums?tab=gallery',pw:'zzz123',
+   msg:'Hi, I am interested in your Shoes collection.'},
+  {key:'watches',name:'Watches',emoji:'⌚',
+   desc:'Luxury timepieces catalog',
+   url:'https://jian528.x.yupoo.com/albums/172833104?uid=1&isSubCate=false&referrercate=4654368',pw:'ZYY123456',
+   msg:'Hi, I am interested in your Watches collection.'}
+];
+
+const WAREHOUSE_APPAREL = [
+  {src:'../images/warehouse/仓库.jpg',label:'Warehouse Overview'},
+  {src:'../images/warehouse/生产车间.jpg',label:'Production Workshop'},
+  {src:'../images/warehouse/检验车间.jpg',label:'Quality Inspection'},
+  {src:'../images/warehouse/包装车间.jpg',label:'Packing Station'}
+];
+const WAREHOUSE_SHOES = [
+  {src:'../images/warehouse/shoes-仓库.jpg',label:'Warehouse Overview'},
+  {src:'../images/warehouse/shoes-包装.jpg',label:'Packing Station'},
+  {src:'../images/warehouse/shoes-生产区.jpg',label:'Production Workshop'},
+  {src:'../images/warehouse/shoes-质检区.jpg',label:'Quality Inspection'}
+];
+const WAREHOUSE_BAGS = [
+  {src:'../images/warehouse/bags-warehouse.jpg',label:'Warehouse Overview'},
+  {src:'../images/warehouse/bags-workshop.jpg',label:'Production Workshop'},
+  {src:'../images/warehouse/bags-qc.jpg',label:'Quality Inspection'},
+  {src:'../images/warehouse/bags-packing.jpg',label:'Packing Station'}
+];
+const WAREHOUSE_WATCHES = [
+  {src:'../images/warehouse/watches-仓库.jpg',label:'Warehouse Overview'},
+  {src:'../images/warehouse/watches-包装区.jpg',label:'Packing Station'},
+  {src:'../images/warehouse/watches-生产区.jpg',label:'Production Workshop'},
+  {src:'../images/warehouse/watches-质检区.jpg',label:'Quality Inspection'}
+];
+
+// ────────────── Render ──────────────
+function renderCategories(){
+  document.getElementById('catGrid').innerHTML = CATEGORIES.map(c =>
+    `<div class="cat-card" onclick="openModal('${c.key}')">
+      <div class="icon">${c.emoji}</div>
+      <div class="name">${c.name.replace(/\n/g,'<br>')}</div>
+      <div class="count">${c.desc}</div>
+    </div>`
+  ).join('');
+}
+
+function openModal(key){
+  const c = CATEGORIES.find(x=>x.key===key); if(!c) return;
+  document.getElementById('mIcon').textContent = c.emoji;
+  document.getElementById('mTitle').textContent = c.name;
+  document.getElementById('mDesc').textContent = c.desc;
+
+  const wa = document.getElementById('mWa');
+  wa.onclick = () => window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(c.msg),'_blank');
+
+  const yp = document.getElementById('mYupoo');
+  const note = document.getElementById('mNote');
+  if(c.pw){
+    yp.innerHTML = '<span>📸 View Full Album on Yupoo</span><span class="badge">PW: '+c.pw+'</span>';
+    note.innerHTML = '🔑 Password <b>'+c.pw+'</b> will be copied. Paste it on Yupoo.';
+    yp.onclick = function(){
+      navigator.clipboard&&navigator.clipboard.writeText&&navigator.clipboard.writeText(c.pw).catch(()=>{});
+      setTimeout(()=>window.open(c.url,'_blank'),150);
+    };
+  } else {
+    yp.innerHTML = '<span>📸 View Full Album on Yupoo</span>';
+    note.innerHTML = 'No password needed — tap to open the album.';
+    yp.onclick = () => window.open(c.url,'_blank');
+  }
+  document.getElementById('catModal').classList.add('open');
+}
+
+function closeModal(ev){
+  if(ev&&ev.target!==document.getElementById('catModal')&&!ev.target.closest('.modal-close')) return;
+  document.getElementById('catModal').classList.remove('open');
+}
+
+function showAbout(){
+  document.getElementById('homePage').style.display='none';
+  document.getElementById('aboutPage').classList.add('show');
+}
+function showHome(){
+  document.getElementById('aboutPage').classList.remove('show');
+  document.getElementById('homePage').style.display='block';
+}
+
+function renderWarehouse(){
+  const sections = [
+    {emoji:'👔',title:'Apparel — Workshop & Warehouse',imgs:WAREHOUSE_APPAREL},
+    {emoji:'👟',title:'Shoes — Workshop & Warehouse',imgs:WAREHOUSE_SHOES},
+    {emoji:'👜',title:'Bags — Workshop & Warehouse',imgs:WAREHOUSE_BAGS},
+    {emoji:'⌚',title:'Watches — Workshop & Warehouse',imgs:WAREHOUSE_WATCHES}
+  ];
+  document.getElementById('warehouseSections').innerHTML = sections.map(sec =>
+    '<div class="warehouse-section">'+
+    '<div class="section-label"><span class="sec-emoji">'+sec.emoji+'</span><span>'+sec.title+'</span></div>'+
+    '<div class="gallery">'+
+    sec.imgs.map(img =>
+      '<div class="gallery-item" onclick="openViewer(\''+img.src+'\',\''+img.label+'\')">'+
+      '<img src="'+img.src+'" alt="'+img.label+'" loading="lazy">'+
+      '<div class="label">'+img.label+'</div>'+
+      '</div>'
+    ).join('')+
+    '</div></div>'
+  ).join('');
+}
+
+function openViewer(src,label){
+  document.getElementById('viewerImg').src = src;
+  document.getElementById('viewerCaption').textContent = label;
+  document.getElementById('imgViewer').classList.add('show');
+}
+function closeViewer(){
+  document.getElementById('imgViewer').classList.remove('show');
+}
+
+renderCategories();
+renderWarehouse();
+</script>
+</body>
+</html>
