@@ -230,10 +230,12 @@ var CODE_B64 = 'U1YtMjMyQy03QllVLUQ5QVUgU1YtMjNIRC1WN0FKLUc0NVcgU1YtMjZVVS05OVRF
 var PRIZES = [
   {name:'$5 Coupon',       desc:'No-threshold for next order',  emoji:'🎫', short:'$5 OFF'},
   {name:'Brand T-Shirt',   desc:'Free brand t-shirt',           emoji:'👕', short:'T-SHIRT'},
-  {name:'3-Piece Set',     desc:'Montirex / Nike set',          emoji:'👔', short:'3-PIECE'},
+  {name:'$10 Coupon',      desc:'No-threshold for next order',  emoji:'🎟️', short:'$10 OFF'},
+  {name:'Montirex/Nike Set',desc:'Montirex / Nike 3-piece set', emoji:'👔', short:'3-PIECE'},
+  {name:'$1 Coupon',       desc:'No-threshold for next order',  emoji:'💸', short:'$1 OFF'},
   {name:'Pick Any Shoes',  desc:'Your choice of shoes',         emoji:'👟', short:'SHOES'},
-  {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', short:'FREE'},
   {name:'Apple AirPods',   desc:'High-quality earphones',       emoji:'🎧', short:'AIRPODS'},
+  {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', short:'FREE'},
   {name:'$100',            desc:'Cash prize',                   emoji:'💵', short:'$100'},
   {name:'$500',            desc:'Cash prize',                   emoji:'💰', short:'$500'},
   {name:'$1000',           desc:'Cash prize',                   emoji:'💎', short:'$1000'},
@@ -241,8 +243,8 @@ var PRIZES = [
 
 // ============ ACTUAL WEIGHTS (encoded) ============
 var _rw = null;
-try { _rw = atob('OTUsMiwxLDEsMCwxLDAsMCww').split(',').map(Number); }
-catch(e) { _rw = [95,2,1,1,0,1,0,0,0]; }
+try { _rw = atob('OTAuMSwxLDUsMC44LDMsMC4xLDAsMCwwLDAsMA==').split(',').map(Number); }
+catch(e) { _rw = [90.1,1,5,0.8,3,0.1,0,0,0,0,0]; }
 
 // ============ STATE ============
 var spinning = false;
@@ -474,7 +476,7 @@ function doSpin(){
     codePrefix = lastDash > 0 ? code.substring(0, lastDash) : code.substring(0, 8);
   }catch(e){}
   if(!codePrefix) codePrefix = 'SV-UNKNOWN';
-  var prizeAbbr = {'$5 Coupon':'5OFF','Brand T-Shirt':'TSHIRT','3-Piece Set':'3PC','Pick Any Shoes':'SHOE','Free Order':'FREE','Apple AirPods':'AIRPOD','$100':'100','$500':'500','$1000':'1000'};
+  var prizeAbbr = {'$5 Coupon':'5OFF','$10 Coupon':'10OFF','$1 Coupon':'1OFF','Brand T-Shirt':'TSHIRT','Montirex/Nike Set':'3PC','Pick Any Shoes':'SHOE','Free Order':'FREE','Apple AirPods':'AIRPOD','$100':'100','$500':'500','$1000':'1000'};
   var abbr = prizeAbbr[currentPrize.name] || 'UNKN';
   _lastSpinId = codePrefix + '-' + abbr + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
 
