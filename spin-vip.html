@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Style Vault · VIP Lucky Spin</title>
+<style>
+:root{
+  --bg:#0B121C;
+  --card:#162133;
+  --surface:#1C2940;
+  --border:rgba(212,168,83,.15);
+  --text:#E4E8F0;
+  --muted:#7D8BA3;
+  --accent:#D4A853;
+  --gold-light:#E8CC7A;
+  --green:#25D366;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+/* 视觉修复/页面美化 — 渐变底色+金色颗粒噪点 */
+html,body{
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(212,168,83,.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(28,41,64,.5) 0%, transparent 50%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+  min-height:100vh;overflow-x:hidden;
+}
+/* 视觉修复/页面美化 — 微弱金色颗粒噪点叠加 */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;
+  background-image:radial-gradient(circle, var(--accent) 1px, transparent 1px);
+  background-size:3px 3px;
+}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+a{text-decoration:none}
+
+/* 视觉修复/页面美化 — 漂浮表情放慢+降低透明度 */
+.emoji-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.emoji-bg span{position:absolute;bottom:-40px;animation:floatUp linear infinite;opacity:.07;font-size:22px}
+@keyframes floatUp{
+  0%{transform:translateY(0) rotate(0deg);opacity:0}
+  8%{opacity:.08}
+  92%{opacity:.05}
+  100%{transform:translateY(-110vh) rotate(200deg);opacity:0}
+}
+
+/* Code gate */
+.code-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.gate-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 24px;text-align:center;max-width:360px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.gate-icon{font-size:48px;display:block;margin-bottom:12px}
+.gate-title{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px}
+.gate-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.gate-input{width:100%;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;text-align:center;letter-spacing:1px;font-family:monospace;margin-bottom:8px;outline:none}
+.gate-input:focus{border-color:var(--accent)}
+.gate-input::placeholder{color:var(--muted);letter-spacing:0;font-family:inherit}
+.gate-err{font-size:12px;color:#ef4444;min-height:18px;margin-bottom:12px}
+.gate-btn{width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--gold-light));color:#0B121C;font-size:15px;font-weight:800;letter-spacing:.5px;box-shadow:0 4px 16px rgba(212,168,83,.25);margin-bottom:16px;transition:all .2s}
+.gate-btn:active{transform:scale(.96)}
+.gate-hint{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* Main view */
+#mainView{display:none;position:relative;z-index:1}
+/* 视觉修复/页面美化 — 上下留白优化 */
+.container{max-width:500px;margin:0 auto;padding:32px 16px 48px;text-align:center}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
+.logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;letter-spacing:-.3px}
+.logo .mark{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#0B121C;font-weight:900}
+/* 视觉修复/页面美化 — 标题金色发光+留白 */
+.subtitle{font-size:16px;font-weight:700;color:var(--accent);margin:12px 0 28px;letter-spacing:.5px;
+  text-shadow:0 0 12px rgba(212,168,83,.35),0 0 24px rgba(212,168,83,.15);
+}
+
+/* 视觉修复 — 转盘居中+1:1正方形+同心定位 */
+.wheel-wrap{position:relative;width:300px;height:300px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+/* 视觉修复 — 删除错位边框，重做同心规整发光外环 */
+.wheel-ring{
+  position:absolute;inset:-6px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(212,168,83,.9),rgba(212,168,83,.18) 40%,rgba(232,204,122,.85));
+  box-shadow:0 0 40px rgba(212,168,83,.18),0 0 80px rgba(212,168,83,.08),inset 0 0 20px rgba(212,168,83,.08);
+  z-index:0;
+}
+.wheel-face{
+  position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;
+  z-index:1;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.35);
+  border:none;
+}
+.wheel-face canvas{width:100%;height:100%;display:block;border-radius:50%}
+
+/* Pointer */
+.pointer{position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--accent);filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));z-index:5}
+
+/* 视觉修复/页面美化 — SPIN按钮多层发光+顺滑缩放 */
+.spin-btn{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:68px;height:68px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--gold-light));
+  color:#0B121C;font-size:12px;font-weight:800;letter-spacing:.5px;
+  box-shadow:
+    0 4px 24px rgba(212,168,83,.35),
+    0 0 0 4px rgba(212,168,83,.1),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -2px 6px rgba(0,0,0,.15);
+  transition:transform .15s cubic-bezier(.4,0,.2,1),box-shadow .2s;
+  z-index:3;text-align:center;line-height:1.3;
+}
+.spin-btn:active{transform:translate(-50%,-50%) scale(.9)}
+.spin-btn.done{
+  background:var(--surface);color:var(--muted);
+  box-shadow:0 2px 8px rgba(0,0,0,.3),0 0 0 4px rgba(212,168,83,.05);
+  pointer-events:none;font-size:11px;font-weight:600;
+}
+
+/* 视觉修复/页面美化 — 6颗均匀环绕星光 */
+.sparkles{position:absolute;inset:-20px;pointer-events:none;z-index:2}
+.sparkle{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:sparklePulse 2s ease-in-out infinite;box-shadow:0 0 8px var(--accent)}
+@keyframes sparklePulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:.9;transform:scale(1.3)}}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(6,10,20,.88);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;z-index:100}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);width:100%;max-width:500px;border-radius:24px 24px 0 0;border:1px solid var(--border);border-bottom:none;padding:32px 20px 36px;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);text-align:center;max-height:90vh;overflow:auto;box-shadow:0 -8px 40px rgba(0,0,0,.5)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal .me{font-size:56px;display:block;margin-bottom:12px}
+.modal .mn{font-size:20px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.modal .md{font-size:13px;color:var(--muted);margin-bottom:4px}
+.modal .mt{font-size:13px;color:var(--accent);margin-bottom:20px;font-weight:600}
+.btn-claim{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2DD46B,#1da851);color:#fff;font-size:15px;font-weight:700;margin-bottom:10px;box-shadow:0 4px 16px rgba(37,211,102,.2)}
+.btn-claim:active{transform:scale(.97)}
+/* 防篡改核销码优化 — 弹窗核销码框 */
+.claim-box{
+  background:rgba(212,168,83,.06);border:1px solid rgba(212,168,83,.2);
+  border-radius:14px;padding:14px;margin:14px 0 18px;text-align:center;
+}
+.cc-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px}
+.cc-val{
+  font-family:'Courier New',monospace;font-size:24px;font-weight:900;
+  letter-spacing:4px;color:var(--accent);background:rgba(0,0,0,.25);
+  border-radius:10px;padding:8px 0;margin-bottom:0;
+}
+.cc-warn{font-size:10px;color:#ef4444;line-height:1.5;margin-top:10px;opacity:.9}
+.footer-rules{font-size:10px;color:var(--muted);text-align:center;margin-top:14px;opacity:.55;line-height:1.6;padding:0 12px}
+.btn-close{width:100%;padding:12px;border-radius:14px;background:transparent;color:var(--muted);font-size:13px;border:1px solid var(--border)}
+
+/* 视觉修复/页面美化 — 彩带分层下落 */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:101}
+.confetti-piece{position:absolute;top:-10px;animation:fall linear forwards}
+@keyframes fall{to{top:110vh;transform:rotate(720deg)}}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--text);padding:12px 24px;border-radius:30px;font-size:13px;font-weight:600;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:90;display:none;animation:toastIn .3s ease}
+.toast.show{display:block}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+@media(max-width:360px){
+  .wheel-wrap{width:260px;height:260px}
+}
+</style>
+</head>
+<body>
+
+<!-- Floating emoji background -->
+<div class="emoji-bg" id="emojiBg"></div>
+
+<!-- Code gate -->
+<div class="code-gate" id="codeGate">
+  <div class="gate-card">
+    <span class="gate-icon">🎡</span>
+    <div class="gate-title">VIP Lucky Spin Access</div>
+    <div class="gate-sub">Enter your VIP code to unlock the wheel.<br>Codes are issued for orders over $300.</div>
+    <input class="gate-input" id="codeInput" placeholder="SV3-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <div class="gate-err" id="codeErr"></div>
+    <button class="gate-btn" onclick="validateCode()">Unlock Wheel 🎰</button>
+    <div class="gate-hint">No VIP code yet? Message us on <b>WhatsApp</b> after placing a $300+ order.</div>
+  </div>
+</div>
+
+<!-- Main view -->
+<div id="mainView">
+<div class="container">
+  <div class="header">
+    <div class="logo"><div class="mark">SV</div>Style <span style="color:var(--accent)">Vault</span></div>
+  </div>
+  <div class="subtitle">🎉 VIP LUCKY SPIN · GOOD LUCK 🍀</div>
+
+  <div class="wheel-wrap" id="wheelWrap">
+    <div class="wheel-ring"></div>
+    <div class="sparkles" id="sparklesLayer"></div>
+    <div class="wheel-face" id="wheelFace">
+      <canvas id="wheelCanvas"></canvas>
+    </div>
+    <button class="spin-btn" id="spinBtn" onclick="doSpin()">SPIN<br>🎰</button>
+    <div class="pointer"></div>
+  </div>
+  <!-- 防篡改核销码优化 — 页脚规则公示 -->
+  <div class="footer-rules">All spin codes &amp; claim codes are uniquely bound. Any edited, AI-altered or forged codes will not be honored. Old winning screenshots cannot be reused for new orders.</div>
+</div>
+</div>
+
+<!-- Result Modal -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal">
+    <span class="me" id="modalEmoji"></span>
+    <div class="mn" id="modalName"></div>
+    <div class="md" id="modalDesc"></div>
+    <div class="mt" id="modalTip"></div>
+    <!-- 防篡改核销码优化 — 中奖弹窗展示核销码+校验密钥 -->
+    <div class="claim-box">
+      <div class="cc-label">🔑 核销码</div>
+      <div class="cc-val" id="modalClaimCode">----------</div>
+      <div class="cc-warn">📸 Please screenshot this page and send it to us via WhatsApp</div>
+    </div>
+    <button class="btn-claim" id="claimBtn" onclick="claimPrize()">💬 Claim via WhatsApp</button>
+    <button class="btn-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<div class="confetti" id="confettiLayer"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ REDEMPTION CODES (encoded) ============
+var CODE_B64 = 'U1YzLTI3V0otRjZYVC04VzlOIFNWMy0yOEVCLThXS0ctRUVaNyBTVjMtMkFDQy0yRlo4LUdIRkMgU1YzLTJCNk4tSEpCUi00UzlVIFNWMy0yRU1NLTVZNkUtMk5YWCBTVjMtMkZCQy1TWldNLTVDODMgU1YzLTJIVEgtVFE1Sy04SDY5IFNWMy0yTVVWLVIzQ0ctNVVXRiBTVjMtMk5BOC01U0FQLU4zR0ogU1YzLTJQVUgtMjZQRi1LNzlQIFNWMy0yVE1OLVZDOEEtNFJKWiBTVjMtMlZWMy05M1ZKLUo5MkIgU1YzLTJYNkgtV1JaWS1VSlNFIFNWMy0zNkNCLUdZQUstVVRORyBTVjMtMzhHRy1QWFo0LVAzQTkgU1YzLTM4WFotM1FUNi1DQ1BRIFNWMy0zOUVCLTMyU1ctVVg5UCBTVjMtM0M2Ti1ZSkE2LVg3WUMgU1YzLTNDSkMtWFo0Ry03RjlDIFNWMy0zR0JLLUNSRkYtVEJFWiBTVjMtM0hTUy01NjM5LUtFUzMgU1YzLTNNU0UtNFJBVy1OWjk0IFNWMy0zTjhWLTJLUDQtVzdDRCBTVjMtM05DVS00OEQ1LUs0QUcgU1YzLTNQQVQtVVIzVC01M0g3IFNWMy0zUEZILTRXWEctN0EzTSBTVjMtM1FRWC1SUVIyLVpGV1AgU1YzLTNUSFAtNENVWi1UNVZZIFNWMy0zVFJCLTJGUUYtS0VBQiBTVjMtM1dRNy1BRllZLVVBVDMgU1YzLTNaRE4tNlBWSi1ROVFUIFNWMy00NllWLVNGOTUtQlU0SiBTVjMtNDdTQy01SkQ3LTc5TlMgU1YzLTRBOUUtNk1TTS1HS0RCIFNWMy00QVFYLVlYSzgtVlZVSiBTVjMtNEI0US1LOTVWLTlUNFIgU1YzLTRDWlItQ1ZVSC1NVzVRIFNWMy00RFdCLTlDRDUtNFkzVyBTVjMtNEUzOC1GNFlBLVNKVVEgU1YzLTRFQ1ktWENENy0yMlFHIFNWMy00RURILUNHWVgtVTRRQSBTVjMtNEVFVS1RN0VILUFHUU4gU1YzLTRKNzktVlI4Qy02RFZFIFNWMy00TUI1LTVZRVUtNk1GRyBTVjMtNFRFVy02NFlQLVJHS1QgU1YzLTRWRFgtUzdQOS1XTldKIFNWMy00VzlELVVDVTktTUNQOSBTVjMtNFpWRy1US0pZLUU5NTMgU1YzLTU0NFgtNldYVS01Q1RRIFNWMy01NkpULVRNTVctQ1k4UCBTVjMtNThQOC1CUlhFLTlaV1cgU1YzLTVBV1gtN1ZXUC1VSDVEIFNWMy01QjVDLTRSNEgtSEsySyBTVjMtNUtIVC1DR1hHLVdKWk4gU1YzLTVNREItVVZXVS1RRlFLIFNWMy01TVA4LVk1NlctRU1XTiBTVjMtNU5TNy1YVkJWLVBVRUQgU1YzLTVVRUctOFQ2NS1XV1RGIFNWMy02MkNTLTVLSkctRzVHUyBTVjMtNjJXUS1BVEtKLUZOUFogU1YzLTYzTUQtNDQ5Wi1BQkVQIFNWMy02NE1BLTVUWDctMzZIWiBTVjMtNjU1NC02OTdVLVI4WU0gU1YzLTY2VDgtRTRVWi1HR0pDIFNWMy02Nzk4LVJFNk0tQlZHRSBTVjMtNjhQOC05SkJFLVJWRDMgU1YzLTZBUlQtQzRGOS0zVDhYIFNWMy02QzU1LU5NNTMtSDkySCBTVjMtNkNOQy00QVBULThRTVogU1YzLTZEUUgtQ0RGVi1XS0M2IFNWMy02RkRQLVpaRTctOFZOTiBTVjMtNk5VNC1QMk01LTc5Q1ggU1YzLTZQUlMtVldXQi1QOVNLIFNWMy02UTc4LTRVWlMtQjc5UiBTVjMtNlRaSy05U1cyLVdGNlIgU1YzLTZXN0gtM1FXSC1CRDdDIFNWMy02V0s0LTZNWVgtNkFTRiBTVjMtNlhWWS1CTjM3LTQ1UkUgU1YzLTZYWTItVU1CQy0zUzg2IFNWMy02WFlWLURQUDktWVJKQyBTVjMtNllUMi1OSDlKLUJBTlogU1YzLTc1QjMtS0tWSy1VV0o1IFNWMy03NjRYLVE2SzQtUEpHSyBTVjMtNzY1Si05NUhULTY2VlcgU1YzLTc2VUItN1hIQi1COE02IFNWMy03NllaLVlIN04tQUc4SCBTVjMtNzdSSi05QkdHLVM4M1UgU1YzLTc4RjItQTZXWi00RTlaIFNWMy03OFdXLVBGSlQtR1g0MyBTVjMtN0FQMy1CM0c5LTNUUVAgU1YzLTdBUVktU0dFTS1EU1RFIFNWMy03QjJVLUg2RzgtTUEyOCBTVjMtN0Q5UC1OWlhBLVZQNjQgU1YzLTdFN0MtODZGWi01VjZTIFNWMy03R05ZLUc1WVotNkRFUiBTVjMtN0hDOC0zVTdFLTZaVFcgU1YzLTdNUFctUEZURC1YUThTIFNWMy03UEpELTVOWjktNUVBRCBTVjMtN1JOUC1YU1RRLVNIQVMgU1YzLTdUREgtOFBEUi1HU0JQIFNWMy03VUVZLVdBVkgtQTJQSyBTVjMtN1ZVVC1CUlhCLUZDVzYgU1YzLTdXQjYtRlBDVS1OWDc4IFNWMy03WEgzLVlZVFUtUU43RyBTVjMtN1lWTi1BTkVDLTZGRkEgU1YzLTgyODMtSjk0Qy1RQUU2IFNWMy04NEJYLUJSM0ctQlZRWCBTVjMtODRQOC1CRDJQLUtFRkMgU1YzLTg1V0EtU1RLQS05SFk2IFNWMy04QTZILTZBTkItQUtNNiBTVjMtOEFRVC1KSEVOLVdZUkIgU1YzLThNMjgtOVAzVy0zWlQyIFNWMy04UFBKLU01UkUtMzNSSyBTVjMtOFFVVi1BWEJCLVJVRUsgU1YzLThUNkstVTJKSi1aQTM1IFNWMy04VTlILVhENjUtUFVEVyBTVjMtOFdWWC02VDhFLURWRFIgU1YzLThZTlYtVFhBOS1DNUdHIFNWMy05MzdVLTM3VEctVVhDSyBTVjMtOTZaSi1SWUNELTJNVzMgU1YzLTk3UE0tRk5XUC1RSDk3IFNWMy05QjRWLUFINlMtU0ZXOSBTVjMtOUZWRy1STTJNLTVQSEYgU1YzLTlLRjItNE1IVy1ITjk5IFNWMy05UEU5LTdQQkctWjRaUiBTVjMtOVNDQS00OTZCLUZCWlIgU1YzLTlUQUEtQU5VRC03NjlCIFNWMy05V0dHLTgzNkItNUUzWCBTVjMtOVhNSi04RTQ3LUZDRUIgU1YzLTlZNEYtU1hUWi1CVUVFIFNWMy05WVlCLUFRRjgtUFRNUyBTVjMtOVozQS1UOUpZLVgyVjMgU1YzLUEyOEUtR0pNQS1NVVhNIFNWMy1BMkQ5LU5LMkQtS0pQMiBTVjMtQTQ2VS1EV0U1LU5UTUMgU1YzLUE0ODItWU5VMy05V1BZIFNWMy1BNFZYLVpRWTktVlA5NiBTVjMtQTZRWi01Tks4LUhDMlYgU1YzLUE2U0UtTkJUTS0yRVZWIFNWMy1BN0pSLUM4UUQtWlEySiBTVjMtQTg3RC1TUUtZLTRQSlAgU1YzLUE5Q0stTkNFNS0zV1UyIFNWMy1BQVQ2LTVOR0gtSEdUMiBTVjMtQURBMy1ZS1ZDLTNGUEsgU1YzLUFGWVMtVzY2Ti1HSzhOIFNWMy1BR0VVLVBYUE0tMjhENyBTVjMtQVFGUS1KM0FHLVI2TVIgU1YzLUFUNEgtTTI0Sy0zNTNYIFNWMy1BVVlTLTM3U1ctQ1pLUyBTVjMtQVdUOS1FVVdKLUhNMzYgU1YzLUFaVTktVVhYMy1NVUZaIFNWMy1CMkI3LVBTTTYtRjJDRSBTVjMtQjQ4Ui1CNTVWLTJDNFEgU1YzLUI0VkMtUlZTUS0ySEFOIFNWMy1CNFlLLTlVUTQtU0tSSiBTVjMtQjdVWi01U0JSLUI0U1ogU1YzLUI3V04tTU1DMi00REE4IFNWMy1CODQyLTU2UUotQUtRNiBTVjMtQkFGOC1ON1FHLVZTQlggU1YzLUJCR1gtNEQ3QS0yVFlZIFNWMy1CQlZYLTZRRVUtVEo1MiBTVjMtQkNHWC03NEhULVZVOFUgU1YzLUJDVlYtOFJLSi1QS1BZIFNWMy1CREdVLTlUS1AtNU02WCBTVjMtQkVORS1CNVJSLUU4VlMgU1YzLUJINlUtQlFLNC1WWldTIFNWMy1CTjg5LU5IU1MtNjg2VyBTVjMtQlRVRy1aNzdCLVFKVVggU1YzLUJVTTktVzlRMy00OERQIFNWMy1CVzNCLVlIV1ItUkpTTSBTVjMtQlhLNy1BWkJKLVRQNFkgU1YzLUJaN00tRTk2Si03TlQzIFNWMy1DM1dKLUEzUFQtTkJSSiBTVjMtQzdVRS00Uzk1LVQzSFogU1YzLUM4RUYtVDU3NS1DVlZSIFNWMy1DOVBOLUhZUTctVkNEMiBTVjMtQ0E0VC1KOTdVLVBINVogU1YzLUNCU1ItNkhNNi1UWDNIIFNWMy1DRDc5LVQ2MlYtWThROSBTVjMtQ0tONS1SNFZOLUFDV1ogU1YzLUNLWE0tMkNCRC1GQVpYIFNWMy1DTVBVLTU2OTMtUzkyUSBTVjMtQ1BKRC0zOEc5LThGSFkgU1YzLUNQVTItM00yVC04S1lOIFNWMy1DUFlCLUhKV1UtVEIzNCBTVjMtQ1RZOC1QVVhZLTM4UVQgU1YzLUNWQjctRlc3Vy1DWTZUIFNWMy1DWDNFLVJETUotV0oyWSBTVjMtRDI4Ti1TR041LVhZVEYgU1YzLUQzU0EtUEJIQy1ROUVYIFNWMy1ENU5LLTM0TlotM1AzTiBTVjMtRDVYNy1ORUMyLTNaNjQgU1YzLUQ2RUQtTU04UC1XWFJEIFNWMy1ENzlILTNRMkgtWENDWSBTVjMtRDg5Vy1CNUQzLTRWVEMgU1YzLUQ5VUotN1NIVC1VQkY5IFNWMy1ERUZOLTY3UFItWjRQOSBTVjMtREY5Ti1WRldRLTJIVlAgU1YzLURLUEctUUNNWi1OSEVYIFNWMy1EUERZLVVEOVEtQk5UTSBTVjMtRFRDVi1CU00zLVBORkEgU1YzLURVNUctSEdQUy1ZRlg2IFNWMy1EVU5CLVZFQ0otV0M1OSBTVjMtRFVVVy1OV1JXLUZHWDQgU1YzLURWQ0UtTjQ1Qy1YUTZRIFNWMy1EVlRGLUM4RlItQUVEUSBTVjMtRFZaRC1SNjk0LVYySFkgU1YzLURYRkQtQVdRQy1QTllIIFNWMy1EWUZVLTc3VTUtRU42MiBTVjMtRFpLMy02N01FLTdTV0IgU1YzLUU1SEctMzZFUS1TOVhBIFNWMy1FNVdXLVVSWkYtNjRWUSBTVjMtRTk4TS1ZSEsyLTVXVEUgU1YzLUU5SjktUlZZUS1VR0VDIFNWMy1FRUszLVdCMk0tWUdITSBTVjMtRUY5Ny1IU0dCLVRTWVQgU1YzLUVGWkctNko0Qy03UENXIFNWMy1FR0I4LUhRSkYtQlhXMiBTVjMtRUdDNi04OVJULUhVQlYgU1YzLUVHWUMtWTVENy1SWlJXIFNWMy1FSEZaLUM2REUtNE5ORyBTVjMtRVA0Ri1XNE1QLTRFTlAgU1YzLUVQOEstRVVGVC1XSDZCIFNWMy1FVVNGLUJTOUMtUTNZVCBTVjMtRVdFRi1KQ0FXLTI3UjkgU1YzLUVYMkMtU0gzSC0yVlk3IFNWMy1FWUpDLThDNFotWVhLNiBTVjMtRVlXTS1DODZWLVIzWlQgU1YzLUVaOEotVTdSSy05Nk5FIFNWMy1FWkc0LVhBUE4tQ0dVUSBTVjMtRjNZVy0zM0pVLVlLSjUgU1YzLUY1WlUtRko1Qi0zWERKIFNWMy1GNkhaLVVaMjYtRVNYUyBTVjMtRjg2Qi02UUFGLTUzSjYgU1YzLUY4RlItWjRLUy1UQjdFIFNWMy1GQVJWLVk3WEItWVY2RiBTVjMtRkFUOC1VSDRLLU0zSEcgU1YzLUZCRzItVEszVS04OFNZIFNWMy1GQlk5LUpVWEYtRDdROSBTVjMtRkNIRi1ZM1k2LUJGN0ogU1YzLUZFMzQtWE5ORy1TR0VRIFNWMy1GRUY3LUFBUTUtODVQTiBTVjMtRkZONC1CWjNHLU5FTTYgU1YzLUZINEYtSk5NQy1DM0pFIFNWMy1GUTNTLUNHSkstSE4zOCBTVjMtRlI0VS0zR000LUhYSzkgU1YzLUZSQ0stSjJGWi1aMzhWIFNWMy1GUzVNLU1GQzgtM0VONCBTVjMtRlNOSC1HWkJNLTVYWTkgU1YzLUZUVFgtNFEyQS01TVZBIFNWMy1GVVY5LVFWQkQtV1k5QiBTVjMtRlpZRi1HNkRILVQ4Qk0gU1YzLUcyOUotUks5Vy1LOFQ4IFNWMy1HNVpKLTRVMk4tQ0FITSBTVjMtRzdUUi1XNFpGLUFERUMgU1YzLUc5M1YtQTJSMi0zOEhCIFNWMy1HQ1I2LVBaTUstREVTWCBTVjMtR0VZTi1VNDlQLURDUzkgU1YzLUdGSEotRktSTS1SVVVUIFNWMy1HSzJRLTJRV0EtQkhLQyBTVjMtR0s4Ry1QUEg3LVFZS1QgU1YzLUdLQVYtQ1MzNC1ONDZTIFNWMy1HUlJCLTdXSkItTVpZSCBTVjMtR1JWRy1NNk5ELTJUQ00gU1YzLUdSWEMtRVpONy1TSDYyIFNWMy1HVFlXLVcyM0ItQ1lBQSBTVjMtR1VIVC1TOVRZLVVXOU0gU1YzLUdWR0QtRzVBVS1RVlFZIFNWMy1HWEpLLTVLR0YtQlhIRiBTVjMtR1lKWC01TVdCLTJQTVogU1YzLUdaRDItWUM5Ri1aNEpaIFNWMy1IMlZELTRaUjUtNkhCUCBTVjMtSDM0Wi05WFVRLVNNN0QgU1YzLUg1RVAtRDZUSC04WFpYIFNWMy1INkE5LU41WDktVzhZRCBTVjMtSDc2UC1CQjc0LUYyNjggU1YzLUhBRDktWTlERi03NDRLIFNWMy1IRFhOLTQ3RTQtVUhRVSBTVjMtSEZEMy1KRzhOLUEzVkcgU1YzLUhHVjYtUEZEWS1KOFJVIFNWMy1ITTJDLTdCSzktODlXUSBTVjMtSE5QQi1RQkoyLTM2SzUgU1YzLUhSWjktWTg2Ni03QlQ0IFNWMy1IWEhXLUE1WUctUkJaOSBTVjMtSFlGQS05S0JVLTdLVlogU1YzLUhaTVQtQU42NS1OOTdSIFNWMy1KNFVSLTI0RVotWTNLQiBTVjMtSjVFQi1DNzQ1LTJCM0sgU1YzLUo2RVQtSlNFMy1FQjJEIFNWMy1KNkhOLVVVQUgtOFNXUiBTVjMtSjZYRy1TNUc0LUs5Q1cgU1YzLUo3R0UtUTczWS1TTllZIFNWMy1KSFZXLVJRU0QtVjNDSyBTVjMtSko2WC1LUzY3LVEyNUQgU1YzLUpQQUotOVZLRy1ZUVA2IFNWMy1KUE1TLTJSNjctVEFFUyBTVjMtSlE1Mi1VMzM3LVNUWDUgU1YzLUpRQzItMkQ3Ny04WTVHIFNWMy1KUU0zLUhTSEctTUNLUCBTVjMtSlJaQi0yUE1QLUVKODcgU1YzLUpVSkgtM1RYNC1TMkY4IFNWMy1KVzZNLVVOOTktTThNOSBTVjMtSldRWC1TU0Y3LUI0QUogU1YzLUpXUkYtTVRIVS1EUzVKIFNWMy1KWk1QLUQ3ODItNTZLSiBTVjMtSzRaMy1BUUtBLVU0QkIgU1YzLUs1Rk4tWTg4Ui1BSEhIIFNWMy1LNjg4LTlDMjItRjROQSBTVjMtS0FESC05V1lLLUdOVVIgU1YzLUtDUFQtOFZXUC03VlFNIFNWMy1LSDVGLVhLOEYtSk5VRyBTVjMtS0s3OS1HOTk1LUMzV1ggU1YzLUtLWFgtMjNCUi04MlFVIFNWMy1LTjNKLU5ZQTktNUg5OSBTVjMtS1A1Ni02R1IyLU5YUEIgU1YzLUtROEItVURQVi00WFEyIFNWMy1LUkcyLTdSVVUtWTNKRCBTVjMtS1RFUy1FVTJULTk0OUUgU1YzLUtXTjMtNkREUS1KOUg1IFNWMy1NNUdaLU5RS0UtVEFOSyBTVjMtTTVLSi1IQkFELVY1N0MgU1YzLU04QjgtQVRXWS0zQk01IFNWMy1NOVNLLTlBMlAtUUY0NyBTVjMtTUFZWS0zU01CLTNNWVogU1YzLU1BWlEtTk03OS1EUFM0IFNWMy1NQjQ0LVI5M1ktOVA2NiBTVjMtTUJRRy00NlQ5LUdOVzggU1YzLU1QTVEtQlRERS1aVE1LIFNWMy1NVDc5LTdDNFYtQjNENyBTVjMtTVRSVS1YVURILThUNjkgU1YzLU1VUlUtWFI0QS00VEpCIFNWMy1NV0VFLTQ5VFAtMkpOQiBTVjMtTVgzVi1ZNUpKLTNBWkQgU1YzLU1YVVotTVM5Vy05TVVEIFNWMy1OOVJRLUpHSjQtSllSNiBTVjMtTkJQNi1OMlM5LTc2SkogU1YzLU5CVVotVkU0VS1aTTlDIFNWMy1OSDYyLVcyQkQtNDRUQyBTVjMtTk05NS1GQ1k5LUY3TVAgU1YzLU5ORzctU1NRSC1RNEVOIFNWMy1OUldLLVE1Q1MtOUJSRSBTVjMtTlMyWC1SVzlCLTZHQjcgU1YzLU5VSFotQjhTVS1NVkRDIFNWMy1OVlNVLVpORkMtTUVSWCBTVjMtTldTMi1UNEhaLVVUSzcgU1YzLVAyWFMtMzYyVy1FOEdNIFNWMy1QOUNVLUpNMlQtUUVTVyBTVjMtUEFYWC1KWFdOLURITlggU1YzLVBDRTUtRFNBNi04ODNKIFNWMy1QQ0ZBLUdTTTgtUktHRiBTVjMtUEpDVi1VMlJKLTNWQjkgU1YzLVBQQTQtRzVUMy1XQ1ZVIFNWMy1QUkpYLVdQSE4tNU1YTiBTVjMtUFlOMi1DSkJZLUozMk0gU1YzLVEzVFgtSzZaUy05RllCIFNWMy1RQjJaLVcyNzctMldNUCBTVjMtUUI2Mi1UWjNOLUJCRjUgU1YzLVFCSFEtVUI4Qy00VllNIFNWMy1RREFaLVFQSlEtS0RBNiBTVjMtUURDVC1aVks0LVE1VlggU1YzLVFOVlAtTjdSRS1QRUQ0IFNWMy1RVktOLUg1U1QtV0FZMiBTVjMtUVhKNi1RVDQ0LVo4VUMgU1YzLVFZOVUtNUFaWi1UR1ZTIFNWMy1SNDdLLVlNVlktM0MzVSBTVjMtUjZUTS0yUzg3LVhUWEggU1YzLVI3WlAtVUpDSC1UUTdEIFNWMy1SRVpWLTlURDItWjRKNyBTVjMtUkZaUC1LUlVFLTlNTTYgU1YzLVJHQjMtNE1BNC1LV1FaIFNWMy1SSEhHLTY1NlgtS0hCUCBTVjMtUktCUS05REFNLVlWMkEgU1YzLVJNMlAtTldQVS1SWlhXIFNWMy1SUTRQLUs5VkYtWkZLVyBTVjMtUlFKVi1QVTZNLTU2VzYgU1YzLVJSNkQtQkRYSy1ZUFY4IFNWMy1SVzk5LUdQRUQtQTg1MyBTVjMtUldWUC00VVRULVpNNEMgU1YzLVJYNkstS0I2RS05SEhBIFNWMy1SWTVaLTQ1RlItMkEyQiBTVjMtUllHMi1CREhWLVlaRVggU1YzLVJZRzktUlE2My03Q0NEIFNWMy1SWkM4LVY5UUgtQkFOUSBTVjMtUzU5Ry1BRUVVLUJYSzYgU1YzLVM2QjQtOUVOWi1IMk1VIFNWMy1TNktLLUczWVItTVVZTiBTVjMtU0RHNS1FQUVVLTM4NTIgU1YzLVNEUzgtSDZRSi1LQURHIFNWMy1TRjY5LUdSS1YtNUhNTiBTVjMtU0ZXRy1VRVdTLUdEVEEgU1YzLVNIWkgtRTlSSC04OEQ0IFNWMy1TSkhDLTZIMkYtWVNEMyBTVjMtU1AzWS1ZUVVILUM0QlcgU1YzLVNQSEItTVY4SC04REJUIFNWMy1TUzQ1LUozWE4tNkJQNCBTVjMtU1RVNC1SWTdRLVNSQUcgU1YzLVNXM0YtR0VOMy1STVNCIFNWMy1TWDdOLUFCNlktRFhWViBTVjMtU1ozWS1YNUtTLUtNTVAgU1YzLVQzM1ktUTNZTi05Nk1EIFNWMy1UNFRFLThQOUUtTlAyWSBTVjMtVDVNQy0yN0hRLU1RWUogU1YzLVQ5UlItMlFaQy1LWlZFIFNWMy1URFdNLUZYQlMtV0szMiBTVjMtVEZaVC1QWEpLLURVNDkgU1YzLVRHNUItOVZLQi1QVVU3IFNWMy1UR1RHLUtVN0YtTlozOCBTVjMtVE4yRy1HNDVELVpHQjYgU1YzLVRTVFAtRVJZQi1QS1NOIFNWMy1UVlQ2LVNOQ1ktVTQzOSBTVjMtVFdRSC1BTTIyLVVWQzMgU1YzLVUyOEItUFZIRy00QzZDIFNWMy1VM1JNLU5OSFctWFA2SiBTVjMtVTVEOS1ZS0s5LVJCVkYgU1YzLVU4Q0ctMlNZRi1SSldHIFNWMy1VRDRULU1TNVctWkRIMyBTVjMtVUU0OC1TOVJFLUtTRlIgU1YzLVVFRDMtN1BTTS1ETUFQIFNWMy1VRjJCLUtKTTQtUlBQUiBTVjMtVVJIQi1QVUVLLVlIOEIgU1YzLVVZV1AtRFlYWi0yRlFZIFNWMy1WMjhTLUEyWFQtQTNRNCBTVjMtVjVDTi1STVc5LVNCVVogU1YzLVY3S1otOVIzRi1RTTVXIFNWMy1WOFlILVJUVEUtNEpIUCBTVjMtVjlEUy1TR0hTLVoyUEEgU1YzLVZCN0gtUlE0Si1UN1ZCIFNWMy1WRkNTLUtZUzgtTUM4TiBTVjMtVkczSC1LN00yLU05U0cgU1YzLVZHQlItNEs3TS03U0pNIFNWMy1WSEhWLVZCRFAtTkM5VyBTVjMtVkpHVC1FTTJULTJDOUYgU1YzLVZNVDMtRTRESy1LM1ROIFNWMy1WTkRWLVFLOEMtTVE5NiBTVjMtVlBNNS1YVzhILVlTQUMgU1YzLVZTQTYtVzQ5Uy1DUjVRIFNWMy1WVDk4LTZCS0stU0RTWiBTVjMtVlQ5RS1LV0dTLUJBNDggU1YzLVZUVVgtQjNWWS1BRzhDIFNWMy1XM1NXLVVOSjktU0o2NSBTVjMtVzRCTi1EV1JBLTZZN1AgU1YzLVc0Q1ItS1VLQS1DV01OIFNWMy1XNFoyLTJDQ1QtUFlWUCBTVjMtV0VLUS1ORU01LVFGV1kgU1YzLVdLRFktTjVWWS1FVkdZIFNWMy1XTUJBLVBZV1ItVjlIRyBTVjMtV05LQi1QVUU0LVdTSE4gU1YzLVdOV1ctNDNGNC1YQVlRIFNWMy1XTlk4LTdNVkstNDJNRSBTVjMtV1FXQi1FNVVVLURaTkQgU1YzLVdRWkYtTlFQTS1HS1AyIFNWMy1XVThZLVlQQ1MtVTNNVCBTVjMtV1ZKUy05SkFRLVA1MzkgU1YzLVdYQlgtWFlIVi1RUFpBIFNWMy1YMktRLVpFTUEtNjU5WiBTVjMtWDJYTS1NOFhDLThVNTIgU1YzLVgzOEstTVlFRC1NTVBHIFNWMy1YN0ZZLTdTWEMtUENVMiBTVjMtWEI4UC0yOUNELVFSSkMgU1YzLVhCVU0tRFNZTi1TSjdWIFNWMy1YSFRILUNaMkMtUlpFRSBTVjMtWFBLVS1KN1pZLVRDOTQgU1YzLVhRNFAtNVUzWi1OMzNXIFNWMy1YUlJELUNVSDQtUU1CRiBTVjMtWFNCSC1RVk0yLVFDNFIgU1YzLVhYS0EtRFFNUi1IOFVRIFNWMy1YWUhSLU5RRFItOVZYWSBTVjMtWTJDRS1XNUNGLUpOWE0gU1YzLVkzOVgtNFNVMi1ZN042IFNWMy1ZNUszLU5LVkotUUQ2NCBTVjMtWTZZSi04ODRZLURCNVogU1YzLVk4NFItQ01OUC1DOUZEIFNWMy1ZOUFYLUZGTkstWVNCRCBTVjMtWUFYQS02NlQ3LUhWUFAgU1YzLVlCOTMtM1kzWi1IU01FIFNWMy1ZRjNFLTk1N1QtRkY0USBTVjMtWUdZRC1IRVhKLVg5VDMgU1YzLVlQNVItRU1QNi1QQ0VFIFNWMy1ZUTZaLVNDWDYtSDZXNCBTVjMtWVI4QS1WS0VCLVNFNzkgU1YzLVlTNlotM1g2Ry1WS1dWIFNWMy1ZU1NTLUpFWEstN0RTVSBTVjMtWVRKSy00UlpLLTlQU1kgU1YzLVlWQ00tSFRNVy1IOUE2IFNWMy1ZV1VULTNUUzgtVUJSVCBTVjMtWVg3Ui01VVIzLUtZOVcgU1YzLVlYOVYtVVlCWi05WlJLIFNWMy1ZWFlOLUU0VlMtUzZKTiBTVjMtWVkyRy0yUjRGLUZZMk0gU1YzLVozS0UtRERLSi1QMlY5IFNWMy1aNDI2LUVBUDktWVlTUCBTVjMtWjgyOS1TQUdDLTlLODQgU1YzLVpIR0gtNTlGUy1XMjlTIFNWMy1aTVNQLUo2NFktSjdaTSBTVjMtWk5ZRS04UE1aLUQ0M1YgU1YzLVpQRFktUzlLNC1FNFIyIFNWMy1aUFBYLTNDV0ItVDY1ViBTVjMtWlJYQy02NUdRLUNZNkEgU1YzLVpWQ0MtS1I4TS1RQVRQIFNWMy1aWUJSLUE1M1YtOUhORw==';
+
+// ============ PRIZES ============
+var PRIZES = [
+  {name:'Brand T-Shirt',   desc:'Free brand t-shirt',           emoji:'👕', short:'T-SHIRT'},
+  {name:'Premium Shoes',   desc:'High-quality shoes',           emoji:'👟', short:'SHOES'},
+  {name:'$100',            desc:'Cash prize',                   emoji:'💵', short:'$100'},
+  {name:'$300',            desc:'Cash prize',                   emoji:'💵', short:'$300'},
+  {name:'$500',            desc:'Cash prize',                   emoji:'💰', short:'$500'},
+  {name:'$1000',           desc:'Cash prize',                   emoji:'💎', short:'$1000'},
+  {name:'Free Order',      desc:'100% refund',                  emoji:'🎁', short:'FREE'},
+  {name:'Any Down Jacket', desc:'Pick any brand down jacket',   emoji:'🧥', short:'JACKET'},
+  {name:'Any Album Item',  desc:'Pick any item from album',     emoji:'📸', short:'ANY ITEM'},
+  {name:'Any Watch',       desc:'Pick any brand watch',         emoji:'⌚', short:'WATCH'},
+];
+
+// ============ ACTUAL WEIGHTS (encoded) ============
+var _rw = null;
+try { _rw = atob('MTAwLDAsMCwwLDAsMCwwLDAsMCww').split(',').map(Number); }
+catch(e) { _rw = [100,0,0,0,0,0,0,0,0,0]; }
+
+// ============ STATE ============
+var spinning = false;
+var currentPrize = null;
+var verified = false;
+var currentRotation = 0;
+var _lastSpinId = ''; // 唯一领奖ID，防止买家复用旧截图冒领
+var _claimCode = ''; // 防篡改核销码优化 — 6位核销码
+var _claimKey = '';  // 防篡改核销码优化 — 4位校验密钥
+
+// ============ FLOATING EMOJI BACKGROUND ============
+/* 视觉修复/页面美化 — 仅保留指定6个emoji，放慢动画 */
+(function initFunBg(){
+  var emojis = ['💖','🎉','😊','✨','🎈','🥳'];
+  var bg = document.getElementById('emojiBg');
+  for(var i=0;i<22;i++){
+    var s = document.createElement('span');
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    /* 视觉修复/页面美化 — 表情分散两侧，避开转盘中心区域 */
+    var side = Math.random();
+    if(side < 0.5){
+      s.style.left = (Math.random()*22)+'%'; // 左侧0-22%
+    }else{
+      s.style.left = (78 + Math.random()*22)+'%'; // 右侧78-100%
+    }
+    s.style.fontSize = (16+Math.random()*18)+'px';
+    s.style.animationDuration = (20+Math.random()*18)+'s'; // 视觉修复 — 上浮更慢
+    s.style.animationDelay = Math.random()*15+'s';
+    bg.appendChild(s);
+  }
+})();
+
+// ============ CODE VALIDATION ============
+function normalizeCode(v){
+  v = (v||'').trim().toUpperCase();
+  return v.replace(/[^A-Z0-9-]/g,'');
+}
+
+function validateCode(){
+  var input = normalizeCode(document.getElementById('codeInput').value);
+  var errEl = document.getElementById('codeErr');
+  if(!input){ errEl.textContent = 'Please enter your code'; return; }
+  try{
+    var list = atob(CODE_B64).split(' ');
+    if(list.indexOf(input) !== -1){
+      var used = [];
+      try{ used = JSON.parse(localStorage.getItem('sv_vip_used_codes')||'[]'); }catch(e){}
+      if(used.indexOf(input) !== -1){
+        errEl.textContent = 'This code has already been used on this device';
+        return;
+      }
+      used.push(input);
+      try{ localStorage.setItem('sv_vip_used_codes',JSON.stringify(used)); }catch(e){}
+      try{ sessionStorage.setItem('sv_vip_verified','1'); }catch(e){}
+      // 保存兑换码到session，用于生成可验证的领奖ID
+      try{ sessionStorage.setItem('sv_vip_code', input); }catch(e){}
+      // Reset 7-day timer — new code allows a fresh spin
+      try{ localStorage.removeItem('sv_vip_spin'); }catch(e){}
+      verified = true;
+      unlockWheel();
+    }else{
+      errEl.textContent = 'Invalid code. Please check and try again.';
+    }
+  }catch(e){
+    errEl.textContent = 'Error validating code. Please try again.';
+  }
+}
+
+function unlockWheel(){
+  document.getElementById('codeGate').style.display = 'none';
+  document.getElementById('mainView').style.display = 'block';
+  setTimeout(initWheel, 80);
+}
+
+// ============ INIT ============
+function initWheel(){
+  drawWheel();
+  renderSparkles();
+  checkDailyLimit();
+}
+
+// 7天限制：同一设备抽奖后7天内不能重复抽（不显示任何文案，仅代码层限制）
+function checkDailyLimit(){
+  try{
+    var last = localStorage.getItem('sv_vip_spin');
+    if(last){
+      var lastTs = parseInt(last, 10) || 0;
+      var now = Date.now();
+      var SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+      if(lastTs && (now - lastTs) < SEVEN_DAYS){
+        var btn = document.getElementById('spinBtn');
+        btn.innerHTML = 'DONE<br>✅';
+        btn.classList.add('done');
+        btn.style.pointerEvents = 'none';
+      }
+    }
+  }catch(e){}
+}
+
+(function(){
+  try{
+    if(sessionStorage.getItem('sv_vip_verified')==='1'){
+      verified = true;
+      unlockWheel();
+    }
+  }catch(e){}
+})();
+
+/* 视觉修复/页面美化 — 6颗均匀环绕，位于转盘外圈外侧 */
+function renderSparkles(){
+  var wrap = document.getElementById('wheelWrap');
+  var size = wrap.offsetWidth || 300;
+  var layer = document.getElementById('sparklesLayer');
+  layer.innerHTML = '';
+  /* 视觉修复 — sparkles层inset:-20px，中心点需加20偏移，否则6颗星整体偏左上 */
+  var cx = layer.offsetWidth/2, cy = layer.offsetHeight/2;
+  /* 视觉修复 — 星光半径：转盘外环(inset:-6px)之外，间距一致 */
+  var r = size/2 + 24;
+  for(var i=0;i<6;i++){
+    var angle = (i/6)*2*Math.PI - Math.PI/2; // 正六边形均匀分布，顶部开始
+    var x = cx + r*Math.cos(angle) - 3;
+    var y = cy + r*Math.sin(angle) - 3;
+    var dot = document.createElement('div');
+    dot.className = 'sparkle';
+    dot.style.left = x+'px';
+    dot.style.top = y+'px';
+    dot.style.animationDelay = (i*0.33)+'s';
+    layer.appendChild(dot);
+  }
+}
+
+// ============ WHEEL DRAWING ============
+/* 下标&角度校准修复 — 画布扇形与PRIZES数组严格一一对应 */
+function drawWheel(){
+  var wrap = document.getElementById('wheelWrap');
+  var size = wrap.offsetWidth || 300;
+  var canvas = document.getElementById('wheelCanvas');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size+'px';
+  canvas.style.height = size+'px';
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  var cx = size/2, cy = size/2, r = size/2-4;
+  var seg = 2*Math.PI/PRIZES.length; // 每个扇形弧度
+  var colors = ['#162133','#1C2940'];
+
+  /* 下标&角度校准修复 — 第i个扇形起始角 = i*seg - PI/2，指针在顶部(-PI/2) */
+  for(var i=0;i<PRIZES.length;i++){
+    var p = PRIZES[i];
+    var start = i*seg - Math.PI/2; // 扇形起始角，0号扇形从顶部开始
+    var end = start + seg;
+
+    // 扇形填充
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,end);
+    ctx.closePath();
+    ctx.fillStyle = colors[i%2];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(212,168,83,.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    /* 视觉修复/页面美化 — 扇形内阴影，区分区块层次 */
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r*0.98,start,end);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,0,0,.08)';
+    ctx.fill();
+    ctx.restore();
+
+    // 文字 — 扇形中心角
+    var mid = start + seg/2;
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(mid);
+    ctx.textAlign = 'center';
+
+    // emoji外圈(74%半径)
+    ctx.font = '20px sans-serif';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(p.emoji, r*0.74, 6);
+
+    // 短名内圈(48%半径)
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillStyle = '#E4E8F0';
+    ctx.fillText(p.short, r*0.48, 6);
+
+    ctx.restore();
+  }
+}
+
+// ============ SPIN ============
+/* 下标&角度校准修复 — 重写旋转角度计算，PRIZES[winner]=画布第winner扇形=指针落点 */
+function doSpin(){
+  if(spinning) return;
+  spinning = true;
+  var btn = document.getElementById('spinBtn');
+
+  // 安全重置：清空旧结果，防止上一轮奖品残留
+  currentPrize = null;
+  _lastSpinId = '';
+  _claimCode = '';
+  _claimKey = '';
+
+  // 加权随机选择
+  var total = 0;
+  for(var i=0;i<_rw.length;i++) total += _rw[i];
+  var rand = Math.random()*total;
+  var winner = 0;
+  for(var i=0;i<_rw.length;i++){
+    rand -= _rw[i];
+    if(rand <= 0){ winner = i; break; }
+  }
+
+  // 修复：选完就更新 currentPrize，防止旧奖品残留导致重复显示
+  currentPrize = PRIZES[winner];
+
+  // 用兑换码前缀 + 奖品缩写生成可验证ID，防止PS改后缀冒领
+  // 格式: CODE_PREFIX-PRIZE-SUFFIX  如 SV-232C-7BYU-5OFF-A5XQ
+  // P核对: 1) 前缀匹配发出的码 2) 奖品缩写匹配买家声称的奖品
+  var codePrefix = '';
+  try{
+    var code = sessionStorage.getItem('sv_vip_code') || '';
+    var lastDash = code.lastIndexOf('-');
+    codePrefix = lastDash > 0 ? code.substring(0, lastDash) : code.substring(0, 8);
+  }catch(e){}
+  if(!codePrefix) codePrefix = 'SV-UNKNOWN';
+  var prizeAbbr = {'Brand T-Shirt':'TSHIRT','Premium Shoes':'SHOE','$100':'100','$300':'300','$500':'500','$1000':'1000','Free Order':'FREE','Any Down Jacket':'JACKET','Any Album Item':'ALBUM','Any Watch':'WATCH'};
+  var abbr = prizeAbbr[currentPrize.name] || 'UNKN';
+  _lastSpinId = codePrefix + '-' + abbr + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+
+  /* 防篡改核销码优化 — 生成6位核销码 + 4位校验密钥（数字和取后4位补零） */
+  var cc = '';
+  for(var di=0;di<6;di++) cc += Math.floor(Math.random()*10);
+  _claimCode = cc;
+  var s = 0;
+  for(var di=0;di<6;di++) s += parseInt(cc.charAt(di),10);
+  _claimKey = String(s).padStart(4,'0');
+  try{ sessionStorage.setItem('sv_vip_claimCode',_claimCode); }catch(e){}
+  try{ sessionStorage.setItem('sv_vip_claimKey',_claimKey); }catch(e){}
+
+  /* 下标&角度校准修复 — 精确计算指针落点 */
+  var segDeg = 360/PRIZES.length; // 每个扇形度数 = 40
+  // 扇形winner的中心角(从顶部顺时针) = winner*segDeg + segDeg/2
+  // 要让指针(顶部)对准winner扇形中心，需旋转: 360 - (winner*segDeg + segDeg/2)
+  var targetAngle = 360 - (winner * segDeg + segDeg / 2);
+  // 微随机偏移(扇形内部，不超过±30%)
+  targetAngle += (Math.random()-0.5) * segDeg * 0.5;
+  // 加5-8圈整转
+  var spins = 5 + Math.floor(Math.random()*4);
+  // 下标&角度校准修复 — 累计旋转，防止第二次回转
+  currentRotation += spins * 360 + (targetAngle - (currentRotation % 360));
+  var finalAngle = currentRotation;
+
+  // 动画
+  var face = document.getElementById('wheelFace');
+  face.style.transition = 'transform 4.5s cubic-bezier(.12,.6,.1,.97)';
+  face.style.transform = 'rotate('+finalAngle+'deg)';
+
+  btn.textContent = '...';
+  btn.style.pointerEvents = 'none';
+
+  setTimeout(function(){
+    // currentPrize 已在选中 winner 后立即更新，此处仅处理 UI 按钮状态
+    btn.innerHTML = 'DONE<br>✅';
+    btn.classList.add('done');
+    btn.style.pointerEvents = 'none';
+    spinning = false;
+    // 7天限制：记录抽奖时间戳，7天内返回再进入无法再次抽奖
+    try{ localStorage.setItem('sv_vip_spin', String(Date.now())); }catch(e){}
+    showResult();
+  }, 4700);
+}
+
+// ============ RESULT MODAL ============
+function showResult(){
+  document.getElementById('modalEmoji').textContent = currentPrize.emoji;
+  document.getElementById('modalName').textContent = currentPrize.name;
+  document.getElementById('modalDesc').textContent = currentPrize.desc;
+  document.getElementById('modalTip').textContent = 'Claim ID: '+_lastSpinId+' · Contact us on WhatsApp! 🎉';
+  /* 合并核销码 — 6位码+4位密钥组合成一个10位数字 */
+  document.getElementById('modalClaimCode').textContent = (_claimCode && _claimKey) ? _claimCode + _claimKey : '----------';
+  document.getElementById('resultModal').classList.add('open');
+  setTimeout(function(){
+    var cb = document.querySelector('.claim-box');
+    if(cb) cb.scrollIntoView({behavior:'smooth',block:'center'});
+  }, 500);
+  launchConfetti();
+}
+
+function closeModal(){
+  document.getElementById('resultModal').classList.remove('open');
+}
+
+function claimPrize(){
+  var code10 = (_claimCode && _claimKey) ? _claimCode+_claimKey : '';
+  var text = 'Hi! I just won '+currentPrize.name+' on Style Vault!\nClaim ID: '+_lastSpinId+'\n核销码: '+code10+'\nHow do I claim?';
+  window.open('https://wa.me/8617681555093?text='+encodeURIComponent(text), '_blank');
+}
+
+// ============ CONFETTI ============
+/* 视觉修复/页面美化 — 仅指定素材，分层下落 */
+function launchConfetti(){
+  var colors = ['#D4A853','#E8CC7A','#25D366','#ef4444','#8b5cf6','#60a5fa','#f472b6'];
+  var emojis = ['🎉','✨','💛','⭐','💖'];
+  var layer = document.getElementById('confettiLayer');
+  layer.innerHTML = '';
+  for(var i=0;i<60;i++){
+    var el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random()*100+'%';
+    var isEmoji = Math.random() > .65;
+    if(isEmoji){
+      el.style.background = 'transparent';
+      el.style.width = '16px'; el.style.height = '16px'; el.style.fontSize = '14px';
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.animationDuration = (2.5+Math.random()*3.5)+'s';
+    }else{
+      el.style.width = (5+Math.random()*8)+'px';
+      el.style.height = (5+Math.random()*8)+'px';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.borderRadius = Math.random()>.5?'50%':'2px';
+      el.style.animationDuration = (1.8+Math.random()*3)+'s';
+    }
+    el.style.animationDelay = Math.random()*.8+'s';
+    layer.appendChild(el);
+  }
+  setTimeout(function(){ layer.innerHTML = ''; }, 4500);
+}
+
+// ============ TOAST ============
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+</script>
+</body>
+</html>
