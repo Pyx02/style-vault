@@ -159,9 +159,213 @@ a{text-decoration:none}
 @media(max-width:360px){
   .wheel-wrap{width:260px;height:260px}
 }
+
+/* ====================================================================
+   🎄 圣诞 · 极光夜空装饰层（纯视觉层，不参与任何业务逻辑）
+   ==================================================================== */
+:root{--xmas-ink:#071020;--xmas-mid:#0A1428;--xmas-top:#0F1B36}
+
+/* 深蓝圣诞夜空：上方蓝紫朦胧，底部更深 */
+html,body{
+  background:
+    radial-gradient(ellipse 132% 66% at 50% -16%,rgba(112,102,206,.22) 0%,rgba(52,86,166,.12) 40%,rgba(10,20,40,0) 74%),
+    radial-gradient(ellipse 68% 38% at 86% 0%,rgba(104,74,176,.10) 0%,rgba(10,20,40,0) 62%),
+    linear-gradient(180deg,var(--xmas-top) 0%,var(--xmas-mid) 46%,var(--xmas-ink) 100%);
+  background-attachment:fixed;
+}
+
+/* 装饰层容器：固定在最底层，永不接收点击 */
+.xmas-scene{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+
+/* ---------------- 流动极光（纯 CSS 渐变，无外部图片） ---------------- */
+.xmas-aurora{position:absolute;pointer-events:none;will-change:transform,opacity}
+.xmas-aurora.a-violet{
+  top:-34vh;left:-30%;width:160%;height:84vh;
+  background:
+    radial-gradient(ellipse 46% 36% at 24% 30%,rgba(152,128,255,.52) 0%,rgba(120,112,238,.18) 46%,rgba(120,112,238,0) 76%),
+    radial-gradient(ellipse 40% 30% at 54% 18%,rgba(98,136,255,.40) 0%,rgba(98,136,255,0) 72%),
+    radial-gradient(ellipse 42% 32% at 84% 32%,rgba(180,140,248,.34) 0%,rgba(180,140,248,0) 74%);
+  filter:blur(40px);
+  opacity:.30;
+  animation:auroraViolet 30s ease-in-out infinite;
+}
+.xmas-aurora.a-green{
+  top:-10vh;left:-28%;width:156%;height:64vh;
+  background:
+    radial-gradient(ellipse 44% 34% at 38% 34%,rgba(126,255,208,.40) 0%,rgba(84,226,180,.14) 50%,rgba(84,226,180,0) 76%),
+    radial-gradient(ellipse 36% 28% at 70% 22%,rgba(126,240,255,.34) 0%,rgba(126,240,255,0) 74%),
+    radial-gradient(ellipse 30% 26% at 12% 42%,rgba(110,232,196,.26) 0%,rgba(110,232,196,0) 72%);
+  filter:blur(46px);
+  opacity:.24;
+  animation:auroraGreen 36s ease-in-out infinite;
+}
+.xmas-aurora.a-ribbon{
+  top:0;left:-20%;width:140%;height:40vh;
+  background:linear-gradient(97deg,rgba(160,255,220,0) 4%,rgba(160,255,220,.16) 20%,rgba(140,200,255,.11) 34%,rgba(140,200,255,0) 47%,rgba(190,160,255,.14) 63%,rgba(150,255,225,.12) 79%,rgba(150,255,225,0) 93%);
+  filter:blur(24px);
+  opacity:.50;
+  animation:auroraRibbon 42s ease-in-out infinite;
+}
+.xmas-aurora.a-gold{
+  top:-6vh;left:10%;width:72%;height:34vh;
+  background:radial-gradient(ellipse 42% 52% at 32% 42%,rgba(232,196,124,.26) 0%,rgba(212,168,83,.10) 46%,rgba(212,168,83,0) 74%);
+  filter:blur(34px);
+  opacity:.26;
+  animation:auroraGold 22s ease-in-out infinite;
+}
+@keyframes auroraViolet{
+  0%,100%{transform:translate3d(-7%,0,0) rotate(-3deg) scale(1,.96);opacity:.24}
+  50%{transform:translate3d(7%,3%,0) rotate(2deg) scale(1.08,1.1);opacity:.46}
+}
+@keyframes auroraGreen{
+  0%,100%{transform:translate3d(9%,2%,0) rotate(2deg) scale(1.04,.98);opacity:.20}
+  50%{transform:translate3d(-9%,-2%,0) rotate(-3deg) scale(1.12,.94);opacity:.34}
+}
+@keyframes auroraRibbon{
+  0%,100%{transform:translate3d(-8%,1%,0) skewY(-7deg) scaleY(.86);opacity:.38}
+  50%{transform:translate3d(5%,-2%,0) skewY(-3deg) scaleY(1.02);opacity:.66}
+}
+@keyframes auroraGold{
+  0%,100%{transform:translate3d(-4%,0,0) scale(1);opacity:.14}
+  50%{transform:translate3d(6%,2%,0) scale(1.08);opacity:.28}
+}
+
+/* 底部压暗：保证转盘 / 文字 / 按钮可读 */
+.xmas-veil{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(7,16,32,0) 32%,rgba(7,16,32,.40) 60%,rgba(7,16,32,.82) 84%,rgba(7,16,32,1) 100%)}
+
+/* ---------------- 淡星光 ---------------- */
+.xmas-stars{position:absolute;inset:0}
+.xmas-stars span{position:absolute;border-radius:50%;animation:xmasTwinkle var(--d,6s) ease-in-out infinite alternate;animation-delay:var(--dl,0s)}
+@keyframes xmasTwinkle{from{opacity:.06;transform:scale(.6)}to{opacity:var(--o,.6);transform:scale(1)}}
+
+/* ---------------- 细小金色光点 ---------------- */
+.xmas-dust{position:absolute;inset:0}
+.xmas-dust span{position:absolute;border-radius:50%;background:radial-gradient(circle,#F5E0B0 0%,rgba(212,168,83,.72) 40%,rgba(212,168,83,0) 72%);box-shadow:0 0 7px rgba(232,204,122,.40);opacity:var(--o,.5);animation:xmasDustFloat var(--d,26s) ease-in-out infinite;animation-delay:var(--dl,0s)}
+@keyframes xmasDustFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(var(--dx,14px),-16px,0) scale(1.12)}}
+
+/* ---------------- 雪花（CSS 绘制，分层密度） ---------------- */
+.xmas-snow{position:absolute;inset:0;overflow:hidden}
+.xmas-snow span{position:absolute;top:0;left:0;border-radius:50%;background:radial-gradient(circle,#fff 0%,rgba(255,255,255,.82) 38%,rgba(255,255,255,0) 74%);animation-name:snowFall;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
+.xmas-snow span.flake-glyph{background:none;border-radius:0;color:rgba(255,255,255,.62);text-shadow:0 0 7px rgba(198,224,255,.55),0 0 12px rgba(212,168,83,.22);font-family:"Segoe UI Symbol","Apple Symbols",sans-serif}
+@keyframes snowFall{
+  0%{transform:translate3d(0,-16vh,0) rotate(0deg);opacity:0}
+  8%{opacity:var(--o,.45)}
+  25%{transform:translate3d(var(--sw,16px),24vh,0) rotate(70deg)}
+  50%{transform:translate3d(0,48vh,0) rotate(150deg)}
+  75%{transform:translate3d(calc(var(--sw,16px) * -1),76vh,0) rotate(230deg)}
+  92%{opacity:var(--o,.45)}
+  100%{transform:translate3d(0,114vh,0) rotate(300deg);opacity:0}
+}
+
+/* 页面边角小装饰 */
+.xmas-corner{position:absolute;bottom:10px;font-size:24px;line-height:1;opacity:.2;filter:drop-shadow(0 0 10px rgba(232,204,122,.28));animation:xmasCornerBreath 9s ease-in-out infinite}
+.xmas-corner.c1{left:10px}
+.xmas-corner.c2{right:10px;animation-delay:-4.5s}
+@keyframes xmasCornerBreath{0%,100%{opacity:.12;transform:translateY(0) rotate(-4deg)}50%{opacity:.26;transform:translateY(-4px) rotate(5deg)}}
+
+/* ---------------- 圣诞老人 · 麋鹿雪橇（顶部缓慢飞过） ---------------- */
+.santa-flight{position:fixed;top:0;left:0;width:100%;height:100px;overflow:hidden;pointer-events:none;z-index:45}
+.santa-flight .santa{position:absolute;top:13px;left:0;animation:santaFly 46s linear infinite;animation-delay:2s;will-change:transform}
+.santa-bob{position:relative;display:flex;align-items:flex-end;gap:3px;font-size:clamp(17px,4.4vw,30px);line-height:1;
+  animation:santaBob 5.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 8px rgba(232,204,122,.45)) drop-shadow(0 10px 16px rgba(0,0,0,.45))}
+.santa-bob::before{content:'';position:absolute;left:-46px;right:-46px;top:-34px;bottom:-14px;
+  background:radial-gradient(ellipse at 50% 62%,rgba(232,204,122,.20) 0%,rgba(232,204,122,.06) 45%,rgba(232,204,122,0) 72%);
+  filter:blur(8px);z-index:-1}
+.santa-trail{position:absolute;right:100%;top:52%;transform:translateY(-50%);display:flex;align-items:center;justify-content:flex-end;gap:7px}
+.santa-trail::after{content:'';position:absolute;right:calc(100% - 4px);top:50%;transform:translateY(-50%);width:96px;height:12px;border-radius:60%;filter:blur(3px);
+  background:linear-gradient(90deg,rgba(232,204,122,0) 0%,rgba(232,204,122,.10) 68%,rgba(232,204,122,.18) 100%)}
+.santa-trail i{display:block;border-radius:50%;background:rgba(244,222,162,.85);box-shadow:0 0 7px rgba(232,204,122,.7);animation:trailTwinkle 2.8s ease-in-out infinite}
+.santa-trail i:nth-child(1){width:2px;height:2px;opacity:.30}
+.santa-trail i:nth-child(2){width:2px;height:2px;opacity:.45;animation-delay:-.4s}
+.santa-trail i:nth-child(3){width:3px;height:3px;opacity:.6;animation-delay:-.8s}
+.santa-trail i:nth-child(4){width:3px;height:3px;opacity:.75;animation-delay:-1.2s}
+.santa-trail i:nth-child(5){width:4px;height:4px;opacity:.9;animation-delay:-1.6s}
+.santa-trail .trail-flake{font-size:7px;color:rgba(255,255,255,.5);text-shadow:0 0 6px rgba(198,224,255,.4);animation:trailTwinkle 3.4s ease-in-out infinite}
+@keyframes trailTwinkle{0%,100%{opacity:.35;transform:scale(.9)}50%{opacity:.95;transform:scale(1.15)}}
+.santa-rig{position:relative;display:inline-block;line-height:1;font-size:1em}
+.santa-rig .sleigh{display:block;line-height:1}
+.santa-rig .santa-claus{position:absolute;left:-.34em;bottom:.40em;font-size:.86em;line-height:1;filter:drop-shadow(0 0 10px rgba(232,204,122,.6))}
+.santa-deer{display:inline-block;font-size:.85em;line-height:1;transform-origin:50% 80%;animation:deerBob 2.2s ease-in-out infinite}
+.santa-deer.d2{font-size:.76em;opacity:.92;animation-delay:-.55s}
+@keyframes deerBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-.18em) rotate(3deg)}}
+@keyframes santaFly{
+  0%{transform:translate3d(-34vw,0,0)}
+  12%{transform:translate3d(-8vw,-2px,0)}
+  70%{transform:translate3d(104vw,-8px,0)}
+  100%{transform:translate3d(104vw,-8px,0)}
+}
+@keyframes santaBob{0%,100%{transform:translateY(0) rotate(-1.2deg)}50%{transform:translateY(-7px) rotate(1.2deg)}}
+
+/* ---------------- 本页专属：门锁 / 转盘 / 中奖弹窗 ---------------- */
+#mainView{position:relative;z-index:2}
+
+/* 门锁层透出夜空与极光 */
+.code-gate{background:linear-gradient(180deg,rgba(9,18,38,.60) 0%,rgba(7,16,32,.92) 78%,rgba(7,16,32,.97) 100%)}
+.gate-card{position:relative;border-color:rgba(212,168,83,.24);
+  box-shadow:0 14px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(212,168,83,.18),inset 0 0 44px rgba(212,168,83,.06)}
+.gate-card::after{content:'🎄';position:absolute;top:14px;right:14px;font-size:14px;line-height:1;opacity:.34;transform:rotate(10deg);pointer-events:none;text-shadow:0 0 8px rgba(232,204,122,.35)}
+.gate-icon{position:relative}
+.gate-icon::after{content:'🎅';position:absolute;left:50%;margin-left:30px;top:8px;font-size:16px;line-height:1;opacity:.5;transform:rotate(12deg);text-shadow:0 0 8px rgba(232,204,122,.4)}
+
+/* 转盘外圈圣诞小装饰（不改变抽奖逻辑与命中位置） */
+.wheel-xmas{position:absolute;inset:-40px;pointer-events:none;z-index:1}
+.wheel-xmas span{position:absolute;font-size:15px;line-height:1;opacity:.45;margin:-7px 0 0 -7px;filter:drop-shadow(0 0 7px rgba(232,204,122,.35));animation:xmasSticker 5.5s ease-in-out infinite}
+.wheel-xmas .w1{left:16%;top:16%}
+.wheel-xmas .w2{right:16%;top:16%;animation-delay:-1.4s}
+.wheel-xmas .w3{left:16%;bottom:16%;animation-delay:-2.8s}
+.wheel-xmas .w4{right:16%;bottom:16%;animation-delay:-4.2s}
+@keyframes xmasSticker{0%,100%{transform:translateY(0) rotate(-6deg);opacity:.26}50%{transform:translateY(-4px) rotate(5deg);opacity:.52}}
+
+/* 中奖弹窗：柔和金色边框 + 轻微内发光 */
+.modal{border-color:rgba(212,168,83,.22);
+  box-shadow:0 -8px 44px rgba(0,0,0,.55),inset 0 1px 0 rgba(212,168,83,.2),inset 0 0 46px rgba(212,168,83,.05)}
+.modal .me{position:relative}
+.modal .me::after{content:'🎅';position:absolute;left:50%;margin-left:30px;top:6px;font-size:16px;line-height:1;opacity:.5;transform:rotate(12deg);text-shadow:0 0 8px rgba(232,204,122,.45)}
+.claim-box{border-color:rgba(212,168,83,.26);box-shadow:inset 0 0 26px rgba(212,168,83,.07)}
+
+/* 小屏降负载 */
+@media(max-width:520px){
+  .xmas-aurora.a-violet{filter:blur(26px)}
+  .xmas-aurora.a-green{filter:blur(30px)}
+  .xmas-aurora.a-ribbon{filter:blur(16px)}
+  .xmas-aurora.a-gold{filter:blur(22px)}
+  .santa-flight{height:82px}
+}
+@media(prefers-reduced-motion:reduce){
+  .xmas-aurora,.santa-flight .santa,.santa-bob,.santa-deer,.xmas-snow span,.xmas-stars span,.xmas-dust span,.santa-trail i,.xmas-corner,.wheel-xmas span{animation:none!important}
+}
 </style>
 </head>
 <body>
+
+<!-- ===== 圣诞夜空装饰层（fixed / 低层级 / 不拦截点击） ===== -->
+<div class="xmas-scene" id="xmasScene" aria-hidden="true">
+  <div class="xmas-aurora a-violet"></div>
+  <div class="xmas-aurora a-green"></div>
+  <div class="xmas-aurora a-ribbon"></div>
+  <div class="xmas-aurora a-gold"></div>
+  <div class="xmas-veil"></div>
+  <div class="xmas-stars" id="xmasStars"></div>
+  <div class="xmas-dust" id="xmasDust"></div>
+  <div class="xmas-snow" id="xmasSnowSmall"></div>
+  <div class="xmas-snow" id="xmasSnowBig"></div>
+  <span class="xmas-corner c1">🎄</span>
+  <span class="xmas-corner c2">🔔</span>
+</div>
+
+<!-- ===== 圣诞老人 · 麋鹿雪橇（顶部缓慢飞过） ===== -->
+<div class="santa-flight" aria-hidden="true">
+  <div class="santa">
+    <div class="santa-bob">
+      <span class="santa-trail"><i></i><i></i><i></i><i></i><i></i><span class="trail-flake">❄</span><span class="trail-flake">❅</span></span>
+      <span class="santa-rig"><span class="santa-claus">🎅</span><span class="sleigh">🛷</span></span>
+      <span class="santa-deer">🦌</span>
+      <span class="santa-deer d2">🦌</span>
+    </div>
+  </div>
+</div>
 
 <!-- Floating emoji background -->
 <div class="emoji-bg" id="emojiBg"></div>
@@ -195,6 +399,7 @@ a{text-decoration:none}
     </div>
     <button class="spin-btn" id="spinBtn" onclick="doSpin()">SPIN<br>🎰</button>
     <div class="pointer"></div>
+    <div class="wheel-xmas" aria-hidden="true"><span class="w1">🎅</span><span class="w2">🎄</span><span class="w3">🔔</span><span class="w4">❄️</span></div>
   </div>
   <!-- 防篡改核销码优化 — 页脚规则公示 -->
   <div class="footer-rules">All spin codes &amp; claim codes are uniquely bound. Any edited, AI-altered or forged codes will not be honored. Old winning screenshots cannot be reused for new orders.</div>
@@ -285,7 +490,8 @@ var _claimKey = '';  // 防篡改核销码优化 — 4位校验密钥
 // ============ FLOATING EMOJI BACKGROUND ============
 /* 视觉修复/页面美化 — 仅保留指定6个emoji，放慢动画 */
 (function initFunBg(){
-  var emojis = ['💖','🎉','😊','✨','🎈','🥳'];
+  /* 视觉修复/页面美化 — 原6个emoji + 圣诞元素，放慢动画 */
+  var emojis = ['💖','🎉','😊','✨','🎈','🥳','🎄','❄️','🔔','🎁','🧦'];
   var bg = document.getElementById('emojiBg');
   for(var i=0;i<22;i++){
     var s = document.createElement('span');
@@ -620,6 +826,103 @@ function showToast(msg){
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
+</script>
+
+<script>
+/* ============================================================
+   🎄 装饰层生成（星光 / 金色光点 / 雪花）— 纯视觉，独立作用域
+   不触碰任何抽奖、核销码、localStorage 逻辑
+   ============================================================ */
+(function(){
+  var scene = document.getElementById('xmasScene');
+  if(!scene) return;
+  var stars = document.getElementById('xmasStars');
+  var dust  = document.getElementById('xmasDust');
+  var snowS = document.getElementById('xmasSnowSmall');
+  var snowB = document.getElementById('xmasSnowBig');
+  var W = window.innerWidth || 360;
+  var H = window.innerHeight || 640;
+  var small = W < 520;
+
+  function make(parent, cls){
+    var el = document.createElement('span');
+    if(cls) el.className = cls;
+    parent.appendChild(el);
+    return el;
+  }
+
+  /* 淡星光：越靠上方越密，少量淡金 */
+  if(stars){
+    var nStars = Math.max(46, Math.min(100, Math.round(W * H / 16000)));
+    for(var i = 0; i < nStars; i++){
+      var s = make(stars, '');
+      var size = (Math.random() * 1.6 + 0.6).toFixed(2);
+      var gold = Math.random() < 0.28;
+      s.style.left = (Math.random() * 100).toFixed(2) + '%';
+      s.style.top  = (Math.pow(Math.random(), 1.35) * 96).toFixed(2) + '%';
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.background = gold ? '#F0D9A2' : '#FFFFFF';
+      if(gold) s.style.boxShadow = '0 0 5px rgba(232,204,122,.55)';
+      s.style.setProperty('--o', (0.25 + Math.random() * 0.5).toFixed(2));
+      s.style.setProperty('--d', (3 + Math.random() * 5).toFixed(1) + 's');
+      s.style.setProperty('--dl', (-Math.random() * 8).toFixed(1) + 's');
+    }
+  }
+
+  /* 细小金色光点 */
+  if(dust){
+    var nDust = small ? 20 : 30;
+    for(var j = 0; j < nDust; j++){
+      var d = make(dust, '');
+      var ds = (Math.random() * 2.4 + 1.6).toFixed(2);
+      d.style.width = ds + 'px';
+      d.style.height = ds + 'px';
+      d.style.left = (Math.random() * 100).toFixed(2) + '%';
+      d.style.top  = (Math.random() * 100).toFixed(2) + '%';
+      d.style.setProperty('--dx', ((Math.random() < 0.5 ? -1 : 1) * (8 + Math.random() * 18)).toFixed(0) + 'px');
+      d.style.setProperty('--o', (0.30 + Math.random() * 0.35).toFixed(2));
+      d.style.setProperty('--d', (18 + Math.random() * 22).toFixed(1) + 's');
+      d.style.setProperty('--dl', (-Math.random() * 20).toFixed(1) + 's');
+    }
+  }
+
+  /* 细密小雪：小颗粒，部分带淡金边缘 */
+  if(snowS){
+    var nSmall = small ? 52 : 76;
+    for(var k = 0; k < nSmall; k++){
+      var f = make(snowS, '');
+      var fs = (Math.random() * 2.2 + 1.2).toFixed(2);
+      f.style.width = fs + 'px';
+      f.style.height = fs + 'px';
+      f.style.left = (Math.random() * 100).toFixed(2) + '%';
+      f.style.setProperty('--sw', ((Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 26)).toFixed(0) + 'px');
+      f.style.setProperty('--o', (0.18 + Math.random() * 0.32).toFixed(2));
+      f.style.animationDuration = (14 + Math.random() * 16).toFixed(1) + 's';
+      f.style.animationDelay = (-Math.random() * 30).toFixed(1) + 's';
+      if(Math.random() < 0.22){
+        f.style.background = 'radial-gradient(circle,#F7E7C0 0%,rgba(232,204,122,.78) 36%,rgba(232,204,122,0) 72%)';
+        f.style.boxShadow = '0 0 6px rgba(232,204,122,.38)';
+      }
+    }
+  }
+
+  /* 稍大 / 缓慢飘落的雪花 */
+  if(snowB){
+    var glyphs = ['❄','❅','❆'];
+    var nBig = small ? 12 : 18;
+    for(var m = 0; m < nBig; m++){
+      var b = make(snowB, 'flake-glyph');
+      b.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+      b.style.fontSize = (9 + Math.random() * 7).toFixed(1) + 'px';
+      b.style.left = (Math.random() * 100).toFixed(2) + '%';
+      b.style.setProperty('--sw', ((Math.random() < 0.5 ? -1 : 1) * (16 + Math.random() * 30)).toFixed(0) + 'px');
+      b.style.setProperty('--o', (0.25 + Math.random() * 0.28).toFixed(2));
+      b.style.animationDuration = (24 + Math.random() * 18).toFixed(1) + 's';
+      b.style.animationDelay = (-Math.random() * 40).toFixed(1) + 's';
+    }
+  }
+})();
 </script>
 </body>
 </html>
